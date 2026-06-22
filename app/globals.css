@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 0, 0, 0;
+  --background-end-rgb: 10, 10, 10;
+}
+
+html {
+  background-color: #050505;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: transparent;
+  margin: 0;
+  overflow-x: hidden;
+  font-family: 'Inter', sans-serif;
+}
+
+canvas {
+  touch-action: none;
+}
+
+.glass-effect {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}

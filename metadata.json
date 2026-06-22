@@ -1,0 +1,6 @@
+{
+  "name": "Dhruv Patil Portfolio",
+  "description": "Personal portfolio website for Dhruv Dinesh Patil, an AI Researcher & Generative Model Engineer based in Nagpur, India.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
