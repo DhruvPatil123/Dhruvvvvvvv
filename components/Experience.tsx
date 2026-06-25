@@ -1,13 +1,16 @@
 "use client"
 
 import React, { useRef, useMemo } from 'react'
-import { useFrame } from '@react-three/fiber'
+import { useFrame, useThree } from '@react-three/fiber'
 import { MeshDistortMaterial, MeshWobbleMaterial, Sphere, TorusKnot, Float } from '@react-three/drei'
 import * as THREE from 'three'
 import { useScrollStore } from '@/store/useScrollStore'
 import CosmicDust from './CosmicDust'
 
 export default function Experience() {
+  const { size } = useThree()
+  const isMobile = size.width < 768
+
   const coreRef = useRef<any>(null)
   const ring1Ref = useRef<any>(null)
   const ring2Ref = useRef<any>(null)
@@ -64,34 +67,36 @@ export default function Experience() {
     let targetX = 0
     let targetY = 0
     let targetZ = 0
-    let targetScale = 1.1
+    let targetScale = isMobile ? 0.6 : 1.1
     let targetRotationY = t * 0.3
     let targetColor = new THREE.Color('#00f2ff')
 
     if (scrollProgress < 0.2) {
       // Hero
       targetX = 0
-      targetScale = 1.1
+      targetScale = isMobile ? 0.6 : 1.1
     } else if (scrollProgress < 0.4) {
       // About
-      targetX = THREE.MathUtils.lerp(0, 2, (scrollProgress - 0.2) / 0.2)
+      targetX = THREE.MathUtils.lerp(0, isMobile ? 0 : 2, (scrollProgress - 0.2) / 0.2)
       targetRotationY = t * 0.8
       targetColor.set('#7000ff')
+      targetScale = isMobile ? 0.55 : 1.1
     } else if (scrollProgress < 0.6) {
       // Projects
-      targetX = THREE.MathUtils.lerp(2, 0, (scrollProgress - 0.4) / 0.2)
-      targetScale = THREE.MathUtils.lerp(1.1, 1.5, (scrollProgress - 0.4) / 0.2)
+      targetX = THREE.MathUtils.lerp(isMobile ? 0 : 2, 0, (scrollProgress - 0.4) / 0.2)
+      targetScale = THREE.MathUtils.lerp(isMobile ? 0.55 : 1.1, isMobile ? 0.75 : 1.5, (scrollProgress - 0.4) / 0.2)
       targetColor.set('#ffffff')
     } else if (scrollProgress < 0.8) {
       // Timeline
-      targetX = THREE.MathUtils.lerp(0, -2, (scrollProgress - 0.6) / 0.2)
+      targetX = THREE.MathUtils.lerp(0, isMobile ? 0 : -2, (scrollProgress - 0.6) / 0.2)
       targetZ = THREE.MathUtils.lerp(0, 0.5, (scrollProgress - 0.6) / 0.2)
+      targetScale = isMobile ? 0.55 : 1.1
       targetColor.set('#00f2ff')
     } else {
       // Contact
-      targetX = THREE.MathUtils.lerp(-2, 0, (scrollProgress - 0.8) / 0.2)
+      targetX = THREE.MathUtils.lerp(isMobile ? 0 : -2, 0, (scrollProgress - 0.8) / 0.2)
       targetZ = THREE.MathUtils.lerp(0.5, 0, (scrollProgress - 0.8) / 0.2)
-      targetScale = THREE.MathUtils.lerp(1.1, 1.3, (scrollProgress - 0.8) / 0.2)
+      targetScale = THREE.MathUtils.lerp(isMobile ? 0.55 : 1.1, isMobile ? 0.65 : 1.3, (scrollProgress - 0.8) / 0.2)
       targetColor.set('#ffcc00')
     }
 

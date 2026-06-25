@@ -37,10 +37,10 @@ const TESTIMONIALS = [
 
 export default function Testimonials() {
   return (
-    <section id="testimonials" className="relative w-full min-h-screen flex flex-col items-center justify-center px-6 py-24">
-      <div className="max-w-6xl w-full text-center mb-20 space-y-4">
+    <section id="testimonials" className="relative w-full min-h-[auto] md:min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-20 md:py-32 lg:py-48">
+      <div className="max-w-6xl w-full text-center mb-16 md:mb-20 space-y-4">
         {/* Section Indicator */}
-        <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold">
+        <span className="font-mono text-xs uppercase tracking-[0.2em] text-primary font-medium">
           [ 07 // COLLABORATIONS ]
         </span>
 
@@ -49,9 +49,14 @@ export default function Testimonials() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-4xl md:text-5xl lg:text-6xl font-display font-light text-white tracking-tight"
+          className="text-4xl md:text-5xl lg:text-6xl font-display font-medium text-white tracking-tight"
         >
-          COLLABORATORS <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">& MENTORS</span>
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-400 via-zinc-200 to-white">
+            COLLABORATORS
+          </span>{" "}
+          <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+            & MENTORS
+          </span>
         </motion.h2>
 
         <motion.p
@@ -73,7 +78,7 @@ export default function Testimonials() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: idx * 0.1 }}
             viewport={{ once: true }}
-            className="glass-effect p-8 rounded-3xl border border-white/5 hover:border-secondary/30 transition-all duration-300 relative flex flex-col justify-between"
+            className="glass-effect p-6 sm:p-8 rounded-3xl border border-white/5 hover:border-secondary/30 transition-all duration-300 relative flex flex-col justify-between"
           >
             <div>
               <div className="flex items-center gap-4 mb-6">

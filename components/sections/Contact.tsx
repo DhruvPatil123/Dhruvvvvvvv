@@ -8,6 +8,7 @@ const CONTACT_EMAIL = 'sujalpatil8657231278@gmail.com'
 
 type ContactResponse = {
   error?: string
+  simulated?: boolean
 }
 
 export default function Contact() {
@@ -35,19 +36,31 @@ export default function Contact() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, message }),
       })
-      const data = await response.json() as ContactResponse
+
+      let data: ContactResponse = {}
+      const contentType = response.headers.get('content-type')
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json() as ContactResponse
+      } else {
+        const text = await response.text()
+        console.error('Non-JSON response received:', text)
+      }
 
       if (!response.ok) {
-        throw new Error(data.error ?? 'Unable to send message')
+        throw new Error(data.error ?? 'Unable to send message. Please try again.')
       }
 
       form.reset()
       setStatus('success')
-      setFeedback('Message sent to Dhruv.')
+      if (data.simulated) {
+        setFeedback('Message simulated! To receive actual emails, configure RESEND_API_KEY in the AI Studio Settings.')
+      } else {
+        setFeedback('Message sent to Dhruv successfully.')
+      }
       setTimeout(() => {
         setStatus('idle')
         setFeedback('')
-      }, 5000)
+      }, 8000)
     } catch (error) {
       setStatus('error')
       setFeedback(error instanceof Error ? error.message : 'Unable to send message')
@@ -55,11 +68,11 @@ export default function Contact() {
   }
 
   return (
-    <section id="contact" className="relative w-full min-h-screen flex flex-col items-center justify-center px-6 py-24">
-      <div className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+    <section id="contact" className="relative w-full min-h-[auto] md:min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-20 md:py-32 lg:py-48">
+      <div className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
         <div className="space-y-6">
           {/* Section Indicator */}
-          <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold">
+          <span className="font-mono text-xs uppercase tracking-[0.2em] text-primary font-medium">
             [ 08 // CONTACT & CHANNELS ]
           </span>
 
@@ -68,9 +81,14 @@ export default function Contact() {
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="text-4xl md:text-5xl lg:text-6xl font-display font-light text-white tracking-tight"
+            className="text-4xl md:text-5xl lg:text-6xl font-display font-medium text-white tracking-tight"
           >
-            LET&apos;S <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">CONNECT</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-400 via-zinc-200 to-white">
+              LET&apos;S
+            </span>{" "}
+            <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+              CONNECT
+            </span>
           </motion.h2>
           
           <motion.p
@@ -121,7 +139,7 @@ export default function Contact() {
           whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="glass-effect p-8 md:p-12 rounded-3xl border border-white/5"
+          className="glass-effect p-6 sm:p-8 md:p-12 rounded-3xl border border-white/5"
         >
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -132,7 +150,7 @@ export default function Contact() {
                   name="name"
                   type="text"
                   placeholder="Your Name"
-                  className="w-full bg-white/[0.03] border border-white/5 rounded-xl px-4 py-3.5 text-white outline-none focus:border-primary transition-all duration-300 font-sans text-sm"
+                  className="w-full bg-white/[0.03] border border-white/5 rounded-xl px-4 py-3.5 text-white outline-none focus:border-primary focus:ring-1 focus:ring-primary/25 focus:shadow-[0_0_15px_rgba(0,242,255,0.12)] transition-all duration-300 font-sans text-sm"
                 />
               </div>
               <div className="space-y-2">
@@ -142,7 +160,7 @@ export default function Contact() {
                   name="email"
                   type="email"
                   placeholder="your@email.com"
-                  className="w-full bg-white/[0.03] border border-white/5 rounded-xl px-4 py-3.5 text-white outline-none focus:border-primary transition-all duration-300 font-sans text-sm"
+                  className="w-full bg-white/[0.03] border border-white/5 rounded-xl px-4 py-3.5 text-white outline-none focus:border-primary focus:ring-1 focus:ring-primary/25 focus:shadow-[0_0_15px_rgba(0,242,255,0.12)] transition-all duration-300 font-sans text-sm"
                 />
               </div>
             </div>
@@ -153,24 +171,26 @@ export default function Contact() {
                 name="message"
                 rows={4}
                 placeholder="How can we collaborate?"
-                className="w-full bg-white/[0.03] border border-white/5 rounded-xl px-4 py-3.5 text-white outline-none focus:border-primary transition-all duration-300 font-sans text-sm resize-none"
+                className="w-full bg-white/[0.03] border border-white/5 rounded-xl px-4 py-3.5 text-white outline-none focus:border-primary focus:ring-1 focus:ring-primary/25 focus:shadow-[0_0_15px_rgba(0,242,255,0.12)] transition-all duration-300 font-sans text-sm resize-none"
               />
             </div>
-            <button
+            <motion.button
               disabled={status === 'sending'}
+              whileHover={{ scale: 1.015 }}
+              whileTap={{ scale: 0.985 }}
               className={`w-full py-4 rounded-xl font-mono text-xs uppercase tracking-widest font-bold flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer ${
                 status === 'success'
                 ? 'bg-green-500 text-white'
                 : status === 'error'
                 ? 'bg-red-500 text-white'
-                : 'bg-primary text-black hover:bg-primary/80 hover:shadow-[0_0_15px_rgba(0,242,255,0.25)]'
+                : 'bg-primary text-black hover:bg-primary/80 hover:shadow-[0_0_20px_rgba(0,242,255,0.35)]'
               }`}
             >
               {status === 'idle' && <>Send Message <Send className="w-3.5 h-3.5" /></>}
               {status === 'sending' && <span>Sending...</span>}
               {status === 'success' && <span>Message Sent</span>}
               {status === 'error' && <span>Try Again</span>}
-            </button>
+            </motion.button>
             {feedback && (
               <p className={`text-xs font-mono text-center mt-2 ${status === 'error' ? 'text-red-300' : 'text-green-350'}`}>
                 {"// "}{feedback}

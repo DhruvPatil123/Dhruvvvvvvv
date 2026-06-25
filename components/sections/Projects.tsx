@@ -72,10 +72,10 @@ const PROJECTS = [
 
 export default function Projects() {
   return (
-    <section id="work" className="relative w-full min-h-screen flex flex-col items-center py-24 px-6">
-      <div className="max-w-6xl w-full text-center mb-20 space-y-4">
+    <section id="work" className="relative w-full min-h-[auto] md:min-h-screen flex flex-col items-center py-20 md:py-32 lg:py-48 px-4 sm:px-6">
+      <div className="max-w-6xl w-full text-center mb-16 md:mb-20 space-y-4">
         {/* Section Indicator */}
-        <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold">
+        <span className="font-mono text-xs uppercase tracking-[0.2em] text-primary font-medium">
           [ 03 // COGNITIVE WORKS ]
         </span>
 
@@ -84,9 +84,14 @@ export default function Projects() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-4xl md:text-5xl lg:text-6xl font-display font-light text-white tracking-tight"
+          className="text-4xl md:text-5xl lg:text-6xl font-display font-medium text-white tracking-tight"
         >
-          ENGINEERING <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">PORTFOLIO</span>
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-400 via-zinc-200 to-white">
+            ENGINEERING
+          </span>{" "}
+          <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+            PORTFOLIO
+          </span>
         </motion.h2>
 
         <motion.p
@@ -108,7 +113,7 @@ export default function Projects() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: idx * 0.08 }}
             viewport={{ once: true }}
-            className="group relative rounded-3xl overflow-hidden border border-white/5 glass-effect p-8 md:p-10 flex flex-col justify-between gap-6 hover:border-primary/30 transition-all duration-500"
+            className="group relative rounded-3xl overflow-hidden border border-white/5 glass-effect p-6 md:p-10 flex flex-col justify-between gap-6 hover:border-primary/30 transition-all duration-500"
           >
             {/* Decorative glow blobs */}
             <div className="absolute -top-16 -right-16 w-48 h-48 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors duration-700 pointer-events-none" />

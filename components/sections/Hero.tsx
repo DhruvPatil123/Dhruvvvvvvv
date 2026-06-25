@@ -16,8 +16,10 @@ export default function Hero() {
 
 
         {/* Hero Title */}
-        <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-display font-light tracking-tighter text-white leading-[0.9] mb-4">
-          DHRUV <br />
+        <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-display font-medium tracking-tighter text-white leading-[0.9] mb-4">
+          <span className="text-transparent bg-clip-text bg-gradient-to-b from-zinc-400 via-zinc-150 to-white">
+            DHRUV
+          </span> <br />
           <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-400 to-secondary animate-gradient">
             DINESH PATIL
           </span>
@@ -59,42 +61,50 @@ export default function Hero() {
             transition={{ delay: 0.6 }}
             className="flex gap-3 mt-4 sm:mt-0"
           >
-            <a 
+            <motion.a 
               href="https://github.com/DhruvPatil123" 
               target="_blank" 
               rel="noreferrer" 
               aria-label="GitHub" 
+              whileHover={{ scale: 1.1, y: -2 }}
+              whileTap={{ scale: 0.95 }}
               className="p-3.5 glass-effect rounded-full text-white hover:text-primary hover:border-primary/20 transition-all duration-300 border border-white/5"
             >
               <Github className="w-4.5 h-4.5" />
-            </a>
-            <a 
+            </motion.a>
+            <motion.a 
               href="https://x.com/DhruvPatil_18" 
               target="_blank" 
               rel="noreferrer" 
               aria-label="X / Twitter" 
+              whileHover={{ scale: 1.1, y: -2 }}
+              whileTap={{ scale: 0.95 }}
               className="p-3.5 glass-effect rounded-full text-white hover:text-primary hover:border-primary/20 transition-all duration-300 border border-white/5"
             >
               <Twitter className="w-4.5 h-4.5" />
-            </a>
-            <a 
+            </motion.a>
+            <motion.a 
               href="https://www.instagram.com/_dhruv.exe.18" 
               target="_blank" 
               rel="noreferrer" 
               aria-label="Instagram" 
+              whileHover={{ scale: 1.1, y: -2 }}
+              whileTap={{ scale: 0.95 }}
               className="p-3.5 glass-effect rounded-full text-white hover:text-primary hover:border-primary/20 transition-all duration-300 border border-white/5"
             >
               <Instagram className="w-4.5 h-4.5" />
-            </a>
-            <a 
+            </motion.a>
+            <motion.a 
               href="https://www.linkedin.com/in/dhruv-patil-3816043b7/" 
               target="_blank" 
               rel="noreferrer" 
               aria-label="LinkedIn" 
+              whileHover={{ scale: 1.1, y: -2 }}
+              whileTap={{ scale: 0.95 }}
               className="p-3.5 glass-effect rounded-full text-white hover:text-primary hover:border-primary/20 transition-all duration-300 border border-white/5"
             >
               <Linkedin className="w-4.5 h-4.5" />
-            </a>
+            </motion.a>
           </motion.div>
         </div>
       </motion.div>

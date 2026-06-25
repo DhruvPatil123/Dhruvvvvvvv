@@ -312,7 +312,7 @@ export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 40, scale: 0.95 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed bottom-4 right-4 md:bottom-8 md:right-8 w-[calc(100vw-2rem)] md:w-[440px] h-[600px] max-h-[80vh] z-[999] flex flex-col rounded-3xl overflow-hidden border border-white/15"
+            className="fixed bottom-4 left-4 right-4 md:left-auto md:right-8 md:bottom-8 md:w-[440px] h-[520px] md:h-[600px] max-h-[85vh] z-[999] flex flex-col rounded-3xl overflow-hidden border border-white/15"
             style={{
               background: 'linear-gradient(145deg, rgba(10,10,10,0.95), rgba(20,20,30,0.95))',
               backdropFilter: 'blur(24px)',

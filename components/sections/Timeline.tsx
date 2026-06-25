@@ -44,23 +44,28 @@ const EXPERIENCE = [
 
 export default function Timeline() {
   return (
-    <section id="experience" className="relative w-full min-h-screen flex flex-col items-center justify-center px-6 py-24">
+    <section id="experience" className="relative w-full min-h-[auto] md:min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-20 md:py-32 lg:py-48">
       <div className="max-w-4xl w-full">
-        <div className="text-center mb-20 space-y-4">
-          {/* Section Indicator */}
-          <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold">
-            [ 04 // DEVELOPMENT TRAJECTORY ]
-          </span>
+        <div className="text-center mb-16 md:mb-20 space-y-4">
+        {/* Section Indicator */}
+        <span className="font-mono text-xs uppercase tracking-[0.2em] text-primary font-medium">
+          [ 04 // DEVELOPMENT TRAJECTORY ]
+        </span>
 
-          <motion.h2
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="text-4xl md:text-5xl lg:text-6xl font-display font-light text-white tracking-tight"
-          >
-            PROFESSIONAL <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">TRAJECTORY</span>
-          </motion.h2>
+        <motion.h2
+          initial={{ opacity: 0, y: 15 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="text-4xl md:text-5xl lg:text-6xl font-display font-medium text-white tracking-tight"
+        >
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-400 via-zinc-200 to-white">
+            PROFESSIONAL
+          </span>{" "}
+          <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+            TRAJECTORY
+          </span>
+        </motion.h2>
           
           <motion.p
             initial={{ opacity: 0, y: 15 }}
@@ -81,9 +86,9 @@ export default function Timeline() {
             {EXPERIENCE.map((exp, idx) => (
               <motion.div
                 key={idx}
-                initial={{ opacity: 0, x: idx % 2 === 0 ? -30 : 30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8, delay: idx * 0.12 }}
+                initial={{ opacity: 0, y: 25 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: idx * 0.08 }}
                 viewport={{ once: true }}
                 className={`relative flex flex-col md:flex-row items-center ${idx % 2 === 0 ? 'md:flex-row-reverse' : ''}`}
               >
@@ -91,7 +96,7 @@ export default function Timeline() {
                 <div className="absolute left-0 md:left-1/2 top-0 w-4 h-4 rounded-full bg-black border-4 border-primary -translate-x-1/2 z-10 shadow-[0_0_12px_rgba(0,242,255,0.8)]" />
 
                 <div className="w-full md:w-1/2 pl-8 md:pl-0 md:px-12">
-                  <div className="glass-effect p-6 rounded-3xl border border-white/5 hover:border-primary/20 transition-all duration-300">
+                  <div className="glass-effect p-5 sm:p-6 rounded-3xl border border-white/5 hover:border-primary/20 transition-all duration-300">
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-4">
                       <h3 className="text-lg md:text-xl font-display font-medium text-white">{exp.role}</h3>
                       <span className="text-gray-400 font-mono text-[10px] md:text-xs font-semibold whitespace-nowrap bg-white/[0.04] px-2.5 py-1 rounded-md border border-white/5">{exp.period}</span>

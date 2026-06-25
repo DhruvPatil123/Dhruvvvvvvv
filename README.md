@@ -2,8 +2,6 @@
 
 An interactive, premium, high-performance 3D portfolio showcasing academic standing, AI research projects, and accomplishments. Powered by **Next.js 15 (App Router)**, **React Three Fiber (Three.js)**, **Tailwind CSS**, and **Framer Motion**.
 
-Live Demo : [dhruvvvvvvv.vercel.app](https://dhruvvvvvvv.vercel.app/)
-
 ---
 
 ## ✨ Features & Aesthetic Choices

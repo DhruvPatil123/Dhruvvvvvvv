@@ -25,7 +25,23 @@ canvas {
 }
 
 .glass-effect {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(8, 8, 8, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    0 8px 32px 0 rgba(0, 0, 0, 0.5),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 40px 0 rgba(112, 0, 255, 0.01);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-effect:hover {
+  background: rgba(10, 10, 10, 0.6);
+  border-color: rgba(0, 242, 255, 0.2);
+  box-shadow: 
+    0 16px 48px 0 rgba(0, 0, 0, 0.7),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.15),
+    0 0 30px 0 rgba(0, 242, 255, 0.06);
+  transform: translateY(-2px);
 }

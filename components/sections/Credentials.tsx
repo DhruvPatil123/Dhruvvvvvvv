@@ -50,10 +50,10 @@ const CERTIFICATIONS = [
 
 export default function Credentials() {
   return (
-    <section id="credentials" className="relative w-full min-h-screen flex flex-col items-center justify-center px-6 py-24">
-      <div className="max-w-6xl w-full text-center mb-20 space-y-4">
+    <section id="credentials" className="relative w-full min-h-[auto] md:min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-20 md:py-32 lg:py-48">
+      <div className="max-w-6xl w-full text-center mb-16 md:mb-20 space-y-4">
         {/* Section Indicator */}
-        <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold">
+        <span className="font-mono text-xs uppercase tracking-[0.2em] text-primary font-medium">
           [ 06 // INTELLECTUAL BASIS ]
         </span>
 
@@ -62,9 +62,14 @@ export default function Credentials() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-4xl md:text-5xl lg:text-6xl font-display font-light text-white tracking-tight"
+          className="text-4xl md:text-5xl lg:text-6xl font-display font-medium text-white tracking-tight"
         >
-          ACADEMIC <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">CREDENTIALS</span>
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-400 via-zinc-200 to-white">
+            ACADEMIC
+          </span>{" "}
+          <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+            CREDENTIALS
+          </span>
         </motion.h2>
 
         <motion.p
@@ -92,7 +97,7 @@ export default function Credentials() {
             <h3 className="text-sm font-mono font-bold text-white uppercase tracking-widest">Education</h3>
           </div>
           {EDUCATION.map((edu, idx) => (
-            <div key={idx} className="glass-effect p-6 rounded-2xl border border-white/5 hover:border-primary/20 transition-all duration-300 group">
+            <div key={idx} className="glass-effect p-5 sm:p-6 rounded-2xl border border-white/5 hover:border-primary/20 transition-all duration-300 group">
               <div className="flex justify-between items-start mb-4">
                 <h4 className="text-lg md:text-xl font-display font-medium text-white">{edu.degree}</h4>
                 <span className="text-gray-400 font-mono text-[10px] md:text-xs font-semibold bg-white/[0.04] px-2 py-0.5 rounded border border-white/5">{edu.year}</span>

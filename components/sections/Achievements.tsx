@@ -10,7 +10,7 @@ const ACHIEVEMENTS = [
     title: 'LeetCode Global Rank',
     category: 'Competitive Coding',
     icon: <Zap className="w-6 h-6" />,
-    description: 'World Profile Rank: 1,254,070 with 850+ algorithmic challenges completed and solved.',
+    description: 'World Profile Rank: 707,446 with 850+ algorithmic challenges completed and solved.',
     color: 'text-blue-400'
   },
   {
@@ -31,10 +31,10 @@ const ACHIEVEMENTS = [
 
 export default function Achievements() {
   return (
-    <section id="achievements" className="relative w-full min-h-screen flex flex-col items-center justify-center px-6 py-24">
-      <div className="max-w-6xl w-full text-center mb-20 space-y-4">
+    <section id="achievements" className="relative w-full min-h-[auto] md:min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-20 md:py-32 lg:py-48">
+      <div className="max-w-6xl w-full text-center mb-16 md:mb-20 space-y-4">
         {/* Section Indicator */}
-        <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold">
+        <span className="font-mono text-xs uppercase tracking-[0.2em] text-primary font-medium">
           [ 05 // BEYOND BENCHMARKS ]
         </span>
 
@@ -43,9 +43,14 @@ export default function Achievements() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-4xl md:text-5xl lg:text-6xl font-display font-light text-white tracking-tight"
+          className="text-4xl md:text-5xl lg:text-6xl font-display font-medium text-white tracking-tight"
         >
-          BEYOND <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">BENCHMARKS</span>
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-400 via-zinc-200 to-white">
+            BEYOND
+          </span>{" "}
+          <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+            BENCHMARKS
+          </span>
         </motion.h2>
 
         <motion.p
@@ -67,7 +72,7 @@ export default function Achievements() {
             whileInView={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: idx * 0.1 }}
             viewport={{ once: true }}
-            className="glass-effect p-8 rounded-3xl border border-white/5 hover:border-primary/20 transition-all duration-300 group relative overflow-hidden flex flex-col justify-between min-h-[250px]"
+            className="glass-effect p-6 sm:p-8 rounded-3xl border border-white/5 hover:border-primary/20 transition-all duration-300 group relative overflow-hidden flex flex-col justify-between min-h-[250px]"
           >
             <div className="absolute -top-4 -right-4 w-24 h-24 bg-white/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors" />
 
