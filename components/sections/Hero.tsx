@@ -3,6 +3,8 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { ArrowRight, Download, Github, Twitter, Linkedin, Instagram } from 'lucide-react'
+import { downloadResume } from '@/lib/downloadResume'
+import LeetCodeIcon from '../LeetCodeIcon'
 
 export default function Hero() {
   return (
@@ -43,16 +45,15 @@ export default function Hero() {
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-300" />
           </motion.a>
           
-          <motion.a
-            href="/dhruv-patil-resume.pdf"
-            download
+          <motion.button
+            onClick={downloadResume}
             whileHover={{ scale: 1.03, y: -2 }}
             whileTap={{ scale: 0.98 }}
-            className="w-full sm:w-auto glass-effect hover:bg-white/10 text-white font-mono text-xs uppercase tracking-widest px-8 py-4 rounded-full font-bold flex items-center justify-center gap-2 border border-white/10 hover:border-white/20 transition-all duration-300"
+            className="w-full sm:w-auto glass-effect hover:bg-white/10 text-white font-mono text-xs uppercase tracking-widest px-8 py-4 rounded-full font-bold flex items-center justify-center gap-2 border border-white/10 hover:border-white/20 transition-all duration-300 cursor-pointer"
           >
             Download CV
             <Download className="w-4 h-4 text-primary" />
-          </motion.a>
+          </motion.button>
 
           {/* Social Icons Dock */}
           <motion.div
@@ -104,6 +105,17 @@ export default function Hero() {
               className="p-3.5 glass-effect rounded-full text-white hover:text-primary hover:border-primary/20 transition-all duration-300 border border-white/5"
             >
               <Linkedin className="w-4.5 h-4.5" />
+            </motion.a>
+            <motion.a 
+              href="https://leetcode.com/u/Dhruv_Patil_18/" 
+              target="_blank" 
+              rel="noreferrer" 
+              aria-label="LeetCode" 
+              whileHover={{ scale: 1.1, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+              className="p-3.5 glass-effect rounded-full text-white hover:text-primary hover:border-primary/20 transition-all duration-300 border border-white/5"
+            >
+              <LeetCodeIcon className="w-4.5 h-4.5" />
             </motion.a>
           </motion.div>
         </div>

@@ -3,15 +3,16 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { Trophy, Medal, Star, Zap } from 'lucide-react'
+import LeetCodeIcon from '../LeetCodeIcon'
 
 const ACHIEVEMENTS = [
 
   {
     title: 'LeetCode Global Rank',
     category: 'Competitive Coding',
-    icon: <Zap className="w-6 h-6" />,
-    description: 'World Profile Rank: 707,446 with 850+ algorithmic challenges completed and solved.',
-    color: 'text-blue-400'
+    icon: <LeetCodeIcon className="w-6 h-6" />,
+    description: 'World Profile Rank: 510,120 with 850+ algorithmic challenges completed and solved.',
+    color: 'text-orange-400'
   },
   {
     title: 'Open Source Contributor',

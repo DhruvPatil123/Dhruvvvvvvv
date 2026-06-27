@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { Github, Twitter, Linkedin, Instagram, ExternalLink } from 'lucide-react'
+import LeetCodeIcon from './LeetCodeIcon'
 
 export default function Footer() {
   const socialLinks = [
@@ -9,7 +10,7 @@ export default function Footer() {
     { name: 'X / Twitter', href: 'https://x.com/DhruvPatil_18', icon: <Twitter className="w-5 h-5" /> },
     { name: 'LinkedIn', href: 'https://www.linkedin.com/in/dhruv-patil-3816043b7/', icon: <Linkedin className="w-5 h-5" /> },
     { name: 'Instagram', href: 'https://www.instagram.com/_dhruv.exe.18', icon: <Instagram className="w-5 h-5" /> },
-    { name: 'LeetCode', href: 'https://leetcode.com/u/Dhruv_Patil_18/', icon: <ExternalLink className="w-5 h-5" /> },
+    { name: 'LeetCode', href: 'https://leetcode.com/u/Dhruv_Patil_18/', icon: <LeetCodeIcon className="w-5 h-5" /> },
   ]
 
   return (
