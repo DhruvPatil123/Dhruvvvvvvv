@@ -2,281 +2,227 @@
 
 import React, { useRef, useMemo } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
-import { MeshDistortMaterial, MeshWobbleMaterial, Sphere, TorusKnot, Float } from '@react-three/drei'
+import { Float } from '@react-three/drei'
 import * as THREE from 'three'
 import { useScrollStore } from '@/store/useScrollStore'
+import { useThemeStore } from '@/store/useThemeStore'
 import CosmicDust from './CosmicDust'
+import WireframeTerrain from './WireframeTerrain'
+
+// Custom camera controller for smooth cinematic drift and cursor parallax
+function CameraController() {
+  const { camera } = useThree()
+
+  useFrame((state) => {
+    const t = state.clock.getElapsedTime()
+    const mouse = state.pointer
+
+    // 1. Slow, elegant cinematic orbit
+    const orbitRadius = 6.8
+    const orbitSpeed = 0.04
+    const angle = t * orbitSpeed
+
+    // 2. Combine slow orbit with delicate mouse parallax
+    const targetX = Math.sin(angle) * 1.2 + mouse.x * 0.9
+    const targetY = Math.cos(angle * 1.3) * 0.35 + mouse.y * 0.7
+    const targetZ = orbitRadius + Math.cos(angle) * 0.4 - Math.abs(mouse.x) * 0.3
+
+    // Smooth lerp for ultra-premium camera motion
+    camera.position.x = THREE.MathUtils.lerp(camera.position.x, targetX, 0.04)
+    camera.position.y = THREE.MathUtils.lerp(camera.position.y, targetY, 0.04)
+    camera.position.z = THREE.MathUtils.lerp(camera.position.z, targetZ, 0.04)
+
+    // Camera gently points towards the hero glass monolith center
+    const lookTarget = new THREE.Vector3(0, 0.1, 0)
+    camera.lookAt(lookTarget)
+  })
+
+  return null
+}
 
 export default function Experience() {
   const { size } = useThree()
   const isMobile = size.width < 768
 
-  const coreRef = useRef<any>(null)
-  const ring1Ref = useRef<any>(null)
-  const ring2Ref = useRef<any>(null)
-  const ring3Ref = useRef<any>(null)
-  const distortMaterialRef = useRef<any>(null)
-  const innerCoreMatRef = useRef<any>(null)
+  const monolithRef = useRef<THREE.Mesh>(null)
+  const ribbonRef = useRef<THREE.Mesh>(null)
+  const ribbon2Ref = useRef<THREE.Mesh>(null)
+  const orbitRingRef = useRef<THREE.Mesh>(null)
+  const monolithGroupRef = useRef<THREE.Group>(null)
 
   const scrollProgress = useScrollStore((state) => state.scrollProgress)
-  const prevScrollRef = useRef(scrollProgress)
-  const scrollSpeedRef = useRef(0)
+  const theme = useThemeStore((state) => state.theme)
 
-  // Pre-calculate segments for custom Majestic Orbital Rings
-  const ring2Segments = useMemo(() => {
-    const count = 30
-    const radius = 2.4
-    const segments = []
-    for (let i = 0; i < count; i++) {
-      const angle = (i / count) * Math.PI * 2
-      segments.push({
-        position: [Math.cos(angle) * radius, Math.sin(angle) * radius, 0] as [number, number, number],
-        rotation: [0, 0, angle] as [number, number, number]
-      })
-    }
-    return segments
-  }, [])
+  const lastScrollProgress = useRef(0)
+  const scrollVelocity = useRef(0)
 
-  const ring3Segments = useMemo(() => {
-    const count = 16
-    const radius = 1.8
-    const segments = []
-    for (let i = 0; i < count; i++) {
-      const angle = (i / count) * Math.PI * 2
-      segments.push({
-        position: [Math.cos(angle) * radius, Math.sin(angle) * radius, 0] as [number, number, number]
-      })
-    }
-    return segments
-  }, [])
+  // Reactive color management
+  const themeColor = useMemo(() => new THREE.Color('#00f2ff'), [])
+  const glassColor = useMemo(() => new THREE.Color('#e0f7fc'), [])
 
   useFrame((state) => {
     const t = state.clock.getElapsedTime()
 
-    // 1. Calculate Scroll Speed (Velocity)
+    // Dynamic lerping rate to sync with scroll velocity on precision trackpad flicking
     const currentScroll = scrollProgress
-    const scrollDiff = Math.abs(currentScroll - prevScrollRef.current)
-    prevScrollRef.current = currentScroll
-    
-    // Smoothly interpolate scroll speed to avoid jitter
-    scrollSpeedRef.current = THREE.MathUtils.lerp(scrollSpeedRef.current, scrollDiff * 14.0, 0.08)
+    const deltaScroll = Math.abs(currentScroll - lastScrollProgress.current)
+    lastScrollProgress.current = currentScroll
 
-    // TARGETS BASED ON SCROLL PROGRESS
-    // 0% (Hero) -> 20% (About) -> 40% (Projects) -> 60% (Timeline) -> 80% (Testimonials) -> 100% (Contact)
+    // Smoothly interpolate the scroll velocity to prevent frame-rate spikes
+    scrollVelocity.current = THREE.MathUtils.lerp(scrollVelocity.current, deltaScroll, 0.15)
 
+    // Under high velocity (aggressive swipe/trackpad flick), scale up lerping factor up to 0.28
+    // so the 3D monolith instantly catches up to the DOM content. At rest, stay at smooth 0.08.
+    const velocityScale = THREE.MathUtils.clamp(scrollVelocity.current * 12.0, 0, 1)
+    const dynamicLerp = THREE.MathUtils.lerp(0.08, 0.28, velocityScale)
+
+    // 1. Interpolate active colors based on current theme
+    let targetRibbonHex = '#00f2ff' // Cobalt
+    let targetGlassHex = '#e0f7fc'
+
+    if (theme === 'charcoal') {
+      targetRibbonHex = '#ffffff'
+      targetGlassHex = '#f1f5f9'
+    } else if (theme === 'emerald') {
+      targetRibbonHex = '#10b981'
+      targetGlassHex = '#ecfdf5'
+    }
+
+    themeColor.lerp(new THREE.Color(targetRibbonHex), 0.05)
+    glassColor.lerp(new THREE.Color(targetGlassHex), 0.05)
+
+    // 2. Responsive scroll positions matching original layouts
     let targetX = 0
-    let targetY = 0
+    let targetY = 0.2
     let targetZ = 0
-    let targetScale = isMobile ? 0.6 : 1.1
-    let targetRotationY = t * 0.3
-    let targetColor = new THREE.Color('#00f2ff')
+    let targetScale = isMobile ? 0.65 : 1.15
+    let targetRotationY = t * 0.25
 
     if (scrollProgress < 0.2) {
-      // Hero
+      // Hero: Centered
       targetX = 0
-      targetScale = isMobile ? 0.6 : 1.1
     } else if (scrollProgress < 0.4) {
-      // About
-      targetX = THREE.MathUtils.lerp(0, isMobile ? 0 : 2, (scrollProgress - 0.2) / 0.2)
-      targetRotationY = t * 0.8
-      targetColor.set('#7000ff')
-      targetScale = isMobile ? 0.55 : 1.1
+      // About: Shifts to the right (leaves left clear for bio text)
+      targetX = THREE.MathUtils.lerp(0, isMobile ? 0 : 2.0, (scrollProgress - 0.2) / 0.2)
+      targetRotationY = t * 0.5
+      targetScale = isMobile ? 0.6 : 1.1
     } else if (scrollProgress < 0.6) {
-      // Projects
-      targetX = THREE.MathUtils.lerp(isMobile ? 0 : 2, 0, (scrollProgress - 0.4) / 0.2)
-      targetScale = THREE.MathUtils.lerp(isMobile ? 0.55 : 1.1, isMobile ? 0.75 : 1.5, (scrollProgress - 0.4) / 0.2)
-      targetColor.set('#ffffff')
+      // Projects: Shifts back to center, slightly larger
+      targetX = THREE.MathUtils.lerp(isMobile ? 0 : 2.0, 0, (scrollProgress - 0.4) / 0.2)
+      targetScale = THREE.MathUtils.lerp(isMobile ? 0.6 : 1.1, isMobile ? 0.75 : 1.4, (scrollProgress - 0.4) / 0.2)
     } else if (scrollProgress < 0.8) {
-      // Timeline
-      targetX = THREE.MathUtils.lerp(0, isMobile ? 0 : -2, (scrollProgress - 0.6) / 0.2)
-      targetZ = THREE.MathUtils.lerp(0, 0.5, (scrollProgress - 0.6) / 0.2)
-      targetScale = isMobile ? 0.55 : 1.1
-      targetColor.set('#00f2ff')
+      // Timeline: Shifts to the left (leaves right clear for timeline)
+      targetX = THREE.MathUtils.lerp(0, isMobile ? 0 : -2.0, (scrollProgress - 0.6) / 0.2)
+      targetZ = THREE.MathUtils.lerp(0, 0.4, (scrollProgress - 0.6) / 0.2)
+      targetScale = isMobile ? 0.6 : 1.1
     } else {
-      // Contact
-      targetX = THREE.MathUtils.lerp(isMobile ? 0 : -2, 0, (scrollProgress - 0.8) / 0.2)
-      targetZ = THREE.MathUtils.lerp(0.5, 0, (scrollProgress - 0.8) / 0.2)
-      targetScale = THREE.MathUtils.lerp(isMobile ? 0.55 : 1.1, isMobile ? 0.65 : 1.3, (scrollProgress - 0.8) / 0.2)
-      targetColor.set('#ffcc00')
+      // Contact: Back to center, focus view
+      targetX = THREE.MathUtils.lerp(isMobile ? 0 : -2.0, 0, (scrollProgress - 0.8) / 0.2)
+      targetZ = THREE.MathUtils.lerp(0.4, 0, (scrollProgress - 0.8) / 0.2)
+      targetScale = THREE.MathUtils.lerp(isMobile ? 0.6 : 1.1, isMobile ? 0.7 : 1.25, (scrollProgress - 0.8) / 0.2)
     }
 
-    // 2. Pulse / Heartbeat Rhythm calculation
-    // Elegant double peak sequence: "Lup-Dup" heartbeat
-    const beatTime = (t * 2.8) % (Math.PI * 2)
-    const heartbeatPulse = Math.pow(Math.sin(beatTime), 8) + 0.35 * Math.pow(Math.sin(beatTime + 0.3), 12)
+    // 3. Smooth group placement
+    if (monolithGroupRef.current) {
+      monolithGroupRef.current.position.x = THREE.MathUtils.lerp(monolithGroupRef.current.position.x, targetX, dynamicLerp)
+      monolithGroupRef.current.position.y = THREE.MathUtils.lerp(monolithGroupRef.current.position.y, targetY, dynamicLerp)
+      monolithGroupRef.current.position.z = THREE.MathUtils.lerp(monolithGroupRef.current.position.z, targetZ, dynamicLerp)
 
-    // Base rhythm scale pulsing (amplified slightly under rapid scroll speed)
-    const rhythmPulse = heartbeatPulse * (0.04 + scrollSpeedRef.current * 0.08)
-
-    // 3. Physical Volume-Conserving Squash & Stretch under fast transitions
-    // Stretch along the moving (vertical) dimension, compress along others to keep volume visually equal
-    const stretchY = 1.0 + scrollSpeedRef.current * 0.35
-    const squashXZ = 1.0 / Math.sqrt(stretchY)
-
-    if (coreRef.current) {
-      coreRef.current.position.x = THREE.MathUtils.lerp(coreRef.current.position.x, targetX, 0.08)
-      coreRef.current.position.z = THREE.MathUtils.lerp(coreRef.current.position.z, targetZ, 0.08)
-      
-      const currentScaleX = THREE.MathUtils.lerp(coreRef.current.scale.x, targetScale, 0.08)
-      
-      // Apply Squash and Stretch dynamically
-      coreRef.current.scale.set(
-        (currentScaleX + rhythmPulse) * squashXZ,
-        (currentScaleX + rhythmPulse) * stretchY,
-        (currentScaleX + rhythmPulse) * squashXZ
-      )
-      
-      coreRef.current.rotation.y = THREE.MathUtils.lerp(coreRef.current.rotation.y, targetRotationY, 0.08)
+      const currentScale = THREE.MathUtils.lerp(monolithGroupRef.current.scale.x, targetScale, dynamicLerp)
+      monolithGroupRef.current.scale.set(currentScale, currentScale, currentScale)
     }
 
-    // 4. Dynamic distort & speed reaction based on scrolling velocity
-    if (distortMaterialRef.current) {
-      distortMaterialRef.current.color.lerp(targetColor, 0.05)
-      distortMaterialRef.current.emissive.lerp(targetColor, 0.05)
-      
-      // Speed and distortion intensify during scroll transitions (glowing ripples)
-      distortMaterialRef.current.distort = THREE.MathUtils.lerp(distortMaterialRef.current.distort, 0.45 + scrollSpeedRef.current * 0.35, 0.1)
-      distortMaterialRef.current.speed = THREE.MathUtils.lerp(distortMaterialRef.current.speed, 2.5 + scrollSpeedRef.current * 2.5, 0.1)
+    // 4. Subtle, tactile interactive rotation on the Monolith
+    if (monolithRef.current) {
+      const targetRotY = targetRotationY + state.pointer.x * 0.35
+      const targetRotX = -state.pointer.y * 0.25
+      monolithRef.current.rotation.y = THREE.MathUtils.lerp(monolithRef.current.rotation.y, targetRotY, dynamicLerp)
+      monolithRef.current.rotation.x = THREE.MathUtils.lerp(monolithRef.current.rotation.x, targetRotX, dynamicLerp)
     }
 
-    // 5. Heartbeat pulsing on the inner emissive core
-    if (innerCoreMatRef.current) {
-      const scrollGlowMultiplier = 1.0 + scrollSpeedRef.current * 3.0
-      innerCoreMatRef.current.emissiveIntensity = (1.5 + heartbeatPulse * 2.2) * scrollGlowMultiplier
+    // 5. Spin the inner glowing ribbon and outer complimentary ribbon independently
+    if (ribbonRef.current) {
+      ribbonRef.current.rotation.y = -t * 0.75
+      ribbonRef.current.rotation.z = t * 0.2
+    }
+    if (ribbon2Ref.current) {
+      ribbon2Ref.current.rotation.y = t * 0.95
+      ribbon2Ref.current.rotation.z = -t * 0.3
     }
 
-    if (ring1Ref.current) {
-      // Rotation gets faster when scrolling!
-      const scrollRingSpeed = 1.0 + scrollSpeedRef.current * 2.5
-      ring1Ref.current.rotation.z += (0.003 * scrollRingSpeed)
-      ring1Ref.current.rotation.x = Math.PI / 2.2 + Math.sin(t * 0.15) * 0.12
-      ring1Ref.current.rotation.y = Math.cos(t * 0.1) * 0.08
-    }
-
-    if (ring2Ref.current) {
-      const scrollRingSpeed2 = 1.0 + scrollSpeedRef.current * 2.5
-      ring2Ref.current.rotation.z -= (0.0055 * scrollRingSpeed2)
-      ring2Ref.current.rotation.x = Math.PI / 2.6 + Math.cos(t * 0.22) * 0.15
-      ring2Ref.current.rotation.y = Math.sin(t * 0.18) * 0.12
-    }
-
-    if (ring3Ref.current) {
-      const scrollRingSpeed3 = 1.0 + scrollSpeedRef.current * 3.5
-      ring3Ref.current.rotation.z += (0.0125 * scrollRingSpeed3)
-      ring3Ref.current.rotation.x = -Math.PI / 2.8 + Math.sin(t * 0.35) * 0.22
-      ring3Ref.current.rotation.y = Math.cos(t * 0.28) * 0.18
+    // 6. Spin the glowing satellite ring based on elapsed time and scroll velocity
+    if (orbitRingRef.current) {
+      orbitRingRef.current.rotation.z = t * 0.35 + scrollProgress * 3.14
     }
   })
 
   return (
     <group>
-      {/* Background Cosmic Dust Nebula */}
+      {/* 1. Cinematic Camera Control */}
+      <CameraController />
+
+      {/* 2. Base: Infinite Wireframe Terrain */}
+      <WireframeTerrain />
+
+      {/* 3. Mid layer: Floating Particle Galaxy */}
       <CosmicDust />
 
-      {/* Central Core Composition */}
-      <Float speed={2} rotationIntensity={1} floatIntensity={1}>
-        <group ref={coreRef}>
-          {/* Main Distorted Knot */}
-          <TorusKnot args={[1, 0.33, 256, 64]} scale={1.1}>
-            <MeshDistortMaterial
-              ref={distortMaterialRef}
-              color="#00f2ff"
-              speed={2.5}
-              distort={0.45}
-              transmission={1.0}
-              thickness={1.5}
-              roughness={0.05}
-              metalness={0.05}
+      {/* 4. Hero object: Glass Monolith with glowing twisting ribbon inside */}
+      <Float speed={1.5} rotationIntensity={0.15} floatIntensity={0.4}>
+        <group ref={monolithGroupRef}>
+          {/* Glass Monolith Shell */}
+          <mesh ref={monolithRef}>
+            <boxGeometry args={[1.3, 2.7, 0.32]} />
+            <meshPhysicalMaterial
+              transmission={0.98}
+              thickness={2.2}
+              roughness={0.02}
               clearcoat={1.0}
-              clearcoatRoughness={0.05}
-              ior={1.6}
-              iridescence={1.0}
-              iridescenceIOR={1.8}
-              iridescenceThicknessRange={[100, 800]}
-              envMapIntensity={2.5}
-              emissive="#00f2ff"
-              emissiveIntensity={0.1}
+              clearcoatRoughness={0.0}
+              ior={1.65}
+              metalness={0.05}
+              color={glassColor}
+              attenuationColor={glassColor}
+              attenuationDistance={1.2}
             />
-          </TorusKnot>
+          </mesh>
 
-          {/* Inner Glowing Sphere */}
-          <Sphere args={[0.4, 32, 32]}>
+          {/* Twisting ribbon inside the glass container - Outer Helix */}
+          <mesh ref={ribbonRef} scale={[0.55, 1.85, 0.55]}>
+            <torusKnotGeometry args={[0.5, 0.038, 200, 16, 2, 9]} />
             <meshStandardMaterial
-              ref={innerCoreMatRef}
-              color="#7000ff"
-              emissive="#7000ff"
-              emissiveIntensity={2}
-              metalness={1}
-              roughness={0}
+              color={themeColor}
+              emissive={themeColor}
+              emissiveIntensity={3.2}
+              roughness={0.15}
+              metalness={0.85}
             />
-          </Sphere>
-        </group>
-      </Float>
+          </mesh>
 
-      {/* Majestic Orbital Rings */}
-      {/* 1. Sleek Continuous Neon Cyan Ring */}
-      <group ref={ring1Ref}>
-        <mesh>
-          <torusGeometry args={[2.9, 0.012, 16, 120]} />
-          <meshStandardMaterial
-            color="#00f2ff"
-            emissive="#00f2ff"
-            emissiveIntensity={1.8}
-            roughness={0}
-            metalness={0.9}
-          />
-        </mesh>
-      </group>
-
-      {/* 2. Middle Segmented Astronautical Indigo Dashboard-Ring */}
-      <group ref={ring2Ref}>
-        {ring2Segments.map((seg, idx) => (
-          <mesh key={idx} position={seg.position} rotation={seg.rotation}>
-            <boxGeometry args={[0.22, 0.015, 0.015]} />
+          {/* Inner counter-rotating twisting ribbon - Inner Helix */}
+          <mesh ref={ribbon2Ref} scale={[0.42, 1.45, 0.42]}>
+            <torusKnotGeometry args={[0.5, 0.024, 180, 12, 3, 5]} />
             <meshStandardMaterial
-              color="#a855f7"
-              emissive="#7000ff"
+              color={themeColor}
+              emissive={themeColor}
               emissiveIntensity={2.5}
-              roughness={0.1}
-              metalness={0.8}
+              roughness={0.2}
+              metalness={0.9}
             />
           </mesh>
-        ))}
-      </group>
 
-      {/* 3. Inner Dotted Fast Golden Particle Halo */}
-      <group ref={ring3Ref}>
-        {ring3Segments.map((seg, idx) => (
-          <mesh key={idx} position={seg.position}>
-            <sphereGeometry args={[0.028, 12, 12]} />
+          {/* Tilted orbital ring wrapping the monolith planetary-style */}
+          <mesh ref={orbitRingRef} rotation={[Math.PI / 3, 0, Math.PI / 6]}>
+            <torusGeometry args={[1.52, 0.009, 16, 100]} />
             <meshStandardMaterial
-              color="#ffcc00"
-              emissive="#eab308"
-              emissiveIntensity={3.0}
-              roughness={0}
-              metalness={1.0}
+              color={themeColor}
+              emissive={themeColor}
+              emissiveIntensity={4.5}
+              transparent
+              opacity={0.5}
             />
           </mesh>
-        ))}
-      </group>
-
-      {/* Dynamic Accents */}
-      <Float speed={3} position={[3, 2, -2]} rotationIntensity={2}>
-        <Sphere args={[0.2, 32, 32]}>
-          <MeshWobbleMaterial color="#7000ff" factor={1} speed={2} />
-        </Sphere>
-      </Float>
-
-      <Float speed={2} position={[-3, -1, 1]} rotationIntensity={1}>
-        <Sphere args={[0.15, 32, 32]}>
-          <MeshWobbleMaterial color="#ffffff" factor={1} speed={1.5} />
-        </Sphere>
-      </Float>
-
-      <Float speed={4} position={[1, -3, -2]} rotationIntensity={1.5}>
-        <Sphere args={[0.1, 32, 32]}>
-          <MeshWobbleMaterial color="#00f2ff" factor={1} speed={3} />
-        </Sphere>
+        </group>
       </Float>
     </group>
   )

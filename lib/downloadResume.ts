@@ -1,17 +1,27 @@
 import { jsPDF } from 'jspdf'
 
-export function downloadResume() {
+export type ResumeTheme = 'charcoal' | 'emerald' | 'cobalt';
+
+export function downloadResume(theme: ResumeTheme = 'charcoal') {
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
     format: 'a4'
   })
   
-  // Color palette definition
+  // Color palette definition based on chosen theme
   const primaryColor = [17, 24, 39]     // Deep charcoal
-  const accentColor = [0, 112, 243]      // Modern high-contrast accent blue
   const bodyColor = [55, 65, 81]        // Elegant slate-gray
   const dividerColor = [229, 231, 235]   // Light gray line
+  
+  let accentColor = [26, 86, 219]      // Default Royal Cobalt
+  if (theme === 'charcoal') {
+    accentColor = [75, 85, 99]         // Slate Charcoal
+  } else if (theme === 'emerald') {
+    accentColor = [16, 122, 87]        // Emerald Green
+  } else if (theme === 'cobalt') {
+    accentColor = [26, 86, 219]        // Royal Cobalt
+  }
   
   let y = 18
   const leftMargin = 18
@@ -216,5 +226,6 @@ export function downloadResume() {
   doc.text('Eduskills Foundation  |  In-depth study of artificial neural networks, generative logic, and LLM orchestration', leftMargin, y)
 
   // Save the constructed resume PDF
-  doc.save('Dhruv_Patil_Resume.pdf')
+  const formattedTheme = theme.charAt(0).toUpperCase() + theme.slice(1)
+  doc.save(`Dhruv_Patil_Resume_${formattedTheme}.pdf`)
 }

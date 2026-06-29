@@ -45,7 +45,7 @@ export default function About() {
               <p className="text-gray-400 font-mono text-[10px] md:text-xs uppercase tracking-wider font-semibold mt-1">CGPA Standing</p>
             </div>
             <div className="glass-effect p-4 sm:p-6 rounded-2xl border-l-[3px] border-secondary hover:bg-white/[0.08] transition-all duration-300">
-              <p className="text-white font-display font-semibold text-2xl md:text-3xl tracking-tight">510,120</p>
+              <p className="text-white font-display font-semibold text-2xl md:text-3xl tracking-tight">463,894</p>
               <p className="text-gray-400 font-mono text-[10px] md:text-xs uppercase tracking-wider font-semibold mt-1">LeetCode Global Rank</p>
             </div>
           </div>

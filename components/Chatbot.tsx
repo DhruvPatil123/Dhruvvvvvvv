@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Send, Bot, User, Sparkles } from 'lucide-react'
+import { playTick, playPopover, playNotification } from '@/lib/sounds'
 
 interface Message {
   id: number
@@ -19,7 +20,7 @@ const PORTFOLIO_DATA = {
   email: 'sujalpatil8657231278@gmail.com',
   phone: '+91 8857841863',
   cgpa: '8.76',
-  leetcodeRank: '1,254,070',
+  leetcodeRank: '463,894',
   resumeUrl: '/dhruv-patil-resume.pdf',
 
   socials: {
@@ -201,6 +202,7 @@ export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
 
   useEffect(() => {
     if (isOpen) {
+      playPopover()
       setTimeout(() => inputRef.current?.focus(), 300)
     }
   }, [isOpen])
@@ -208,6 +210,8 @@ export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
   const handleSend = async () => {
     const trimmed = input.trim()
     if (!trimmed) return
+
+    playTick()
 
     const userMsg: Message = {
       id: Date.now(),
@@ -234,12 +238,15 @@ export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
 
     setIsTyping(false)
     setMessages((prev) => [...prev, botMsg])
+    playNotification()
   }
 
-  const sendPrompt = (prompt: string) => {
+  const sendPrompt = (query: string, displayText?: string) => {
+    playTick()
+
     const userMsg: Message = {
       id: Date.now(),
-      text: prompt,
+      text: displayText || query,
       sender: 'user',
       timestamp: new Date(),
     }
@@ -249,13 +256,14 @@ export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
     setIsTyping(true)
 
     setTimeout(() => {
-      const botResponse = generateResponse(prompt)
+      const botResponse = generateResponse(query)
       setIsTyping(false)
       setMessages((prev) => [
         ...prev,
         { id: Date.now() + 1, text: botResponse, sender: 'bot', timestamp: new Date() },
       ])
-    }, 700)
+      playNotification()
+    }, 1200)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -287,10 +295,11 @@ export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
   }
 
   const quickQuestions = [
-    'Best AI projects?',
-    'Download resume',
-    'Why hire Dhruv?',
-    'How to contact?',
+    { label: '🏆 LeetCode Rank', query: 'LeetCode Rank' },
+    { label: '🚀 Top Projects', query: 'Best AI projects?' },
+    { label: '📬 Let\'s Connect', query: 'How to contact?' },
+    { label: '💼 Experience', query: 'Experience' },
+    { label: '🎓 Education', query: 'Education' },
   ]
 
   return (
@@ -382,11 +391,24 @@ export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
                   <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center text-primary flex-shrink-0 mt-1">
                     <Bot className="w-3.5 h-3.5" />
                   </div>
-                  <div className="bg-white/5 border border-white/5 px-4 py-3 rounded-2xl rounded-tl-md">
-                    <div className="flex gap-1.5">
-                      <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                      <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                      <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                  <div className="bg-white/5 border border-white/5 px-4 py-3 rounded-2xl rounded-tl-md flex items-center">
+                    <div className="flex gap-1.5 items-center py-1">
+                      {[0, 1, 2].map((index) => (
+                        <motion.span
+                          key={index}
+                          className="w-2 h-2 bg-primary rounded-full"
+                          animate={{
+                            y: ["0%", "-50%", "0%"]
+                          }}
+                          transition={{
+                            duration: 0.6,
+                            repeat: Infinity,
+                            repeatType: "loop",
+                            ease: "easeInOut",
+                            delay: index * 0.15,
+                          }}
+                        />
+                      ))}
                     </div>
                   </div>
                 </motion.div>
@@ -395,20 +417,26 @@ export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Quick Questions (show only when few messages) */}
-            {messages.length <= 2 && (
-              <div className="px-4 pb-2 flex flex-wrap gap-2">
+            {/* Interactive Quick-Reply Chips */}
+            <div 
+              className="px-4 py-2 border-t border-white/5 bg-black/10 overflow-x-auto scrollbar-none"
+              style={{
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none',
+              }}
+            >
+              <div className="flex gap-2 flex-nowrap pb-0.5">
                 {quickQuestions.map((q) => (
                   <button
-                    key={q}
-                    onClick={() => sendPrompt(q)}
-                    className="px-3 py-1.5 rounded-full text-[11px] font-medium bg-white/5 text-gray-400 hover:text-primary hover:bg-primary/10 border border-white/5 hover:border-primary/30 transition-all"
+                    key={q.label}
+                    onClick={() => sendPrompt(q.query, q.label)}
+                    className="px-3 py-1.5 rounded-full text-[11px] font-medium bg-white/5 text-zinc-300 hover:text-primary hover:bg-primary/10 border border-white/5 hover:border-primary/30 transition-all duration-300 shadow-sm flex items-center gap-1.5 whitespace-nowrap active:scale-95 cursor-pointer hover:shadow-[0_0_12px_rgba(0,242,255,0.12)]"
                   >
-                    {q}
+                    {q.label}
                   </button>
                 ))}
               </div>
-            )}
+            </div>
 
             {/* Input */}
             <div className="px-4 pb-4 pt-2">

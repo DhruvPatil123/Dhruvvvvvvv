@@ -12,8 +12,8 @@ module.exports = {
         mono: ["var(--font-mono)", "monospace"],
       },
       colors: {
-        primary: "#00f2ff",
-        secondary: "#7000ff",
+        primary: "rgb(var(--primary-rgb))",
+        secondary: "rgb(var(--secondary-rgb))",
         dark: "#0a0a0a",
       },
       animation: {

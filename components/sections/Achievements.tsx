@@ -11,7 +11,7 @@ const ACHIEVEMENTS = [
     title: 'LeetCode Global Rank',
     category: 'Competitive Coding',
     icon: <LeetCodeIcon className="w-6 h-6" />,
-    description: 'World Profile Rank: 510,120 with 850+ algorithmic challenges completed and solved.',
+    description: 'World Profile Rank: 463,894 with 850+ algorithmic challenges completed and solved.',
     color: 'text-orange-400'
   },
   {

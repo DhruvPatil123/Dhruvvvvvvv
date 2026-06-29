@@ -16,6 +16,7 @@ import Contact from '@/components/sections/Contact'
 import Chatbot from '@/components/Chatbot'
 import { useScrollStore } from '@/store/useScrollStore'
 import { useChatStore } from '@/store/useChatStore'
+import { useThemeStore } from '@/store/useThemeStore'
 
 const Scene = dynamic(() => import('@/components/Scene'), { ssr: false })
 
@@ -23,6 +24,15 @@ export default function Home() {
   const setScrollProgress = useScrollStore((state) => state.setScrollProgress)
   const isChatOpen = useChatStore((state) => state.isOpen)
   const closeChat = useChatStore((state) => state.closeChat)
+  const theme = useThemeStore((state) => state.theme)
+
+  useEffect(() => {
+    // Prevent the browser from automatically jumping to a hash section or restoring previous scroll position on reload
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual'
+    }
+    window.scrollTo(0, 0)
+  }, [])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -35,6 +45,12 @@ export default function Home() {
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [setScrollProgress])
+
+  useEffect(() => {
+    // Sync class list with current theme
+    document.documentElement.classList.remove('theme-charcoal', 'theme-emerald', 'theme-cobalt')
+    document.documentElement.classList.add(`theme-${theme}`)
+  }, [theme])
 
   return (
     <main className="relative w-full min-h-screen">

@@ -6,6 +6,25 @@
   --foreground-rgb: 255, 255, 255;
   --background-start-rgb: 0, 0, 0;
   --background-end-rgb: 10, 10, 10;
+  
+  /* Default to Cobalt */
+  --primary-rgb: 26, 86, 219;
+  --secondary-rgb: 37, 99, 235;
+}
+
+.theme-cobalt {
+  --primary-rgb: 26, 86, 219;
+  --secondary-rgb: 37, 99, 235;
+}
+
+.theme-charcoal {
+  --primary-rgb: 107, 114, 128;
+  --secondary-rgb: 75, 85, 99;
+}
+
+.theme-emerald {
+  --primary-rgb: 16, 122, 87;
+  --secondary-rgb: 16, 185, 129;
 }
 
 html {
@@ -25,23 +44,19 @@ canvas {
 }
 
 .glass-effect {
-  background: rgba(8, 8, 8, 0.45);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(15, 20, 25, 0.65);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 
-    0 8px 32px 0 rgba(0, 0, 0, 0.5),
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.1),
-    0 0 40px 0 rgba(112, 0, 255, 0.01);
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-effect:hover {
-  background: rgba(10, 10, 10, 0.6);
-  border-color: rgba(0, 242, 255, 0.2);
+  background: rgba(15, 20, 25, 0.75);
+  border-color: rgba(255, 255, 255, 0.2);
   box-shadow: 
-    0 16px 48px 0 rgba(0, 0, 0, 0.7),
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.15),
-    0 0 30px 0 rgba(0, 242, 255, 0.06);
-  transform: translateY(-2px);
+    0 30px 70px rgba(0, 0, 0, 0.6),
+    0 0 30px rgba(var(--primary-rgb), 0.08);
+  transform: translateY(-8px) scale(1.02);
 }
