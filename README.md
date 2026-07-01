@@ -1,26 +1,45 @@
-# 🌌 Portfolio of Dhruv Dinesh Patil
+# 🌌 Dhruv Dinesh Patil | Interactive 3D Portfolio
 
-An interactive, premium, high-performance 3D portfolio showcasing academic standing, AI research projects, and accomplishments. Powered by **Next.js 15 (App Router)**, **React Three Fiber (Three.js)**, **Tailwind CSS**, and **Framer Motion**.
+An immersive, premium, high-performance 3D portfolio showcasing academic standing, AI research projects, and interactive engineering capabilities. Built using **Next.js 15 (App Router)**, **React Three Fiber (Three.js)**, **Tailwind CSS**, and **Framer Motion**.
 
 ---
 
-## ✨ Features & Aesthetic Choices
+## ✨ Features & Interactive Core
 
-- **🌌 Immersive 3D Experience**: A interactive 3D particle landscape and floating elements powered by Three.js and `@react-three/fiber`.
-- **✍️ Refined Typography**: Beautiful font hierarchy pairing **Space Grotesk** (for display/academic titles), **Inter** (for high-legibility body copy), and **JetBrains Mono** (for computational/syntax accents).
-- **🔬 Premium Technical Layout**: Clean indicator badges, structured matrix layout, and micro-animations mirroring a state-of-the-art AI lab design.
-- **📱 Fully Responsive & Fluid**: Optimized touch targets and adaptiveness on all screen sizes (mobile up to ultra-wide displays).
-- **🤖 Built-in AI Chatbot**: Real-time interactive messaging node to learn more about Dhruv, built natively into the UI.
+### 1. 🎨 Interactive Project Playgrounds & Sandboxes
+For top-tier projects, visitors can interact with fully functional mini-sandboxes directly inside their inspect modals:
+- **VisionCraft.AI (Procedural Art Synthesizer)**: Enter custom visual prompts (e.g., *neon cyberpunk monolith*, *emerald forest vortex*) and watch the AI simulator compile custom-hashed seeds to render dynamic, responsive procedural vector (SVG) graphics in real time.
+- **EncryptX (AES-256 Binary Stream Pipeline)**: Drag and drop any small `.txt` file directly onto the container, or click to load a mock system secrets stream. Watch live binary matrix grids ripple, transition through structural cryptographic pipeline stages (SubBytes, ShiftRows, MixColumns, AddRoundKey), and toggle encryption states in real time.
+
+### 2. 🎵 Real-Time Stereo Panning & Interactive Soundscapes
+The site features a custom high-fidelity audio engine (`/lib/sounds.ts`) with stereo panning dynamically tied to cursor coordinates:
+- **Cursor-Tracked Panning**: Mouse X-coordinate movement dynamically shifts audio balance between `-1.0` (far left) and `1.0` (far right).
+- **Tactile Sound Effects**: Includes ultra-short mechanical key click transients, smooth popover slide sounds, and pristine electronic crystal chimes.
+- **Cinematic Ambient Pad Swell**: Interactive elements evoke a luxurious, cinematic F Major 9 chord synthesized dynamically with warm analog-drift lowpass filters and organic, multi-second stereo decay.
+
+### 3. 📄 Themeable Dynamic Resume Downloads
+The resume downloading module integrates on-the-fly customizable styles:
+- **Theme Selection**: Visitors can choose between three distinctive visual signatures: **Charcoal Obsidian**, **Emerald Aurora**, and **Cobalt Abyssal**.
+- **Dynamic Download**: Generates a high-quality stylized PDF conforming instantly to the selected theme's signature color palette.
+
+### 4. 🤖 Secure Server-Side Gemini Chatbot Node
+- An intelligent conversational AI chatbot integrated directly into the layout.
+- Powered by a secure, server-side Next.js route proxying the Gemini API to safeguard sensitive API secrets while offering high-speed real-time responses.
+
+### 5. 🪐 Immersive 3D Canvas Atmosphere
+- A beautiful, fluid particle landscape powered by `@react-three/fiber` and `@react-three/drei`.
+- Elegant camera drifts and micro-interactions creating high-contrast depth behind a minimal, editorial layout.
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Framework**: [Next.js 15+](https://nextjs.org/) (App Router, React 19)
-- **3D Engine**: [@react-three/fiber](https://docs.pmnd.rs/react-three-fiber/) & [@react-three/drei](https://github.com/pmndrs/drei)
-- **Animations**: [Framer Motion](https://www.framer.com/motion/) (importing from `motion/react`)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/) with customized font variables
-- **Iconography**: [Lucide React](https://lucide.dev/)
+- **Framework**: Next.js 15+ (App Router, React 19)
+- **3D Graphics**: `@react-three/fiber` & `@react-three/drei` (Three.js wrapper)
+- **Animations**: Framer Motion (imported from `motion/react` for buttery-smooth entries and transitions)
+- **Audio Synthesizer**: Web Audio API (procedural oscillator generation, stereo panner nodes, and custom resonance filter chains)
+- **Styling**: Tailwind CSS (fully responsive, touch-friendly density layouts)
+- **Icons**: Lucide React
 
 ---
 
@@ -30,7 +49,7 @@ An interactive, premium, high-performance 3D portfolio showcasing academic stand
 
 Ensure you have [Node.js](https://nodejs.org/) (v18+ recommended) and `npm` installed.
 
-### Installation
+### Installation & Run
 
 1. **Clone the repository**:
    ```bash
@@ -44,15 +63,16 @@ Ensure you have [Node.js](https://nodejs.org/) (v18+ recommended) and `npm` inst
    ```
 
 3. **Set up Environment Variables**:
-   Copy `.env.example` to `.env` or `.env.local` and configure your API keys (like `GEMINI_API_KEY` for the server-side chatbot proxy).
-   ```bash
-   cp .env.example .env.local
+   Create a `.env.local` file at the root and input your private server-side key (never prefix with `NEXT_PUBLIC_`):
+   ```env
+   GEMINI_API_KEY=your_google_gemini_api_key_here
    ```
 
 4. **Run the development server**:
    ```bash
    npm run dev
    ```
+   Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
 
 5. **Build for Production**:
    ```bash
@@ -66,15 +86,18 @@ Ensure you have [Node.js](https://nodejs.org/) (v18+ recommended) and `npm` inst
 
 ```text
 ├── app/                  # Next.js App Router (Layouts, Global Styles, Pages)
-│   ├── api/              # Secure Server-Side Proxy API routes
+│   ├── api/              # Secure Server-Side Proxy API routes (Gemini Agent)
 │   ├── globals.css       # Tailwind entry styles & CSS custom rules
 │   └── page.tsx          # Main entry page assembling the viewport
 ├── components/           # Reusable UI React Components
 │   ├── ui/               # System primitive components
 │   ├── sections/         # Beautiful custom page sections (Hero, About, Projects, etc.)
-│   ├── Experience.tsx    # Three.js 3D scene elements & shaders
+│   ├── Experience.tsx    # Three.js 3D particle scene elements
 │   └── Chatbot.tsx       # Live conversational agent component
-└── public/               # Static assets & document links
+├── lib/                  # Utility libraries
+│   ├── sounds.ts         # Web Audio API engine & stereo cursor panning logic
+│   └── downloadResume.ts # Contextual theme-based PDF generation logic
+└── public/               # Static assets & resume document templates
 ```
 
 ---
@@ -86,4 +109,4 @@ Ensure you have [Node.js](https://nodejs.org/) (v18+ recommended) and `npm` inst
 - **LinkedIn**: [Dhruv Patil](https://www.linkedin.com/in/dhruv-patil-3816043b7/)
 
 ---
-*⚠️ Please verify critical deployment configurations independently before hosting on platforms like Vercel.*
+*⚠️ Please independently verify critical deployment configurations and keys before hosting on hosting platforms.*

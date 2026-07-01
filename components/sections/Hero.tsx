@@ -6,7 +6,7 @@ import { ArrowRight, Download, Github, Twitter, Linkedin, Instagram } from 'luci
 import { downloadResume, ResumeTheme } from '@/lib/downloadResume'
 import LeetCodeIcon from '../LeetCodeIcon'
 import { useThemeStore } from '@/store/useThemeStore'
-import { playTick, playPopover } from '@/lib/sounds'
+import { playTick, playPopover, playAmbientPad } from '@/lib/sounds'
 
 export default function Hero() {
   const [showThemes, setShowThemes] = React.useState(false)
@@ -125,7 +125,7 @@ export default function Hero() {
                   <div className="grid grid-cols-1 gap-1.5 pt-1">
                     <button
                       onClick={() => {
-                        playTick()
+                        playAmbientPad()
                         setTheme('charcoal')
                         downloadResume('charcoal')
                         setShowThemes(false)
@@ -144,7 +144,7 @@ export default function Hero() {
                     </button>
                     <button
                       onClick={() => {
-                        playTick()
+                        playAmbientPad()
                         setTheme('emerald')
                         downloadResume('emerald')
                         setShowThemes(false)
@@ -163,7 +163,7 @@ export default function Hero() {
                     </button>
                     <button
                       onClick={() => {
-                        playTick()
+                        playAmbientPad()
                         setTheme('cobalt')
                         downloadResume('cobalt')
                         setShowThemes(false)

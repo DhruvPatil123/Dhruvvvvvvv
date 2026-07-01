@@ -3,6 +3,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { Brain, Code2, ShieldAlert, Cpu } from 'lucide-react'
+import { useScrollStore } from '@/store/useScrollStore'
 
 const SKILL_CATEGORIES = [
   {
@@ -29,6 +30,8 @@ const SKILL_CATEGORIES = [
 ]
 
 export default function Skills() {
+  const setSkillsHovered = useScrollStore((state) => state.setSkillsHovered)
+
   return (
     <section id="skills" className="relative w-full min-h-screen flex flex-col items-center justify-center px-6 py-32 md:py-48">
       <div className="max-w-6xl w-full text-center mb-20 space-y-4">
@@ -73,6 +76,8 @@ export default function Skills() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
           viewport={{ once: true }}
+          onMouseEnter={() => setSkillsHovered(true)}
+          onMouseLeave={() => setSkillsHovered(false)}
           className="glass-effect p-8 rounded-3xl border border-white/5 hover:border-primary/30 transition-all duration-300 group md:col-span-2 flex flex-col justify-between"
         >
           <div>
@@ -109,6 +114,8 @@ export default function Skills() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           viewport={{ once: true }}
+          onMouseEnter={() => setSkillsHovered(true)}
+          onMouseLeave={() => setSkillsHovered(false)}
           className="glass-effect p-8 rounded-3xl border border-white/5 hover:border-secondary/30 transition-all duration-300 group md:col-span-1 flex flex-col justify-between"
         >
           <div>
@@ -145,6 +152,8 @@ export default function Skills() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
           viewport={{ once: true }}
+          onMouseEnter={() => setSkillsHovered(true)}
+          onMouseLeave={() => setSkillsHovered(false)}
           className="glass-effect p-8 rounded-3xl border border-white/5 hover:border-zinc-500/30 transition-all duration-300 group md:col-span-2 flex flex-col justify-between"
         >
           <div>
@@ -181,6 +190,8 @@ export default function Skills() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
           viewport={{ once: true }}
+          onMouseEnter={() => setSkillsHovered(true)}
+          onMouseLeave={() => setSkillsHovered(false)}
           className="glass-effect p-8 rounded-3xl border border-white/5 hover:border-primary/20 transition-all duration-300 group md:col-span-1 flex flex-col justify-between relative overflow-hidden"
         >
           <div className="absolute -right-12 -bottom-12 w-32 h-32 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-all duration-500" />

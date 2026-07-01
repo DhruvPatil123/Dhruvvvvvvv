@@ -20,7 +20,7 @@ const PORTFOLIO_DATA = {
   email: 'sujalpatil8657231278@gmail.com',
   phone: '+91 8857841863',
   cgpa: '8.76',
-  leetcodeRank: '463,894',
+  leetcodeRank: '416,077',
   resumeUrl: '/dhruv-patil-resume.pdf',
 
   socials: {
@@ -220,28 +220,54 @@ export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
       timestamp: new Date(),
     }
 
-    setMessages((prev) => [...prev, userMsg])
+    const updatedMessages = [...messages, userMsg]
+    setMessages(updatedMessages)
     setInput('')
     setIsTyping(true)
 
-    // Simulate typing delay
-    const delay = Math.min(800 + trimmed.length * 15, 2000)
-    await new Promise((res) => setTimeout(res, delay))
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: updatedMessages }),
+      })
 
-    const botResponse = generateResponse(trimmed)
-    const botMsg: Message = {
-      id: Date.now() + 1,
-      text: botResponse,
-      sender: 'bot',
-      timestamp: new Date(),
+      if (!response.ok) {
+        throw new Error('API failed')
+      }
+
+      const data = await response.json()
+      const botMsg: Message = {
+        id: Date.now() + 1,
+        text: data.text,
+        sender: 'bot',
+        timestamp: new Date(),
+      }
+
+      setIsTyping(false)
+      setMessages((prev) => [...prev, botMsg])
+      playNotification()
+    } catch (error) {
+      console.warn('Dynamic chat failing, falling back to local database:', error)
+      // Simulate typing delay
+      const delay = Math.min(800 + trimmed.length * 10, 1500)
+      await new Promise((res) => setTimeout(res, delay))
+
+      const botResponse = generateResponse(trimmed)
+      const botMsg: Message = {
+        id: Date.now() + 1,
+        text: botResponse,
+        sender: 'bot',
+        timestamp: new Date(),
+      }
+
+      setIsTyping(false)
+      setMessages((prev) => [...prev, botMsg])
+      playNotification()
     }
-
-    setIsTyping(false)
-    setMessages((prev) => [...prev, botMsg])
-    playNotification()
   }
 
-  const sendPrompt = (query: string, displayText?: string) => {
+  const sendPrompt = async (query: string, displayText?: string) => {
     playTick()
 
     const userMsg: Message = {
@@ -251,19 +277,41 @@ export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
       timestamp: new Date(),
     }
 
-    setMessages((prev) => [...prev, userMsg])
+    const updatedMessages = [...messages, userMsg]
+    setMessages(updatedMessages)
     setInput('')
     setIsTyping(true)
 
-    setTimeout(() => {
-      const botResponse = generateResponse(query)
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: updatedMessages }),
+      })
+
+      if (!response.ok) {
+        throw new Error('API failed')
+      }
+
+      const data = await response.json()
       setIsTyping(false)
       setMessages((prev) => [
         ...prev,
-        { id: Date.now() + 1, text: botResponse, sender: 'bot', timestamp: new Date() },
+        { id: Date.now() + 1, text: data.text, sender: 'bot', timestamp: new Date() },
       ])
       playNotification()
-    }, 1200)
+    } catch (error) {
+      console.warn('Dynamic prompt failing, falling back to local database:', error)
+      setTimeout(() => {
+        const botResponse = generateResponse(query)
+        setIsTyping(false)
+        setMessages((prev) => [
+          ...prev,
+          { id: Date.now() + 1, text: botResponse, sender: 'bot', timestamp: new Date() },
+        ])
+        playNotification()
+      }, 1000)
+    }
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -273,25 +321,61 @@ export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
     }
   }
 
-  // Simple markdown-like rendering for bold text
+  // Improved markdown-like rendering for rich text
   const renderText = (text: string) => {
-    const parts = text.split(/(\*\*[^*]+\*\*)/g)
-    return parts.map((part, i) => {
-      if (part.startsWith('**') && part.endsWith('**')) {
-        return (
-          <strong key={i} className="text-white font-bold">
-            {part.slice(2, -2)}
-          </strong>
-        )
-      }
-      // Handle line breaks
-      return part.split('\n').map((line, j) => (
-        <React.Fragment key={`${i}-${j}`}>
-          {j > 0 && <br />}
-          {line}
-        </React.Fragment>
-      ))
-    })
+    const lines = text.split('\n')
+    return (
+      <div className="space-y-1.5 font-sans text-sm">
+        {lines.map((line, idx) => {
+          let content: React.ReactNode = line
+
+          // Check if it is a list item or bullet point
+          const isBullet = line.trim().startsWith('•') || line.trim().startsWith('-') || line.trim().startsWith('*')
+          const cleanLine = isBullet ? line.replace(/^[\s•\-*]+/, '') : line
+
+          // Parse bold text **text**
+          const parts = cleanLine.split(/(\*\*[^*]+\*\*)/g)
+          const parsedParts = parts.map((part, i) => {
+            if (part.startsWith('**') && part.endsWith('**')) {
+              return (
+                <strong key={i} className="text-white font-bold font-sans">
+                  {part.slice(2, -2)}
+                </strong>
+              )
+            }
+            // Parse inline code `code`
+            const codeParts = part.split(/(`[^`]+`)/g)
+            return codeParts.map((cPart, cIdx) => {
+              if (cPart.startsWith('`') && cPart.endsWith('`')) {
+                return (
+                  <code key={`${i}-${cIdx}`} className="px-1.5 py-0.5 rounded bg-white/10 text-primary font-mono text-xs font-semibold">
+                    {cPart.slice(1, -1)}
+                  </code>
+                )
+              }
+              return cPart
+            })
+          })
+
+          if (isBullet) {
+            content = (
+              <div key={idx} className="flex gap-2 items-start pl-2">
+                <span className="text-primary mt-1 shrink-0">•</span>
+                <span className="flex-1 text-gray-300 font-sans">{parsedParts}</span>
+              </div>
+            )
+          } else {
+            content = (
+              <p key={idx} className="text-gray-300 font-sans leading-relaxed">
+                {parsedParts}
+              </p>
+            )
+          }
+
+          return content
+        })}
+      </div>
+    )
   }
 
   const quickQuestions = [

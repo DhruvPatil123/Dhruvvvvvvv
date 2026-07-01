@@ -12,6 +12,7 @@ export default function CosmicDust() {
   const colorAttribRef = useRef<THREE.BufferAttribute>(null)
   
   const scrollProgress = useScrollStore((state) => state.scrollProgress)
+  const skillsHovered = useScrollStore((state) => state.skillsHovered)
   const prevScrollRef = useRef(scrollProgress)
   const theme = useThemeStore((state) => state.theme)
 
@@ -42,7 +43,7 @@ export default function CosmicDust() {
         tiers[i] = 3 // Mostly white, elegant twinkling stars
       }
 
-      // Slower, graceful movement speeds (Point 5)
+      // Slower, graceful movement speeds
       spd[i] = 0.05 + Math.random() * 0.15
 
       // Random offsets for swaying/twinkling
@@ -91,13 +92,15 @@ export default function CosmicDust() {
         uTime: { value: 0 },
         uScroll: { value: 0 },
         uScrollSpeed: { value: 0 },
-        uMouse: { value: new THREE.Vector2(0, 0) }
+        uMouse: { value: new THREE.Vector2(0, 0) },
+        uSkillsHover: { value: 0 }
       },
       vertexShader: `
         uniform float uTime;
         uniform float uScroll;
         uniform float uScrollSpeed;
         uniform vec2 uMouse;
+        uniform float uSkillsHover;
         
         attribute vec3 color;
         attribute float aSpeed;
@@ -107,51 +110,80 @@ export default function CosmicDust() {
         varying float vDepth;
         varying float vSpeed;
         varying vec3 vRandom;
+        varying float vSkillsHover;
         
         void main() {
           vColor = color;
           vRandom = aRandom;
+          vSkillsHover = uSkillsHover;
           
-          vec3 pos = position;
+          // 1. Calculate Orbiting Ring positions (slow orbiting cosmic dust ring centered on hero)
+          float angle = aRandom.x * 6.28318;
+          // Radius varies per particle to form a thick, beautiful ring structure
+          float ringRadius = 3.2 + aRandom.y * 3.8; 
           
-          // 1. Slow, elegant organic floating sways (Point 5)
+          // Speed up when uSkillsHover is active!
+          float speedMultiplier = 1.0 + uSkillsHover * 4.5;
+          float currentAngle = angle + uTime * 0.12 * speedMultiplier * (0.6 + aSpeed * 0.4);
+          
+          vec3 ringPos;
+          ringPos.x = sin(currentAngle) * ringRadius;
+          ringPos.y = cos(currentAngle) * ringRadius * 0.85 + 0.2; // ellipse slightly centered
+          ringPos.z = (aRandom.z - 0.5) * 2.0 - 0.5; // slight depth spread
+
+          // Slow organic floating sways
           float floatOffset = uTime * 0.15 * aSpeed;
-          pos.x += sin(floatOffset + aRandom.x * 6.28) * 0.18;
-          pos.y += cos(floatOffset + aRandom.y * 6.28) * 0.18;
-          pos.z += sin(floatOffset + aRandom.z * 6.28) * 0.12;
+          ringPos.x += sin(floatOffset + aRandom.x * 6.28) * 0.18;
+          ringPos.y += cos(floatOffset + aRandom.y * 6.28) * 0.18;
+          ringPos.z += sin(floatOffset + aRandom.z * 6.28) * 0.12;
+
+          // Scroll influence and boundary wrapping for Ring
+          vec3 activeRing = ringPos;
+          activeRing.y -= uScroll * 15.0;
+          activeRing.x += sin(uScroll * 3.14 + aRandom.x * 2.0) * uScrollSpeed * 2.5;
+
+          activeRing.x = mod(activeRing.x + 22.5, 45.0) - 22.5;
+          activeRing.y = mod(activeRing.y + 22.5, 45.0) - 22.5;
+          activeRing.z = mod(activeRing.z + 12.5, 25.0) - 12.5;
+
+          // 2. Calculate Geometric Grid positions (technical matrix bento grid layout)
+          float cols = 40.0;
+          float rows = 25.0;
           
-          // 2. Slower, drift speed (Point 5)
-          pos.y += uTime * 0.015 * aSpeed;
+          float colIndex = floor(aRandom.x * cols);
+          float rowIndex = floor(aRandom.y * rows);
           
-          // 3. Scroll influence
-          pos.y -= uScroll * 14.0;
-          pos.x += sin(uScroll * 3.14 + aRandom.x * 2.0) * uScrollSpeed * 2.5;
-          
-          // 4. Wrap around boundary bounds
-          pos.x = mod(pos.x + 22.5, 45.0) - 22.5;
-          pos.y = mod(pos.y + 22.5, 45.0) - 22.5;
-          pos.z = mod(pos.z + 12.5, 25.0) - 12.5;
+          vec3 gridPos;
+          gridPos.x = (colIndex / cols - 0.5) * 16.0; // Spanned across width 16
+          gridPos.y = (rowIndex / rows - 0.5) * 10.0 + 0.2; // Spanned across height 10
+          gridPos.z = -1.5 + sin(colIndex * 0.4 + rowIndex * 0.4 + uTime * 2.5) * 0.12; // wave ripple across the grid!
+
+          // 3. Morph smoothly based on hover uniform
+          vec3 pos = mix(activeRing, gridPos, uSkillsHover);
  
-          // 5. Cinematic Mouse Parallax (Point 5)
+          // 4. Cinematic Mouse Parallax
           // Farther stars shift less, closer stars shift more based on depth
           float zDepth = (pos.z + 12.5) / 25.0; // 0 to 1
           pos.x += uMouse.x * 2.2 * zDepth;
           pos.y += uMouse.y * 1.6 * zDepth;
- 
+
           // Calculate view space
           vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
           float depth = -mvPosition.z;
           vDepth = depth;
           vSpeed = aSpeed;
- 
-          // 6. High-end Depth of Field computation
+
+          // High-end Depth of Field computation
           float distToFocus = abs(depth - 6.0);
           float bokehFactor = 1.0 + (distToFocus * 0.4);
- 
+
           // Base particle size (slightly increased for high glare contrast)
           float baseSize = 52.0;
           
-          gl_PointSize = (baseSize * bokehFactor) / depth;
+          // Make grid particles slightly smaller, sharper and tech-like
+          float finalBaseSize = mix(baseSize, 35.0, uSkillsHover);
+          
+          gl_PointSize = (finalBaseSize * bokehFactor) / depth;
           gl_Position = projectionMatrix * mvPosition;
         }
       `,
@@ -161,39 +193,49 @@ export default function CosmicDust() {
         varying float vDepth;
         varying float vSpeed;
         varying vec3 vRandom;
- 
+        varying float vSkillsHover;
+
         void main() {
           // Circular coordinate from the center of the point
           vec2 center = gl_PointCoord - vec2(0.5);
           float dist = length(center);
- 
+
           // Discard outside particles
           if (dist > 0.5) {
             discard;
           }
- 
-          // Compute blur based on depth focusing (Point 5)
+
+          // Compute blur based on depth focusing
           float distToFocus = abs(vDepth - 6.0);
           float blur = 0.15 + distToFocus * 0.09;
           if (vDepth < 2.0) {
             blur += (2.0 - vDepth) * 0.3;
           }
- 
+
+          // Make the grid particles sharper on skills hover
+          float finalBlur = mix(blur, 0.05, vSkillsHover);
+
           // Smooth core and ambient halo
-          float alpha = smoothstep(0.5, 0.5 - blur, dist);
+          float alpha = smoothstep(0.5, 0.5 - finalBlur, dist);
           
-          // Gentle, slow organic twinkling cycle (Point 5)
-          float twinkle = sin(uTime * 1.5 + vRandom.x * 6.28) * 0.35 + 0.65;
+          // Twinkling speeds up or stabilizes based on grid transition
+          float twinkleSpeed = mix(1.5, 3.5, vSkillsHover);
+          float twinkle = sin(uTime * twinkleSpeed + vRandom.x * 6.28) * 0.35 + 0.65;
+          
+          // Grid particles twinkle in a digital circuit/wave-like way
+          if (vSkillsHover > 0.5) {
+            twinkle = sin(uTime * 3.5 + (vRandom.x + vRandom.y) * 3.14) * 0.4 + 0.6;
+          }
           
           // Bright magical center core glow
           float core = smoothstep(0.18, 0.0, dist) * 0.7;
- 
+
           // Combine core brightness with color map
           vec3 finalColor = vColor + vec3(core * 0.55);
- 
+
           // Velocity based shining
           float velocityShine = 0.8 + vSpeed * 0.3;
- 
+
           gl_FragColor = vec4(finalColor * velocityShine, alpha * 0.45 * twinkle);
         }
       `
@@ -203,7 +245,7 @@ export default function CosmicDust() {
   useFrame((state) => {
     const t = state.clock.getElapsedTime()
     
-    // Smooth transition of scroll and mouse coordinates
+    // Smooth transition of scroll, mouse, and hover coordinates
     if (materialRef.current) {
       materialRef.current.uniforms.uTime.value = t
       materialRef.current.uniforms.uScroll.value = THREE.MathUtils.lerp(
@@ -217,6 +259,13 @@ export default function CosmicDust() {
         materialRef.current.uniforms.uScrollSpeed.value,
         scrollSpeed,
         0.1
+      )
+
+      // Lerp skills hover uniform smoothly (dynamic acceleration/deceleration)
+      materialRef.current.uniforms.uSkillsHover.value = THREE.MathUtils.lerp(
+        materialRef.current.uniforms.uSkillsHover.value,
+        skillsHovered ? 1.0 : 0.0,
+        0.06
       )
 
       // Lerp mouse coordinates smoothly to avoid jitter
@@ -262,9 +311,10 @@ export default function CosmicDust() {
     
     prevScrollRef.current = scrollProgress
 
-    // Rotate points slightly for added depth
+    // Rotate points slightly for added depth (only rotate when not in full grid state to keep grid aligned)
     if (pointsRef.current) {
-      pointsRef.current.rotation.y = t * 0.008
+      const targetRotationY = t * 0.015 * (1.0 - (materialRef.current?.uniforms.uSkillsHover.value || 0));
+      pointsRef.current.rotation.y = THREE.MathUtils.lerp(pointsRef.current.rotation.y, targetRotationY, 0.08)
     }
   })
 
