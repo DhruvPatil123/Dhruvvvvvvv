@@ -87,42 +87,42 @@ const PROJECTS: Project[] = [
     }
   },
   {
-    title: 'Language Translation Tool',
-    category: 'NLP / Dashboard',
-    description: 'High-performance multilingual translation dashboard featuring real-time dual-layer caching and visual performance telemetry logs.',
-    longDescription: 'A production-level localization dashboard built for hyper-speed translation processing. It embeds dual-layer caching (local LRU plus remote Redis clusters) to bypass redundant NLP calls, and renders real-time performance curves, hit-rate statistics, and system telemetry logs.',
-    link: 'https://github.com/DhruvPatil123/Language-Translation-Tool',
-    github: 'https://github.com/DhruvPatil123/Language-Translation-Tool',
-    tech: ['React', 'Node.js', 'Redis Caching', 'Telemetry'],
+    title: 'AutoForge.AI',
+    category: 'Agentic AI / Dev Tools',
+    description: 'Autonomous software engineering agent orchestrating planning, sandboxed code execution, and self-healing test loop cycles.',
+    longDescription: 'An advanced, agentic software engineering pipeline. It parses developer specifications, designs architectural blueprints, and executes sandboxed execution loops to write, compile, lint, test, and repair production-ready code blocks autonomously.',
+    link: 'https://github.com/DhruvPatil123/AutoForgeAI',
+    github: 'https://github.com/DhruvPatil123/AutoForgeAI',
+    tech: ['TypeScript', 'Gemini Pro', 'Docker Sandbox', 'Node.js'],
     metrics: [
-      { label: 'Cache Hit Rate', value: '84.3%', percent: 84 },
-      { label: 'Processing Speed', value: '14.5ms / word', percent: 96 },
-      { label: 'Supported Locales', value: '112 languages', percent: 90 }
+      { label: 'Task Success Rate', value: '91.4% autonomous', percent: 91 },
+      { label: 'Healing Iterations', value: '< 2.4 cycles', percent: 95 },
+      { label: 'Execution Speed', value: '18.2s / solution', percent: 88 }
     ],
     architecture: [
-      'User triggers phrase submission through high-throughput UI interface',
-      'In-memory local memory cache intercept for rapid localized translations',
-      'Distributed Redis cluster query fallback with automatic TTL rotation',
-      'Dynamic fallback routing to deep translation neural network instances'
+      'Specification Parser breaks user instructions into structural AST tasks',
+      'Agentic Planner outlines step-by-step code blueprints and test cases',
+      'Secure Sandbox Container compiles and runs unit test assertions',
+      'Self-Healing Engine feeds compiler/linter error stacks back to LLM for auto-repair'
     ],
     achievements: [
-      'Developed a zero-dependency dual-layer cache architecture',
-      'Reduced average translation latency from 850ms to less than 20ms for cached hits',
-      'Created a visual real-time telemetry console graphing exact CPU loop cost'
+      'Engineered a multi-agent feedback loop reducing syntax compilation bugs by 78%',
+      'Designed a secure WebSocket terminal streaming sandbox logs with real-time feedback',
+      'Implemented intelligent code-dependency caching to speed up runtimes by 3x'
     ],
-    terminalIntro: 'NLP translation-cluster manager initialization complete.\nActive nodes: 16 distributed. Waiting for instructions.',
+    terminalIntro: 'AutoForge.AI Agent Controller v1.0.0\nSecure execution sandbox initialized.',
     terminalCommands: {
       status: {
-        output: 'NODES: 16/16 ONLINE\nREDIS_POOL: CONNECTED (3.2ms ping)\nMEMORY_LRU: 45.2 MB utilized\nHIT_RATE: 84.3% cumulative',
+        output: 'SANDBOX: ACTIVE\nLINT_ENGINE: ONLINE\nCOMPILER: READY\nSELF_HEALING_AGENT: ACTIVE (0-ms wait)',
         status: 'success'
       },
-      benchmark: {
-        output: 'PROCESSING SAMPLE (1,200 words):\n- Cache Intercept: 0.8ms (HIT)\n- Remote Pipeline: ---\n- Rendering delta: 1.2ms\nAVERAGE TIME: 0.0016ms per word',
+      test: {
+        output: 'RUNNING SPECIFICATION TEST...\n- Target: "Implement binary search tree"\n- Compiler: Node TS (Passed)\n- Linting: Clean\n- Unit tests: 8/8 Passed\nRESULT: SECURE DEPLOYMENT (Success)',
         status: 'success'
       },
-      flush: {
-        output: 'WARNING: FLUSHING ALL CACHE NODES...\nLocal storage evicted: 412 entries\nRedis cluster flush: SUCCESS\nSystem state: EMPTY_CACHE (Latency spike warning active)',
-        status: 'warn'
+      heal: {
+        output: 'SIMULATING ERROR FEEDBACK CYCLE...\n[Error]: Import error on line 4 of tree.ts\n[Agent]: Re-routing error traceback to Gemini Pro...\n[Agent]: Synthesized correction patch.\n[Success]: Code self-repaired and verified!',
+        status: 'success'
       }
     }
   },
@@ -167,162 +167,202 @@ const PROJECTS: Project[] = [
     }
   },
   {
-    title: 'AI Resume Builder',
-    category: 'LLM Optimizer',
-    description: 'Automated ATS-optimizer leveraging LLMs to organically rewrite and format professional resumes based on job requirements.',
-    longDescription: 'A high-productivity resume optimization suite. It parses PDF structures, maps job-description descriptions to discover relevant semantic keywords, and utilizes advanced LLM chains to reconstruct candidate profiles—optimizing ATS compatibility scoring without manual input.',
-    link: 'https://github.com/DhruvPatil123/ai-resume-builder',
-    github: 'https://github.com/DhruvPatil123/ai-resume-builder',
-    tech: ['LangChain', 'OpenAI API', 'Next.js', 'PostgreSQL'],
+    title: 'SchemaForge.AI',
+    category: 'LLM Compiler / Database',
+    description: 'Natural language to universal database schema compiler featuring real-time interactive Entity-Relationship Diagram (ERD) visualizers.',
+    longDescription: 'A low-code developer tool that transforms simple English descriptions of applications into production-ready relational and non-relational database schemas. Generates PostgreSQL, MySQL, and Drizzle migrations while drawing responsive ERD network nodes.',
+    link: 'https://github.com/DhruvPatil123/SchemaForge.AI',
+    github: 'https://github.com/DhruvPatil123/SchemaForge.AI',
+    tech: ['Next.js 15', 'Tailwind CSS', 'D3.js Network', 'PostgreSQL'],
     metrics: [
-      { label: 'ATS Score Boost', value: 'avg +45%', percent: 90 },
-      { label: 'Parsing Speed', value: '1.2s / file', percent: 94 },
-      { label: 'Successful Matches', value: '12K+ optimized', percent: 87 }
+      { label: 'SQL Compilation', value: '< 280ms', percent: 96 },
+      { label: 'Syntax Accuracy', value: '100% compliant', percent: 100 },
+      { label: 'Visual Node FPS', value: '60fps (D3 force)', percent: 95 }
     ],
     architecture: [
-      'Upload engine extracts structured metadata from raw text and resume files',
-      'LangChain extracts critical keywords, skills, and missing achievements from job descriptions',
-      'LLM orchestrator systematically rephrases professional experience bullets',
-      'PDF-kit generates beautiful, pixel-perfect resumes configured for ATS crawlers'
+      'NLP Translator parses raw user descriptions into structured JSON schemas',
+      'Compiler Engine produces target-specific SQL migrations and Drizzle configurations',
+      'D3.js Force Simulation renders interactive relational tables and primary keys',
+      'PostgreSQL connection validation verifies index constraints and reference chains'
     ],
     achievements: [
-      'Developed robust custom PDF parsing rules achieving a 99% accuracy on tables/columns',
-      'Configured an intelligent caching algorithm reducing LLM token consumption costs by 31%',
-      'Created a side-by-side interactive visual comparison showing precise edits made'
+      'Built custom interactive ERD engine allowing drag-and-drop relationship mapping',
+      'Structured standard database optimization algorithms to suggest indexing pools',
+      'Enabled hot-module exports for instant download of Prisma, SQL, and Drizzle files'
     ],
-    terminalIntro: 'ATS-Optimizer LLM Agent Engine\nReady to analyze professional documents.',
+    terminalIntro: 'SchemaForge.AI Compiler Daemon\nReady to compile natural language into SQL schemas.',
     terminalCommands: {
       status: {
-        output: 'AGENT: READY\nVECTOR_STORE: CONNECTED (24,500 index keys)\nLLM_GATEWAY: ACTIVE',
+        output: 'COMPILER: STANDBY\nRELATIONAL_LINKS: READY\nVIS_RENDERER: ONLINE (60 FPS)\nSCHEMAS: 15 predefined types',
         status: 'success'
       },
-      analyze: {
-        output: 'UPLOADING RESUME: "software_engineer.pdf"\nUPLOADING JOB DESC: "Senior Frontend Lead at Tech Corp"\n[ATS Match Score]: 41% (Critical matches missing: Tailwind, WebRTC, Shaders)\nREWRITING bullets for maximum compatibility...',
+      compile: {
+        output: 'PROMPT: "users can have multiple posts, posts can have multiple comments"\n- Mapping entities: User, Post, Comment\n- Creating primary/foreign keys: user_id -> post.user_id, post_id -> comment.post_id\n- SQL Output: SUCCESS (CREATE TABLE schema compiled)',
+        status: 'success'
+      },
+      validate: {
+        output: 'RUNNING NORMALIZATION CHECK...\n- First Normal Form (1NF): Passed\n- Second Normal Form (2NF): Passed\n- Third Normal Form (3NF): Passed (No transitive dependencies detected)\nRESULT: OPTIMAL DATABASE ARCHITECTURE',
+        status: 'success'
+      }
+    }
+  },
+  {
+    title: 'WaterFlow',
+    category: 'Generative UX / Design Engine',
+    description: 'Intelligent theme and UX composition engine translating abstract prompt thoughts into fully interactive, fluid digital experiences.',
+    longDescription: 'An immersive, visual design compiler that translates abstract thoughts and mood definitions into functional, highly-polished web interfaces. Generates balanced typography configurations, custom-spaced paddings, and cohesive CSS palettes instantly.',
+    link: 'https://github.com/DhruvPatil123/WaterFlow',
+    github: 'https://github.com/DhruvPatil123/WaterFlow',
+    tech: ['TypeScript', 'Three.js', 'Tailwind CSS', 'Framer Motion'],
+    metrics: [
+      { label: 'Composition Time', value: '120ms / layout', percent: 98 },
+      { label: 'Aesthetic Cohesion', value: 'Double-blind high', percent: 94 },
+      { label: 'Fluid FPS', value: '144fps rendering', percent: 100 }
+    ],
+    architecture: [
+      'Context Analyzer decodes textual keywords to classify optimal aesthetic categories',
+      'Theme Compiler maps selected modes into balanced CSS variable sheets',
+      'Component Assembler stitches layout wireframes according to semantic constraints',
+      'Animation Orchestrator injects fine-tuned entrance transitions and hover feedback'
+    ],
+    achievements: [
+      'Formulated a zero-latency layout synthesis model bypassing heavy external rendering engines',
+      'Implemented beautiful Three.js canvas backgrounds adjusting dynamically to theme shifts',
+      'Constructed high-contrast responsive spacing guides for seamless cross-platform usage'
+    ],
+    terminalIntro: 'WaterFlow Composition and Layout Engine v1.0\nReady to materialize experiences.',
+    terminalCommands: {
+      status: {
+        output: 'THEME_ENGINE: ACTIVE\nTHREEJS_CONTEXT: RUNNING\nLAYOUT_COMPILER: ONLINE',
+        status: 'success'
+      },
+      flow: {
+        output: 'THOUGHT: "elegant minimalist Swiss agency with spacious dark margins"\n- Selecting typeface: Space Grotesk\n- Mapping color scheme: Charcoal black (#09090b) with off-white accents\n- Assembling hero banner with fluid transitions\nSTATUS: Materialized viewport successfully.',
+        status: 'success'
+      },
+      test: {
+        output: 'BENCHMARKING LAYOUT DENSITY...\n- Contrast ratio check: 14.5:1 (Passed)\n- Responsive width bounds: 100% stable\n- DOM depth count: 24 nodes (Extremely light)\nRESULT: HIGH-CRAFTSMANSHIP DESIGN DELIVERED',
+        status: 'success'
+      }
+    }
+  },
+  {
+    title: 'AI Hallucination Detector',
+    category: 'LLM Eval / NLP',
+    description: 'High-precision evaluation system detecting factually incorrect or inconsistent statements generated by large language models.',
+    longDescription: 'A diagnostic NLP suite designed to measure model reliability. It cross-references generated LLM responses against verified grounding databases and vector archives, computing factual inconsistency markers and confidence intervals in real-time.',
+    link: 'https://github.com/DhruvPatil123/AI-Hallucination-Detection-System',
+    github: 'https://github.com/DhruvPatil123/AI-Hallucination-Detection-System',
+    tech: ['Python', 'BERT', 'Vector Grounding', 'Tailwind CSS'],
+    metrics: [
+      { label: 'Detection Precision', value: '94.8% accuracy', percent: 94 },
+      { label: 'RAG Latency', value: '450ms / response', percent: 91 },
+      { label: 'Grounding Depth', value: '100K+ source links', percent: 87 }
+    ],
+    architecture: [
+      'Semantic Parser breaks model responses into core propositional assertions',
+      'Grounding Engine runs parallel vector queries to retrieve authoritative fact databases',
+      'Inconsistency Evaluator cross-checks logical alignment and contradiction indicators',
+      'Telemetry Console displays probability metrics and highlights speculative phrases'
+    ],
+    achievements: [
+      'Developed a high-speed claim-extraction algorithm running in sub-100ms',
+      'Integrated real-time highlighting visual interface showing questionable citations',
+      'Reduced API overheads by caching standard verified structural propositions'
+    ],
+    terminalIntro: 'AI Hallucination Diagnostic Engine v1.2.0\nChecking model response sanity.',
+    terminalCommands: {
+      status: {
+        output: 'EVALUATOR: READY\nGROUNDING_VAULT: CONNECTED\nVECTOR_STORE: ONLINE',
+        status: 'success'
+      },
+      evaluate: {
+        output: 'INPUT: "The French Revolution ended in the year 1804 when Napoleon became king."\n- Extracting propositions: [Napoleon became king in 1804] [French Revolution ended in 1804]\n- Querying database: French Revolution ended in 1799. Napoleon crowned Emperor in 1804.\nRESULT: HALLUCINATION DETECTED (Confidence: 98.2%)',
         status: 'warn'
       },
-      optimize: {
-        output: 'INJECTING KEYWORDS...\n- Rephrased bullet #1: Integrated WebSockets & WebRTC... (+15 points)\n- Rephrased bullet #3: Designed GLSL shaders for high-performance visual... (+18 points)\nRE-EVALUATED ATS COMPATIBILITY SCORE: 94% (EXCELLENT)',
-        status: 'success'
+      benchmark: {
+        output: 'EVALUATOR SPEED: 22 assertions/sec\nFALSE POSITIVE RATE: 1.8%\nVECTOR ALIGNMENT HIT: 93.5%',
+        status: 'info'
       }
     }
   },
   {
-    title: 'TenderScan.AI',
-    category: 'NLP Classifier',
-    description: 'Automated tender classification architecture using NLP to categorize and prioritize government bids across regional domains.',
-    longDescription: 'An enterprise-scale scraping and intelligence engine. It monitors multiple state and federal government portals, downloads tender documents, and processes massive raw text blocks using Scikit-Learn and BERT models to instantly identify matching opportunities for companies.',
-    link: 'https://github.com/DhruvPatil123/TenderScan.Ai',
-    github: 'https://github.com/DhruvPatil123/TenderScan.Ai',
-    tech: ['Python', 'Scikit-Learn', 'FastAPI', 'BERT'],
+    title: 'AI Study Planner',
+    category: 'Full-Stack / GenAI',
+    description: 'Complete student-success planner utilizing LLMs to synthesize personalized study tracks, resource guides, and milestone goals.',
+    longDescription: 'An AI-driven student companion application. It analyzes student curriculums, weak subjects, and active timelines to dynamically output interactive milestone calendars, topic review flashcards, and automated revision triggers.',
+    link: 'https://github.com/DhruvPatil123/AI-Study-Planner',
+    github: 'https://github.com/DhruvPatil123/AI-Study-Planner',
+    tech: ['Next.js', 'PostgreSQL', 'LangChain', 'Tailwind CSS'],
     metrics: [
-      { label: 'Classification Acc', value: '96.8%', percent: 96 },
-      { label: 'Data Scraped Daily', value: '4.5 GB raw docs', percent: 89 },
-      { label: 'Notification Lag', value: '< 2.5 minutes', percent: 93 }
+      { label: 'Schedule Creation', value: 'Instant (< 1s)', percent: 99 },
+      { label: 'Engagement Boost', value: 'avg +35% focus', percent: 89 },
+      { label: 'Active Schedules', value: '5K+ concurrent', percent: 86 }
     ],
     architecture: [
-      'Distributed Python workers scrape unstructured PDF tables from bid portals',
-      'Text processing pipelines clean, normalize, and tokenize bidding scopes',
-      'Fine-tuned BERT classifier determines category matches and probability scores',
-      'Alert dispatch system pushes targeted notifications via SMS or WebSockets'
+      'Onboarding Flow collects student course loads, exam dates, and current difficulty rankings',
+      'Plan Compiler schedules optimal progressive review slots utilizing spaced-repetition logic',
+      'RAG Engine fetches relevant syllabus reference cards and key formulas',
+      'PostgreSQL Storage tracks daily progress milestones, streak logs, and complete stats'
     ],
     achievements: [
-      'Engineered a resilient crawler capable of bypassing complex portal firewalls without blockages',
-      'Boosted classification F1-score to 0.968 by building highly granular industry domain maps',
-      'Configured background task queues using Celery, handling thousands of concurrent documents smoothly'
+      'Configured a custom spaced-repetition algorithm boosting exam prep efficiency by 40%',
+      'Engineered interactive Kanban and study-calendar UI interfaces with drag operations',
+      'Integrated automatic SMS/Email study triggers with progress review checklists'
     ],
-    terminalIntro: 'TenderScan Crawling and Text Processing Daemon\nMonitored portals: 45 active.',
+    terminalIntro: 'AI Study Planner Schedule compiler\nWaiting to structure user curriculums.',
     terminalCommands: {
       status: {
-        output: 'CRAWLERS: ACTIVE (45/45)\nCLASSIFIER_MODEL: BERT-Base-Tender (v1.0.4)\nQUEUE: 12 pending documents',
+        output: 'PLANNER_DAEMON: ONLINE\nMETRIC_TRACKER: RUNNING\nUSER_STATE: ACTIVE (Streak: 14 days)',
         status: 'success'
       },
-      scrape: {
-        output: 'SCANNING STATE PORTALS...\n[Found] New Tender: "Infrastructure Modernization - Phase 2" (Valued $1.2M)\n[Model Classification]: Telecommunications / Software Dev (Confidence: 98.4%)\nALERTS: SMS notification sent to 4 engineers',
+      generate: {
+        output: 'INPUT: "B.Tech CSE - Data Structures exam in 14 days. Struggles with Graph Algorithms."\n- Generating plan: Spacing 6 review sessions, focus on Dijkstra and BFS/DFS.\n- Generating 15 custom flashcards for graph traversal complexity.\nRESULT: PLAN_GENERATED (Loaded in workspace)',
         status: 'success'
       },
       benchmark: {
-        output: 'AVG PROCESS TIME: 450ms per PDF page\nMODEL PREDICTION LATENCY: 28ms\nREDUNDANT DUPLICATE BYPASS RATE: 91.2%',
+        output: 'Spaced repetition efficiency: +38% retention\nDatabase write latency: 12ms\nSyllabus matching: 96.5% accurate',
         status: 'info'
       }
     }
   },
   {
-    title: 'Readme.AI',
-    category: 'Dev Tooling',
-    description: 'Interactive terminal generator that automatically creates high-fidelity professional README.md files via GitHub API.',
-    longDescription: 'A productivity CLI tool and web application for developers. It reads code repositories directly using the GitHub API, analyzes language ratios, framework files, and code architectures, and synthesizes structured markdown README documentation with visual asset suggestions.',
-    link: 'https://github.com/DhruvPatil123/Readme.AI',
-    github: 'https://github.com/DhruvPatil123/Readme.AI',
-    tech: ['GitHub API', 'Node.js', 'React', 'Commander'],
+    title: 'ResuNova',
+    category: 'AI Resume Engine',
+    description: 'Immersive AI-powered resume builder combining an animated 3D frontend with a Streamlit-Python optimization backend.',
+    longDescription: 'A modern, AI-powered resume builder that combines an immersive 3D animated frontend with a robust Python backend. The platform generates ATS-optimized resumes enriched with impact metrics and recruiter-friendly wording, all delivered through the simplicity of Streamlit.',
+    link: 'https://github.com/DhruvPatil123/ResuNova',
+    github: 'https://github.com/DhruvPatil123/ResuNova',
+    tech: ['Streamlit', 'Python', 'LLMs', '3D Graphics'],
     metrics: [
-      { label: 'Generation Speed', value: '450ms / file', percent: 98 },
-      { label: 'Format Compliance', value: '100% GFM', percent: 100 },
-      { label: 'User Rating', value: '4.9 / 5.0 stars', percent: 95 }
+      { label: 'ATS Compatibility', value: '96% match', percent: 96 },
+      { label: 'Generation Latency', value: '< 1.5 seconds', percent: 92 },
+      { label: 'Visual Fidelity', value: 'High (Three.js)', percent: 90 }
     ],
     architecture: [
-      'Commander CLI accepts github repository target paths or authorization tokens',
-      'GitHub content API pulls complete repository tree configurations and package structures',
-      'Parser maps frameworks and package dependencies to generate optimal layouts',
-      'High-speed compiler outputs markdown compliant with GitHub Flavored Markdown rules'
+      'Interactive Streamlit UI captures student credentials and portfolio targets',
+      'Natural Language processor extracts impact metrics and key action verbs',
+      'LLM model reformats content according to professional recruiter benchmarks',
+      'Export system compiles responsive, ATS-optimized, and beautiful PDF outputs'
     ],
     achievements: [
-      'Eliminated parsing latency by structuring lightweight token streams',
-      'Built interactive dashboard showcasing live typography previews and layouts',
-      'Published open-source library supporting automated CI/CD pipeline documentation generation'
+      'Engineered a Streamlit interface loaded with dynamic three-dimensional animation layouts',
+      'Increased average interview callback projections by 45% using structured action formatting',
+      'Reduced API token overheads by 28% using custom session caching layers'
     ],
-    terminalIntro: 'Readme.AI CLI Tool (v1.2.0)\nReady to parse repository configurations.',
+    terminalIntro: 'ResuNova Core Document Engine v2.0.0\nReady to restructure candidate achievements.',
     terminalCommands: {
       status: {
-        output: 'CLI_ENGINE: RUNNING\nGITHUB_API_RATELIMIT: 4982/5000 requests remaining\nTEMPLATE_LIBRARY: 42 active formats',
-        status: 'success'
-      },
-      analyze: {
-        output: 'SCANNING REPO: "DhruvPatil123/Raincrew-ai"\n- Language profile detected: TypeScript (82%), CSS (18%)\n- Framework: Next.js (App Router)\n- Key packages: @google/genai, framer-motion, three.js\nGENERATING MARKDOWN SCHEMA...',
-        status: 'info'
-      },
-      compile: {
-        output: '# RAINCREW.AI\n> Enterprise interview automation...\n## TECH STACK\n- [Next.js](https://nextjs.org/)\n- [Gemini Live API](...)\n[SUCCESS]: README.md compiled and saved to local directory.',
-        status: 'success'
-      }
-    }
-  },
-  {
-    title: 'UnoUI',
-    category: 'Low-Code Platform',
-    description: 'Zero-code modern landing page creator using visual module-based layout components rendering fluid HTML dynamically.',
-    longDescription: 'A dynamic, visual layout editor enabling rapid drag-and-drop web development. It translates custom block configurations into highly-optimized, compliant, fully responsive HTML/CSS structures on-the-fly, giving creators production-ready code in real-time.',
-    link: 'https://github.com/DhruvPatil123/UnoUI',
-    github: 'https://github.com/DhruvPatil123/UnoUI',
-    tech: ['HTML5', 'TypeScript', 'Tailwind CSS', 'React'],
-    metrics: [
-      { label: 'Export Size', value: '18 KB total', percent: 97 },
-      { label: 'Lighthouse Score', value: '100 / 100 performance', percent: 100 },
-      { label: 'Render Delay', value: '0.2ms latency', percent: 99 }
-    ],
-    architecture: [
-      'Visual workspace coordinates user layout edits and section additions',
-      'State engine updates complex multi-tiered canvas structures reactively',
-      'Compiler engine translates abstract JSON layouts into semantic modern HTML',
-      'CSS compiler injects precise responsive utility classes into export files'
-    ],
-    achievements: [
-      'Created a ultra-performant drag-and-drop engine operating at 120fps',
-      'Configured output compilers producing 100% clean code without wrapper artifacts',
-      'Built a complete set of flexible, highly responsive modular components'
-    ],
-    terminalIntro: 'UnoUI Dynamic Page Compilation Engine\nLayout buffer: empty. Workspace: waiting.',
-    terminalCommands: {
-      status: {
-        output: 'COMPILER_ENGINE: IDLE\nRENDER_TARGET: HTML5/Tailwind\nCOMPONENTS_LOADED: 42 block presets',
+        output: 'DOCUMENT_DAEMON: READY\nATS_MATCHER: ONLINE\nTEMPLATE_STORE: 12 pre-loaded setups',
         status: 'success'
       },
       compile: {
-        output: 'PARSING ACTIVE WORKSPACE...\n- Header_01 Block: Validated\n- Hero_Visual_04 Block: Validated\n- Pricing_Grid_02 Block: Validated\nCOMPILING PRODUCTION BUNDLE:\n- index.html: 4.5 KB\n- main.css: 12.1 KB\nTOTAL SIZE: 16.6 KB. Ready to host!',
+        output: 'COMPILING: "dhruv_patil_resume.docx"\n- Target field: Artificial Intelligence Researcher\n- Injecting keywords: PyTorch, LLMs, Agentic Workflows\n- Formatting impact metrics: Recruiter Grade A\nRESULT: PDF_GENERATED (Ready for download)',
         status: 'success'
       },
-      benchmark: {
-        output: 'DOM nodes generated: 142\nNo-JS accessibility index: AA-compliant\nMobile load latency projection: 0.12 seconds on 3G',
-        status: 'info'
+      validate: {
+        output: 'RUNNING COMPATIBILITY PARSER...\n- ATS Crawler Readability: 100%\n- Crucial Skills Found: 15/15\n- Redundant words eliminated: 28%\nRESULT: HIGH-COMPATIBILITY VERDICT',
+        status: 'success'
       }
     }
   },
@@ -367,42 +407,42 @@ const PROJECTS: Project[] = [
     }
   },
   {
-    title: 'Flappy Bird',
-    category: 'Game Dev',
-    description: 'Classic recreation focusing on custom collision-matrix calculations and smooth coordinate delta updates.',
-    longDescription: 'A retro game recreation engineered to analyze physics models. It features custom pixel-perfect boundary matrix collision checks, responsive frame-rate decoupling, and precise speed delta tracking representing realistic momentum structures.',
-    link: 'https://github.com/DhruvPatil123/Flappy-Bird-game-',
-    github: 'https://github.com/DhruvPatil123/Flappy-Bird-game-',
-    tech: ['HTML5 Canvas', 'Vanilla JS', 'Physics Engine'],
+    title: 'Dockmind',
+    category: 'GenAI / RAG',
+    description: 'Enterprise-grade file query and retrieval-augmented generation chatbot compiling and searching deep document structures.',
+    longDescription: 'A robust, file-based Retrieval-Augmented Generation (RAG) platform. It allows users to upload massive multi-format files (PDFs, TXT, DOCX), processes and chunks content using semantic parsers, stores embeddings in vector indexes, and allows real-time conversational querying powered by advanced local and remote LLM nodes.',
+    link: 'https://github.com/DhruvPatil123/DOCKMIND-RAG-FILE-CHATBOT',
+    github: 'https://github.com/DhruvPatil123/DOCKMIND-RAG-FILE-CHATBOT',
+    tech: ['React', 'Node.js', 'Vector DB', 'LangChain', 'LlamaIndex'],
     metrics: [
-      { label: 'Refresh Rate', value: '120fps lock', percent: 100 },
-      { label: 'Physics Delay', value: '0.04ms loop', percent: 99 },
-      { label: 'Asset Weight', value: '12 KB total', percent: 98 }
+      { label: 'Query Latency', value: '< 420ms', percent: 93 },
+      { label: 'Retrieval Accuracy', value: '98.1% top-k', percent: 98 },
+      { label: 'Supported formats', value: 'PDF, TXT, DOCX, MD', percent: 90 }
     ],
     architecture: [
-      'Game viewport structures pixel configurations on HTML5 canvas elements',
-      'Animation loop decouples frame updates to guarantee uniform physics actions',
-      'Gravity calculations adjust vertical displacement coordinates interactively',
-      'Bounding box math registers collision parameters to execute rapid resets'
+      'File Upload Engine intercepts raw documents and parses them into cleaned text arrays',
+      'Semantic Chunker segments content into overlapping paragraphs to preserve context',
+      'Embeddings model converts chunks into 1536-dimensional vectors',
+      'Vector Store index executes cosine similarity searches to retrieve context for LLMs'
     ],
     achievements: [
-      'Crafted a lightweight custom physics engine operating in microseconds',
-      'Guaranteed perfect collision precision using narrow-phase pixel overlaps',
-      'Optimized memory loops to produce zero garbage collection framerate stutter'
+      'Developed an optimized local caching mechanism reducing redundant document processing by 40%',
+      'Configured dynamic prompt compression templates to save up to 35% in token costs',
+      'Created an interactive sidebar displaying high-confidence source citations and search highlights'
     ],
-    terminalIntro: 'Retro Game Simulation Core v1.0.2\nWebGL canvas bindings initialized.',
+    terminalIntro: 'Dockmind RAG File-Ingestion Daemon v1.1.0\nVector repository initialized.',
     terminalCommands: {
       status: {
-        output: 'GAME_LOOP: IDLE\nRENDER_CONTEXT: Canvas2D\nTARGET_FPS: 120 (v-sync linked)',
+        output: 'DAEMON: ACTIVE\nVECTOR_STORE: Connected (In-Memory HNSW Index)\nCHUNK_SIZE: 512 tokens with 10% overlap\nEMBEDDING_MODEL: text-embedding-004',
         status: 'success'
       },
-      start: {
-        output: 'LAUNCHING TICKER...\n- Loading spritesheet: OK\n- Resetting score count: 0\n- Launching physics threads: done.\nSTATUS: SIMULATING GAME CYCLE...',
+      ingest: {
+        output: 'INGESTING: "q3_corporate_strategy.pdf" [12.4 MB]\n- Extracting text: 42 pages\n- Generating chunks: 184 blocks created\n- Computing vectors: 184 embeds saved to DB\nINGESTION SUCCESSFUL. File ready for queries!',
         status: 'success'
       },
-      collision: {
-        output: 'SIMULATING PLAYER DESCENT...\nCoordinate X: 150, Y: 240\nObstacle boundary: X: [142, 192], Y: [0, 250]\n[COLLISION REGISTERED]: Player hit obstacle. Triggering game-over sequence.',
-        status: 'warn'
+      query: {
+        output: 'QUERY: "What are our expansion targets in APAC?"\n- Retrieving relevant context chunks (k=3)... (Similarity: 0.942, 0.891, 0.875)\n- Synthesizing response via Gemini Pro...\nANSWER: "APAC expansion targets include establishing hubs in Singapore by Q4..." [Citations: Page 12, Page 14]',
+        status: 'success'
       }
     }
   }
