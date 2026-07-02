@@ -26,12 +26,12 @@ const OTHER_ACHIEVEMENTS = [
 export default function Achievements() {
   const [leetcode, setLeetcode] = useState({
     username: 'Dhruv_Patil_18',
-    ranking: 416077,
+    ranking: 370720,
     streak: 12,
-    solvedTotal: 850,
-    solvedEasy: 320,
-    solvedMedium: 430,
-    solvedHard: 100,
+    solvedTotal: 367,
+    solvedEasy: 95,
+    solvedMedium: 210,
+    solvedHard: 62,
     submissionCalendar: '',
     loading: true,
     source: 'local'
@@ -41,7 +41,7 @@ export default function Achievements() {
     let active = true
     async function fetchStats() {
       try {
-        const response = await fetch('/api/leetcode')
+        const response = await fetch('/api/leetcode', { cache: 'no-store' })
         if (!response.ok) throw new Error('API failed')
         const data = await response.json()
         if (active) {

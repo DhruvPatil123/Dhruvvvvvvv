@@ -17,7 +17,7 @@ const PORTFOLIO_DATA = {
   email: 'sujalpatil8657231278@gmail.com',
   phone: '+91 8857841863',
   cgpa: '8.76',
-  leetcodeRank: '416,077',
+  leetcodeRank: '370,720',
   resumeUrl: '/dhruv-patil-resume.pdf',
   socials: {
     github: 'https://github.com/DhruvPatil123',
@@ -122,7 +122,7 @@ Here is Dhruv's authentic knowledge base:
 - Email: ${PORTFOLIO_DATA.email}
 - Phone: ${PORTFOLIO_DATA.phone}
 - CGPA: ${PORTFOLIO_DATA.cgpa}
-- LeetCode: Rank ${PORTFOLIO_DATA.leetcodeRank}, solved 850+ challenges. Link: ${PORTFOLIO_DATA.socials.leetcode}
+- LeetCode: Rank ${PORTFOLIO_DATA.leetcodeRank}, solved 360+ challenges. Link: ${PORTFOLIO_DATA.socials.leetcode}
 - Resume Link: ${PORTFOLIO_DATA.resumeUrl}
 - Education: ${JSON.stringify(PORTFOLIO_DATA.education)}
 - Skills: ${JSON.stringify(PORTFOLIO_DATA.skills)}

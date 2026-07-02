@@ -30,6 +30,10 @@ The resume downloading module integrates on-the-fly customizable styles:
 - A beautiful, fluid particle landscape powered by `@react-three/fiber` and `@react-three/drei`.
 - Elegant camera drifts and micro-interactions creating high-contrast depth behind a minimal, editorial layout.
 
+### 6. 📊 Live-Synchronized LeetCode Dashboard
+- Fully automated frontend-to-backend pipeline integration fetching real-time LeetCode statistics.
+- Dynamic fallback layers querying resilient API proxies (Vercel & Render) or direct GraphQL queries to automatically display current global rank (now **370,720**), streaks, and exact problem difficulties solved.
+
 ---
 
 ## 🛠️ Tech Stack
@@ -107,6 +111,7 @@ Ensure you have [Node.js](https://nodejs.org/) (v18+ recommended) and `npm` inst
 - **Email**: [sujalpatil8657231278@gmail.com](mailto:sujalpatil8657231278@gmail.com)
 - **GitHub**: [@DhruvPatil123](https://github.com/DhruvPatil123)
 - **LinkedIn**: [Dhruv Patil](https://www.linkedin.com/in/dhruv-patil-3816043b7/)
+- **LeetCode**: [Dhruv_Patil_18](https://leetcode.com/u/Dhruv_Patil_18/) (Global Rank: **370,720** | **360+** solved challenges)
 
 ---
 *⚠️ Please independently verify critical deployment configurations and keys before hosting on hosting platforms.*

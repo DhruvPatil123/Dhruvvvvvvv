@@ -20,7 +20,7 @@ const PORTFOLIO_DATA = {
   email: 'sujalpatil8657231278@gmail.com',
   phone: '+91 8857841863',
   cgpa: '8.76',
-  leetcodeRank: '416,077',
+  leetcodeRank: '370,720',
   resumeUrl: '/dhruv-patil-resume.pdf',
 
   socials: {
@@ -141,7 +141,7 @@ function generateResponse(input: string): string {
 
   // LeetCode
   if (/leetcode|competitive|coding|rank/i.test(q)) {
-    return `Dhruv's LeetCode profile:\n\n🏆 **Global Rank:** ${PORTFOLIO_DATA.leetcodeRank}\n🔗 **Profile:** ${PORTFOLIO_DATA.socials.leetcode}\n\nHe has solved 850+ algorithmic challenges! 💪`
+    return `Dhruv's LeetCode profile:\n\n🏆 **Global Rank:** ${PORTFOLIO_DATA.leetcodeRank}\n🔗 **Profile:** ${PORTFOLIO_DATA.socials.leetcode}\n\nHe has solved 360+ algorithmic challenges! 💪`
   }
 
   // Location
