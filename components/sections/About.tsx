@@ -1,9 +1,31 @@
 "use client"
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 
 export default function About() {
+  const [ranking, setRanking] = useState<string>('370,720')
+
+  useEffect(() => {
+    let active = true
+    async function fetchRank() {
+      try {
+        const response = await fetch('/api/leetcode', { cache: 'no-store' })
+        if (!response.ok) throw new Error('API failed')
+        const data = await response.json()
+        if (active && data.ranking) {
+          setRanking(data.ranking.toLocaleString())
+        }
+      } catch (err) {
+        console.warn('Failed to fetch dynamic LeetCode rank for About section:', err)
+      }
+    }
+    fetchRank()
+    return () => {
+      active = false
+    }
+  }, [])
+
   return (
     <section id="about" className="relative w-full min-h-[auto] md:min-h-screen flex items-center justify-center px-4 sm:px-6 py-20 md:py-32 lg:py-48">
       <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center">
@@ -45,7 +67,7 @@ export default function About() {
               <p className="text-gray-400 font-mono text-[10px] md:text-xs uppercase tracking-wider font-semibold mt-1">CGPA Standing</p>
             </div>
             <div className="glass-effect p-4 sm:p-6 rounded-2xl border-l-[3px] border-secondary hover:bg-white/[0.08] transition-all duration-300">
-              <p className="text-white font-display font-semibold text-2xl md:text-3xl tracking-tight">370,720</p>
+              <p className="text-white font-display font-semibold text-2xl md:text-3xl tracking-tight">{ranking}</p>
               <p className="text-gray-400 font-mono text-[10px] md:text-xs uppercase tracking-wider font-semibold mt-1">LeetCode Global Rank</p>
             </div>
           </div>
