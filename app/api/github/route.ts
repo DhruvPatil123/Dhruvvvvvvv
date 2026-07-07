@@ -77,7 +77,131 @@ export async function GET(req: NextRequest) {
   };
 
   try {
-    // Attempt to scrape GitHub's contribution page for live data
+    // 1. Primary Source: Attempt to fetch from Deno GitHub Contributions API (highly reliable, returns structured JSON)
+    try {
+      const denoUrl = `https://github-contributions-api.deno.dev/${username}.json`;
+      const denoResponse = await fetchWithTimeout(denoUrl, { cache: 'no-store' }, 4000);
+      
+      if (denoResponse.ok) {
+        const denoData = await denoResponse.json();
+        const totalContributions = denoData.totalContributions || fallbackData.totalContributions;
+
+        // Flatten the 2D weeks-and-days array to a flat 1D days list
+        const days: { date: string; count: number; level: number }[] = [];
+        if (Array.isArray(denoData.contributions)) {
+          for (const week of denoData.contributions) {
+            if (Array.isArray(week)) {
+              for (const day of week) {
+                if (day && typeof day === 'object' && day.date) {
+                  let level = 0;
+                  if (day.contributionLevel === "FIRST_QUARTILE") level = 1;
+                  else if (day.contributionLevel === "SECOND_QUARTILE") level = 2;
+                  else if (day.contributionLevel === "THIRD_QUARTILE") level = 3;
+                  else if (day.contributionLevel === "FOURTH_QUARTILE") level = 4;
+                  
+                  days.push({
+                    date: day.date,
+                    count: day.contributionCount || 0,
+                    level
+                  });
+                }
+              }
+            }
+          }
+        }
+
+        if (days.length > 0) {
+          // Sort days chronologically
+          days.sort((a, b) => a.date.localeCompare(b.date));
+
+          // Calculate streaks
+          let longestStreak = 0;
+          let tempStreak = 0;
+          let streakStart = "";
+          let streakEnd = "";
+          let longestStart = "";
+          let longestEnd = "";
+          let tempStart = "";
+          let tempEnd = "";
+
+          for (let i = 0; i < days.length; i++) {
+            const day = days[i];
+            if (day.level > 0) {
+              if (tempStreak === 0) {
+                tempStart = day.date;
+              }
+              tempStreak++;
+              tempEnd = day.date;
+              
+              if (tempStreak > longestStreak) {
+                longestStreak = tempStreak;
+                longestStart = tempStart;
+                longestEnd = tempEnd;
+              }
+            } else {
+              tempStreak = 0;
+            }
+          }
+
+          // Calculate current streak (ends today or yesterday)
+          let curStreakCount = 0;
+          let curStart = "";
+          let curEnd = "";
+          const todayStr = new Date().toISOString().split('T')[0];
+          const yesterday = new Date();
+          yesterday.setDate(yesterday.getDate() - 1);
+          const yesterdayStr = yesterday.toISOString().split('T')[0];
+          
+          let hasStreakTodayOrYesterday = false;
+          let index = days.length - 1;
+          
+          // Skip trailing future days
+          while (index >= 0 && days[index].date > todayStr) {
+            index--;
+          }
+          
+          if (index >= 0 && (days[index].date === todayStr || days[index].date === yesterdayStr) && days[index].level > 0) {
+            hasStreakTodayOrYesterday = true;
+            curEnd = days[index].date;
+            while (index >= 0 && days[index].level > 0) {
+              curStreakCount++;
+              curStart = days[index].date;
+              index--;
+            }
+          }
+
+          const formatDate = (dateStr: string) => {
+            if (!dateStr) return "";
+            const d = new Date(dateStr);
+            return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+          };
+
+          return NextResponse.json({
+            username,
+            totalContributions,
+            currentStreak: hasStreakTodayOrYesterday ? curStreakCount : fallbackData.currentStreak,
+            longestStreak: longestStreak > 0 ? longestStreak : fallbackData.longestStreak,
+            streakStart: hasStreakTodayOrYesterday ? formatDate(curStart) : fallbackData.streakStart,
+            streakEnd: hasStreakTodayOrYesterday ? formatDate(curEnd) : fallbackData.streakEnd,
+            longestStart: longestStart ? formatDate(longestStart) : fallbackData.longestStart,
+            longestEnd: longestEnd ? formatDate(longestEnd) : fallbackData.longestEnd,
+            startDate: fallbackData.startDate,
+            contributions: days.slice(-100), // return last 100 days for heatmap
+            source: "live-api"
+          }, {
+            headers: {
+              "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+              "Pragma": "no-cache",
+              "Expires": "0",
+            }
+          });
+        }
+      }
+    } catch (apiErr) {
+      console.warn("GitHub Deno JSON API failed, falling back to scraping:", apiErr);
+    }
+
+    // 2. Secondary Source: Scraping fallback (if Deno JSON proxy is down or blocked)
     const url = `https://github.com/users/${username}/contributions`;
     const response = await fetchWithTimeout(url, {
       headers: {
@@ -96,8 +220,6 @@ export async function GET(req: NextRequest) {
         totalContributions = parseInt(contribMatch[1].replace(/,/g, ""), 10);
       }
 
-      // We can also extract the contribution levels and dates from the HTML days
-      // E.g. data-date="2026-07-06" data-level="2"
       const days: { date: string; count: number; level: number }[] = [];
       const dayRegex = /data-date="([^"]+)"[^>]*data-level="([^"]+)"/g;
       let match;
@@ -105,17 +227,13 @@ export async function GET(req: NextRequest) {
       while ((match = dayRegex.exec(html)) !== null) {
         const date = match[1];
         const level = parseInt(match[2], 10);
-        // Estimate count based on level
         const count = level === 0 ? 0 : level === 1 ? 1 : level === 2 ? 3 : level === 3 ? 5 : 8;
         days.push({ date, count, level });
       }
 
       if (days.length > 0) {
-        // Sort days by date
         days.sort((a, b) => a.date.localeCompare(b.date));
 
-        // Calculate streaks
-        // Let's iterate backwards to find the current streak
         let currentStreak = 0;
         let longestStreak = 0;
         let tempStreak = 0;
@@ -128,8 +246,6 @@ export async function GET(req: NextRequest) {
         let tempStart = "";
         let tempEnd = "";
 
-        // Filter and calculate streaks
-        // A streak is active if there is at least 1 contribution (level > 0)
         for (let i = 0; i < days.length; i++) {
           const day = days[i];
           if (day.level > 0) {
@@ -149,7 +265,6 @@ export async function GET(req: NextRequest) {
           }
         }
 
-        // Calculate current streak (ends today or yesterday)
         let curStreakCount = 0;
         let curStart = "";
         let curEnd = "";
@@ -158,11 +273,9 @@ export async function GET(req: NextRequest) {
         yesterday.setDate(yesterday.getDate() - 1);
         const yesterdayStr = yesterday.toISOString().split('T')[0];
         
-        // Find if user has a streak ending near today
         let hasStreakTodayOrYesterday = false;
         let index = days.length - 1;
         
-        // Skip trailing days that are in the future if any
         while (index >= 0 && days[index].date > todayStr) {
           index--;
         }
@@ -183,7 +296,6 @@ export async function GET(req: NextRequest) {
           return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
         };
 
-        // If we found live streak information, use it! Otherwise, use fallback ranges updated to the current year
         return NextResponse.json({
           username,
           totalContributions,
@@ -194,18 +306,30 @@ export async function GET(req: NextRequest) {
           longestStart: longestStart ? formatDate(longestStart) : fallbackData.longestStart,
           longestEnd: longestEnd ? formatDate(longestEnd) : fallbackData.longestEnd,
           startDate: fallbackData.startDate,
-          contributions: days.slice(-100), // return last 100 days for heatmap
+          contributions: days.slice(-100),
           source: "live-scrape"
+        }, {
+          headers: {
+            "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0",
+          }
         });
       }
     }
   } catch (err) {
-    console.warn("GitHub live contributions scrape failed:", err);
+    console.warn("GitHub live contributions scrape and API both failed:", err);
   }
 
-  // Graceful fallback
+  // 3. Graceful mock fallback with Cache-Control headers disabled
   return NextResponse.json({
     ...fallbackData,
     source: "fallback"
+  }, {
+    headers: {
+      "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+      "Pragma": "no-cache",
+      "Expires": "0",
+    }
   });
 }

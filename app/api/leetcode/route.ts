@@ -159,6 +159,12 @@ export async function GET(req: NextRequest) {
             solvedHard,
             submissionCalendar,
             source: "live"
+          }, {
+            headers: {
+              "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+              "Pragma": "no-cache",
+              "Expires": "0",
+            }
           });
         }
       }
@@ -171,5 +177,11 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({
     ...fallbackData,
     source: "fallback"
+  }, {
+    headers: {
+      "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+      "Pragma": "no-cache",
+      "Expires": "0",
+    }
   });
 }
