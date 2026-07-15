@@ -68,7 +68,7 @@ export default function Contact() {
   }
 
   return (
-    <section id="contact" className="relative w-full min-h-[auto] md:min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-20 md:py-32 lg:py-48">
+    <section id="contact" className="relative w-full min-h-[auto] md:min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-32 md:py-48 lg:py-64">
       <div className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
         <div className="space-y-6">
           {/* Section Indicator */}

@@ -40,16 +40,26 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: 'Dhruv Dinesh Patil | AI Researcher & Generative Model Engineer',
-    description: 'Explore Dhruv Patil\'s AI, LLM, RAG, and high-performance web engineering portfolio.',
-    url: '/',
+    description: 'High-end 3D portfolio for Dhruv Dinesh Patil, an AI researcher focused on LLMs, Agentic AI, RAG systems, and high-performance web engineering.',
+    url: 'https://dhruvvvvvv.vercel.app',
     siteName: 'Dhruv Dinesh Patil Portfolio',
-    type: 'website',
+    locale: 'en_US',
+    type: 'profile',
+    images: [
+      {
+        url: '/opengraph-image',
+        width: 1200,
+        height: 630,
+        alt: 'Dhruv Dinesh Patil | AI Researcher & Generative Model Engineer',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Dhruv Dinesh Patil | AI Researcher & Generative Model Engineer',
-    description: 'AI, LLM, RAG, and high-performance web engineering portfolio.',
+    description: 'High-end 3D portfolio for Dhruv Dinesh Patil, an AI researcher focused on LLMs, Agentic AI, RAG systems, and high-performance web engineering.',
     creator: '@DhruvPatil_18',
+    images: ['/opengraph-image'],
   },
   category: 'portfolio',
   viewport: {

@@ -24,15 +24,21 @@ const OTHER_ACHIEVEMENTS = [
   }
 ]
 
+function Skeleton({ className }: { className?: string }) {
+  return (
+    <div className={`animate-pulse bg-white/[0.04] rounded-lg border border-white/5 ${className}`} />
+  );
+}
+
 export default function Achievements() {
   const [leetcode, setLeetcode] = useState({
     username: 'Dhruv_Patil_18',
-    ranking: 370720,
-    streak: 12,
-    solvedTotal: 367,
-    solvedEasy: 95,
-    solvedMedium: 210,
-    solvedHard: 62,
+    ranking: 239343,
+    streak: 29,
+    solvedTotal: 466,
+    solvedEasy: 121,
+    solvedMedium: 261,
+    solvedHard: 84,
     submissionCalendar: '',
     loading: true,
     source: 'local'
@@ -124,7 +130,7 @@ export default function Achievements() {
   }, [])
 
   return (
-    <section id="achievements" className="relative w-full min-h-[auto] md:min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-20 md:py-32 lg:py-48">
+    <section id="achievements" className="relative w-full min-h-[auto] md:min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-32 md:py-48 lg:py-64">
       <div className="max-w-6xl w-full text-center mb-16 md:mb-20 space-y-4">
         {/* Section Indicator */}
         <span className="font-mono text-xs uppercase tracking-[0.2em] text-primary font-medium">
@@ -198,76 +204,115 @@ export default function Achievements() {
               <div>
                 <p className="text-xs font-mono text-gray-400 uppercase tracking-widest mb-1">Global Profile Rank</p>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-3xl sm:text-4xl font-display font-extrabold text-white tracking-tight">
-                    {leetcode.ranking.toLocaleString()}
-                  </span>
-                  <Trophy className="w-4 h-4 text-orange-400 shrink-0 self-center" />
+                  {leetcode.loading ? (
+                    <Skeleton className="h-10 w-32 my-1" />
+                  ) : (
+                    <>
+                      <span className="text-3xl sm:text-4xl font-mono font-bold text-white tracking-tight">
+                        {leetcode.ranking.toLocaleString()}
+                      </span>
+                      <Trophy className="w-4 h-4 text-orange-400 shrink-0 self-center" />
+                    </>
+                  )}
                 </div>
                 <p className="text-[11px] font-sans text-gray-400 mt-1">
                   Active tier standing among global algorithmic problem solvers.
                 </p>
               </div>
 
-              <div className="bg-orange-500/[0.03] border border-orange-500/10 p-4 rounded-2xl flex items-center justify-between">
-                <div>
-                  <p className="text-[10px] font-mono text-orange-400 uppercase tracking-wider font-semibold">Active Streak</p>
-                  <p className="text-2xl font-display font-bold text-white mt-1">
-                    {leetcode.streak} <span className="text-xs font-sans font-medium text-gray-400">Days</span>
-                  </p>
-                </div>
-                <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-400 animate-pulse">
-                  <Flame className="w-5 h-5 fill-orange-400/20" />
-                </div>
+              <div className="bg-orange-500/[0.03] border border-orange-500/10 p-4 rounded-2xl flex items-center justify-between min-h-[76px]">
+                {leetcode.loading ? (
+                  <div className="w-full space-y-2">
+                    <Skeleton className="h-3.5 w-16" />
+                    <Skeleton className="h-6 w-24" />
+                  </div>
+                ) : (
+                  <>
+                    <div>
+                      <p className="text-[10px] font-mono text-orange-400 uppercase tracking-wider font-semibold">Active Streak</p>
+                      <p className="text-2xl font-mono font-bold text-white mt-1">
+                        {leetcode.streak} <span className="text-xs font-mono font-medium text-gray-400">Days</span>
+                      </p>
+                    </div>
+                    <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-400 animate-pulse">
+                      <Flame className="w-5 h-5 fill-orange-400/20" />
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 
             {/* Column 2: Problem Solving Metrics */}
             <div className="space-y-4 flex flex-col justify-center">
-              <div>
-                <div className="flex justify-between items-baseline mb-1">
-                  <p className="text-xs font-mono text-gray-400 uppercase tracking-widest">Total Problems Solved</p>
-                  <span className="text-xl font-display font-bold text-white">{leetcode.solvedTotal}</span>
+              {leetcode.loading ? (
+                <div className="space-y-3 w-full">
+                  <div className="flex justify-between items-center">
+                    <Skeleton className="h-3.5 w-32" />
+                    <Skeleton className="h-5 w-12" />
+                  </div>
+                  <Skeleton className="h-2 w-full" />
+                  <div className="grid grid-cols-3 gap-2 pt-1">
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-12 w-full" />
+                  </div>
                 </div>
-                
-                {/* Visual Segments */}
-                <div className="h-2 w-full bg-white/[0.04] rounded-full overflow-hidden flex">
-                  <div 
-                    className="h-full bg-emerald-500 transition-all duration-1000" 
-                    style={{ width: `${(leetcode.solvedEasy / leetcode.solvedTotal) * 100}%` }}
-                  />
-                  <div 
-                    className="h-full bg-amber-500 transition-all duration-1000" 
-                    style={{ width: `${(leetcode.solvedMedium / leetcode.solvedTotal) * 100}%` }}
-                  />
-                  <div 
-                    className="h-full bg-rose-500 transition-all duration-1000" 
-                    style={{ width: `${(leetcode.solvedHard / leetcode.solvedTotal) * 100}%` }}
-                  />
-                </div>
-              </div>
+              ) : (
+                <>
+                  <div>
+                    <div className="flex justify-between items-baseline mb-1">
+                      <p className="text-xs font-mono text-gray-400 uppercase tracking-widest">Total Problems Solved</p>
+                      <span className="text-xl font-mono font-bold text-white">{leetcode.solvedTotal}</span>
+                    </div>
+                    
+                    {/* Visual Segments */}
+                    <div className="h-2 w-full bg-white/[0.04] rounded-full overflow-hidden flex">
+                      <div 
+                        className="h-full bg-emerald-500 transition-all duration-1000" 
+                        style={{ width: `${(leetcode.solvedEasy / leetcode.solvedTotal) * 100}%` }}
+                      />
+                      <div 
+                        className="h-full bg-amber-500 transition-all duration-1000" 
+                        style={{ width: `${(leetcode.solvedMedium / leetcode.solvedTotal) * 100}%` }}
+                      />
+                      <div 
+                        className="h-full bg-rose-500 transition-all duration-1000" 
+                        style={{ width: `${(leetcode.solvedHard / leetcode.solvedTotal) * 100}%` }}
+                      />
+                    </div>
+                  </div>
 
-              <div className="grid grid-cols-3 gap-2 pt-2">
-                <div className="bg-emerald-500/[0.04] border border-emerald-500/10 p-2.5 rounded-xl text-center">
-                  <span className="text-[9px] font-mono text-emerald-400 uppercase tracking-wider font-semibold block">Easy</span>
-                  <span className="text-lg font-display font-bold text-white mt-0.5 block">{leetcode.solvedEasy}</span>
-                </div>
-                <div className="bg-amber-500/[0.04] border border-amber-500/10 p-2.5 rounded-xl text-center">
-                  <span className="text-[9px] font-mono text-amber-400 uppercase tracking-wider font-semibold block">Med</span>
-                  <span className="text-lg font-display font-bold text-white mt-0.5 block">{leetcode.solvedMedium}</span>
-                </div>
-                <div className="bg-rose-500/[0.04] border border-rose-500/10 p-2.5 rounded-xl text-center">
-                  <span className="text-[9px] font-mono text-rose-400 uppercase tracking-wider font-semibold block">Hard</span>
-                  <span className="text-lg font-display font-bold text-white mt-0.5 block">{leetcode.solvedHard}</span>
-                </div>
-              </div>
+                  <div className="grid grid-cols-3 gap-2 pt-2">
+                    <div className="bg-emerald-500/[0.04] border border-emerald-500/10 p-2.5 rounded-xl text-center">
+                      <span className="text-[9px] font-mono text-emerald-400 uppercase tracking-wider font-semibold block">Easy</span>
+                      <span className="text-lg font-mono font-semibold text-white mt-0.5 block">{leetcode.solvedEasy}</span>
+                    </div>
+                    <div className="bg-amber-500/[0.04] border border-amber-500/10 p-2.5 rounded-xl text-center">
+                      <span className="text-[9px] font-mono text-amber-400 uppercase tracking-wider font-semibold block">Med</span>
+                      <span className="text-lg font-mono font-semibold text-white mt-0.5 block">{leetcode.solvedMedium}</span>
+                    </div>
+                    <div className="bg-rose-500/[0.04] border border-rose-500/10 p-2.5 rounded-xl text-center">
+                      <span className="text-[9px] font-mono text-rose-400 uppercase tracking-wider font-semibold block">Hard</span>
+                      <span className="text-lg font-mono font-semibold text-white mt-0.5 block">{leetcode.solvedHard}</span>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Column 3: Submission Contribution Calendar Heat-map */}
             <div className="flex flex-col justify-center">
               {leetcode.loading ? (
-                <div className="h-28 w-full flex flex-col items-center justify-center gap-2">
-                  <Loader2 className="w-5 h-5 text-gray-500 animate-spin" />
-                  <span className="text-[10px] font-mono text-gray-500">Generating Heatmap...</span>
+                <div className="space-y-3 w-full">
+                  <div className="flex justify-between items-center">
+                    <Skeleton className="h-3.5 w-24" />
+                    <Skeleton className="h-3 w-16" />
+                  </div>
+                  <div className="grid grid-cols-10 gap-1.5">
+                    {Array.from({ length: 40 }).map((_, i) => (
+                      <Skeleton key={i} className="aspect-square w-full rounded-[3px]" />
+                    ))}
+                  </div>
                 </div>
               ) : (
                 <LeetcodeHeatmap submissionCalendar={leetcode.submissionCalendar} />
@@ -314,95 +359,123 @@ export default function Achievements() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Column 1: Total Contributions */}
             <div className="flex flex-col justify-center items-center md:items-start text-center md:text-left space-y-2 border-r-0 md:border-r border-white/5 pr-0 md:pr-4">
-              <span className="text-4xl sm:text-5xl font-display font-extrabold text-white tracking-tight">
-                {github.loading ? (
-                  <Loader2 className="w-8 h-8 text-emerald-400 animate-spin mx-auto md:mx-0" />
-                ) : (
-                  github.totalContributions.toLocaleString()
-                )}
-              </span>
-              <p className="text-sm font-mono text-emerald-400 uppercase tracking-widest font-semibold">Total Contributions</p>
-              <p className="text-xs text-gray-400 mt-1">
-                {github.startDate} - Present
-              </p>
-              <p className="text-[11px] font-sans text-gray-500 max-w-[200px] leading-relaxed">
-                Active commits, pull requests, issues, and code review contributions.
-              </p>
+              {github.loading ? (
+                <div className="space-y-2 w-full py-1">
+                  <Skeleton className="h-10 w-28 mx-auto md:mx-0" />
+                  <Skeleton className="h-4 w-32 mx-auto md:mx-0" />
+                </div>
+              ) : (
+                <>
+                  <span className="text-4xl sm:text-5xl font-mono font-bold text-white tracking-tight">
+                    {github.totalContributions.toLocaleString()}
+                  </span>
+                  <p className="text-sm font-mono text-emerald-400 uppercase tracking-widest font-semibold">Total Contributions</p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {github.startDate} - Present
+                  </p>
+                  <p className="text-[11px] font-sans text-gray-500 max-w-[200px] leading-relaxed">
+                    Active commits, pull requests, issues, and code review contributions.
+                  </p>
+                </>
+              )}
             </div>
 
             {/* Column 2: Streak Dashboard with Circular Flame Graphic */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 md:gap-4 border-r-0 md:border-r border-white/5 px-0 md:px-4">
-              {/* Left Part: Current Streak Circle */}
-              <div className="flex flex-col items-center space-y-2">
-                <div className="relative w-24 h-24 flex items-center justify-center">
-                  {/* Glowing Circular Ring */}
-                  <svg className="absolute w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="40"
-                      className="stroke-white/5"
-                      strokeWidth="6"
-                      fill="transparent"
-                    />
-                    <motion.circle
-                      cx="50"
-                      cy="50"
-                      r="40"
-                      className="stroke-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]"
-                      strokeWidth="6"
-                      fill="transparent"
-                      strokeDasharray={251.2}
-                      initial={{ strokeDashoffset: 251.2 }}
-                      animate={{ strokeDashoffset: 251.2 - (251.2 * Math.min(github.currentStreak, 10)) / 10 }}
-                      transition={{ duration: 1.5, ease: "easeOut" }}
-                    />
-                  </svg>
-                  
-                  {/* Absolute Flame Icon on Top Ring edge */}
-                  <div className="absolute top-1 text-emerald-400 animate-bounce">
-                    <Flame className="w-4 h-4 fill-emerald-400" />
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 md:gap-4 border-r-0 md:border-r border-white/5 px-0 md:px-4 w-full">
+              {github.loading ? (
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-6 md:gap-4 w-full">
+                  <div className="flex flex-col items-center space-y-2">
+                    <Skeleton className="w-20 h-20 rounded-full" />
+                    <Skeleton className="h-3.5 w-24" />
                   </div>
-
-                  <div className="flex flex-col items-center">
-                    <span className="text-3xl font-display font-black text-white leading-none">
-                      {github.loading ? "..." : github.currentStreak}
-                    </span>
+                  <div className="hidden sm:block w-[1px] h-12 bg-white/5" />
+                  <div className="flex flex-col items-center sm:items-start space-y-2">
+                    <Skeleton className="h-6 w-12" />
+                    <Skeleton className="h-3.5 w-28" />
                   </div>
                 </div>
+              ) : (
+                <>
+                  {/* Left Part: Current Streak Circle */}
+                  <div className="flex flex-col items-center space-y-2">
+                    <div className="relative w-24 h-24 flex items-center justify-center">
+                      {/* Glowing Circular Ring */}
+                      <svg className="absolute w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="40"
+                          className="stroke-white/5"
+                          strokeWidth="6"
+                          fill="transparent"
+                        />
+                        <motion.circle
+                          cx="50"
+                          cy="50"
+                          r="40"
+                          className="stroke-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]"
+                          strokeWidth="6"
+                          fill="transparent"
+                          strokeDasharray={251.2}
+                          initial={{ strokeDashoffset: 251.2 }}
+                          animate={{ strokeDashoffset: 251.2 - (251.2 * Math.min(github.currentStreak, 10)) / 10 }}
+                          transition={{ duration: 1.5, ease: "easeOut" }}
+                        />
+                      </svg>
+                      
+                      {/* Absolute Flame Icon on Top Ring edge */}
+                      <div className="absolute top-1 text-emerald-400 animate-bounce">
+                        <Flame className="w-4 h-4 fill-emerald-400" />
+                      </div>
 
-                <div className="text-center">
-                  <p className="text-[10px] font-mono text-emerald-400 uppercase tracking-wider font-semibold">Current Streak</p>
-                  <p className="text-[10px] text-gray-400 font-sans mt-0.5">
-                    {github.streakStart} - {github.streakEnd}
-                  </p>
-                </div>
-              </div>
+                      <div className="flex flex-col items-center">
+                        <span className="text-3xl font-mono font-bold text-white leading-none">
+                          {github.currentStreak}
+                        </span>
+                      </div>
+                    </div>
 
-              {/* Minimal Divider inside column */}
-              <div className="hidden sm:block w-[1px] h-12 bg-white/5" />
+                    <div className="text-center">
+                      <p className="text-[10px] font-mono text-emerald-400 uppercase tracking-wider font-semibold">Current Streak</p>
+                      <p className="text-[10px] text-gray-400 font-sans mt-0.5">
+                        {github.streakStart} - {github.streakEnd}
+                      </p>
+                    </div>
+                  </div>
 
-              {/* Right Part: Longest Streak Stats */}
-              <div className="flex flex-col items-center sm:items-start text-center sm:text-left space-y-1">
-                <div className="flex items-baseline gap-1">
-                  <span className="text-2xl font-display font-extrabold text-white">
-                    {github.loading ? "..." : github.longestStreak}
-                  </span>
-                  <span className="text-xs text-gray-400 font-sans">Days</span>
-                </div>
-                <p className="text-[10px] font-mono text-teal-400 uppercase tracking-wider font-semibold">Longest Streak</p>
-                <p className="text-[10px] text-gray-400 font-sans">
-                  {github.longestStart} - {github.longestEnd}
-                </p>
-              </div>
+                  {/* Minimal Divider inside column */}
+                  <div className="hidden sm:block w-[1px] h-12 bg-white/5" />
+
+                  {/* Right Part: Longest Streak Stats */}
+                  <div className="flex flex-col items-center sm:items-start text-center sm:text-left space-y-1">
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-2xl font-mono font-bold text-white">
+                        {github.longestStreak}
+                      </span>
+                      <span className="text-xs text-gray-400 font-mono">Days</span>
+                    </div>
+                    <p className="text-[10px] font-mono text-teal-400 uppercase tracking-wider font-semibold">Longest Streak</p>
+                    <p className="text-[10px] text-gray-400 font-sans">
+                      {github.longestStart} - {github.longestEnd}
+                    </p>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Column 3: Dynamic Heatmap Calendar */}
             <div className="flex flex-col justify-center">
               {github.loading ? (
-                <div className="h-28 w-full flex flex-col items-center justify-center gap-2">
-                  <Loader2 className="w-5 h-5 text-gray-500 animate-spin" />
-                  <span className="text-[10px] font-mono text-gray-500">Generating Heatmap...</span>
+                <div className="space-y-3 w-full">
+                  <div className="flex justify-between items-center">
+                    <Skeleton className="h-3.5 w-24" />
+                    <Skeleton className="h-3 w-16" />
+                  </div>
+                  <div className="grid grid-cols-10 gap-1.5">
+                    {Array.from({ length: 40 }).map((_, i) => (
+                      <Skeleton key={i} className="aspect-square w-full rounded-[3px]" />
+                    ))}
+                  </div>
                 </div>
               ) : (
                 <GithubHeatmap contributions={github.contributions} />

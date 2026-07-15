@@ -1,10 +1,11 @@
 "use client"
 
-import React, { Suspense, Component, ReactNode, useEffect, useState } from 'react'
+import React, { Suspense, Component, ReactNode, useEffect, useState, useRef } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { PerspectiveCamera, Environment } from '@react-three/drei'
 import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing'
 import { useThemeStore } from '@/store/useThemeStore'
+import { useScrollStore } from '@/store/useScrollStore'
 import Experience from './Experience'
 
 // Robust Error Boundary to isolate 3D failures and prevent site-wide blank screen crashes
@@ -41,7 +42,9 @@ class SceneErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryStat
 
 export default function Scene() {
   const theme = useThemeStore((state) => state.theme)
+  const setIsCanvasVisible = useScrollStore((state) => state.setIsCanvasVisible)
   const [webglSupported, setWebglSupported] = useState<boolean | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   // Premium, atmospheric colors tailored for each active theme
   const fogColor = theme === 'charcoal' ? '#080a0f' : theme === 'emerald' ? '#03140f' : '#010612'
@@ -65,6 +68,39 @@ export default function Scene() {
     }
   }, [])
 
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+
+    let isIntersecting = true
+
+    const updateVisibility = () => {
+      // Pause if the container is scrolled completely out of view, or if the browser tab is hidden
+      setIsCanvasVisible(isIntersecting && !document.hidden)
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isIntersecting = entry.isIntersecting
+        updateVisibility()
+      },
+      { threshold: 0.01 }
+    )
+
+    observer.observe(container)
+
+    const handleVisibilityChange = () => {
+      updateVisibility()
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    return () => {
+      observer.unobserve(container)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
+  }, [setIsCanvasVisible])
+
   // Render a clean, premium static backdrop during detection or as a safe WebGL fallback
   const fallbackStaticBackdrop = (
     <div className={`fixed top-0 left-0 w-screen h-screen -z-10 bg-gradient-to-b ${fallbackBg}`}>
@@ -84,7 +120,7 @@ export default function Scene() {
 
   return (
     <SceneErrorBoundary fallback={fallbackStaticBackdrop}>
-      <div className="fixed top-0 left-0 w-screen h-screen -z-10 bg-[#050505]">
+      <div ref={containerRef} className="fixed top-0 left-0 w-screen h-screen -z-10 bg-[#050505]">
         <Canvas
           dpr={[1, 2]}
           gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}

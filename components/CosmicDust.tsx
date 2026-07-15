@@ -13,8 +13,10 @@ export default function CosmicDust() {
   
   const scrollProgress = useScrollStore((state) => state.scrollProgress)
   const skillsHovered = useScrollStore((state) => state.skillsHovered)
+  const isCanvasVisible = useScrollStore((state) => state.isCanvasVisible)
   const prevScrollRef = useRef(scrollProgress)
   const theme = useThemeStore((state) => state.theme)
+  const mousePhysics = useRef({ x: 0, y: 0, vx: 0, vy: 0 })
 
   const count = 1000
 
@@ -161,11 +163,25 @@ export default function CosmicDust() {
           // 3. Morph smoothly based on hover uniform
           vec3 pos = mix(activeRing, gridPos, uSkillsHover);
  
-          // 4. Cinematic Mouse Parallax
-          // Farther stars shift less, closer stars shift more based on depth
+          // 4. Cinematic Mouse Parallax & Dynamic Drift
           float zDepth = (pos.z + 12.5) / 25.0; // 0 to 1
+          
+          // Classic parallax shift (moves with camera)
           pos.x += uMouse.x * 2.2 * zDepth;
           pos.y += uMouse.y * 1.6 * zDepth;
+
+          // Interactive radial drift (particles gently drift away from cursor)
+          // Scale normalized uMouse [-1, 1] to approximate 3D world space coordinates
+          vec2 mouseWorld = uMouse * vec2(10.0, 6.0);
+          vec2 directionToMouse = pos.xy - mouseWorld;
+          float distToMouse = length(directionToMouse);
+          
+          if (distToMouse < 12.0) {
+            // Smoothly interpolate repulsion force
+            float force = smoothstep(12.0, 0.0, distToMouse);
+            // Gentle drift away from cursor (cosmic wind) with lag and organic scaling
+            pos.xy += normalize(directionToMouse) * force * 0.75 * (0.3 + aSpeed * 0.7);
+          }
 
           // Calculate view space
           vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
@@ -243,6 +259,7 @@ export default function CosmicDust() {
   }, [])
 
   useFrame((state) => {
+    if (!isCanvasVisible) return
     const t = state.clock.getElapsedTime()
     
     // Smooth transition of scroll, mouse, and hover coordinates
@@ -268,10 +285,23 @@ export default function CosmicDust() {
         0.06
       )
 
-      // Lerp mouse coordinates smoothly to avoid jitter
+      // Spring-damping mouse physics for smooth lag transition
+      const phys = mousePhysics.current
+      const targetX = state.pointer.x
+      const targetY = state.pointer.y
+
+      const ax = (targetX - phys.x) * 0.035
+      const ay = (targetY - phys.y) * 0.035
+
+      phys.vx = (phys.vx + ax) * 0.88
+      phys.vy = (phys.vy + ay) * 0.88
+
+      phys.x += phys.vx
+      phys.y += phys.vy
+
       const mouseUniform = materialRef.current.uniforms.uMouse.value
-      mouseUniform.x = THREE.MathUtils.lerp(mouseUniform.x, state.pointer.x, 0.08)
-      mouseUniform.y = THREE.MathUtils.lerp(mouseUniform.y, state.pointer.y, 0.08)
+      mouseUniform.x = phys.x
+      mouseUniform.y = phys.y
     }
 
     // Smoothly interpolate colors toward active theme

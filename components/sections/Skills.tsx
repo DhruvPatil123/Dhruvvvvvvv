@@ -33,7 +33,7 @@ export default function Skills() {
   const setSkillsHovered = useScrollStore((state) => state.setSkillsHovered)
 
   return (
-    <section id="skills" className="relative w-full min-h-screen flex flex-col items-center justify-center px-6 py-32 md:py-48">
+    <section id="skills" className="relative w-full min-h-screen flex flex-col items-center justify-center px-6 py-32 md:py-48 lg:py-64">
       <div className="max-w-6xl w-full text-center mb-20 space-y-4">
         {/* Section Indicator */}
         <span className="font-mono text-xs uppercase tracking-[0.2em] text-primary font-medium">
@@ -227,10 +227,9 @@ export default function Skills() {
           </div>
 
           <div className="mt-8 pt-4 border-t border-white/5 flex items-center justify-between">
-            <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">SYSTEM TELEMETRY</span>
-            <span className="inline-flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-ping" />
-              <span className="text-[10px] font-mono text-green-400">READY</span>
+            <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">ENGINEERING STANDARDS</span>
+            <span className="text-[10px] font-mono text-zinc-400 font-semibold uppercase">
+              SECURE & HIGH-PERFORMANCE
             </span>
           </div>
         </motion.div>

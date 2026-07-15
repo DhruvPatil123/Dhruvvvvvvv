@@ -5,6 +5,8 @@ interface ScrollState {
   setScrollProgress: (progress: number) => void
   skillsHovered: boolean
   setSkillsHovered: (hovered: boolean) => void
+  isCanvasVisible: boolean
+  setIsCanvasVisible: (visible: boolean) => void
 }
 
 export const useScrollStore = create<ScrollState>((set) => ({
@@ -12,4 +14,6 @@ export const useScrollStore = create<ScrollState>((set) => ({
   setScrollProgress: (progress) => set({ scrollProgress: progress }),
   skillsHovered: false,
   setSkillsHovered: (hovered) => set({ skillsHovered: hovered }),
+  isCanvasVisible: true,
+  setIsCanvasVisible: (visible) => set({ isCanvasVisible: visible }),
 }))

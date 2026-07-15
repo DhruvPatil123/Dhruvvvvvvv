@@ -27,7 +27,7 @@ export default function About() {
   }, [])
 
   return (
-    <section id="about" className="relative w-full min-h-[auto] md:min-h-screen flex items-center justify-center px-4 sm:px-6 py-20 md:py-32 lg:py-48">
+    <section id="about" className="relative w-full min-h-[auto] md:min-h-screen flex items-center justify-center px-4 sm:px-6 py-32 md:py-48 lg:py-64">
       <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center">
         <motion.div
           initial={{ opacity: 0, x: -30 }}

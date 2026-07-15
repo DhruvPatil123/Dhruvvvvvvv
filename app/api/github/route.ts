@@ -2,42 +2,41 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(req: NextRequest) {
-  const username = "DhruvPatil123";
-  
-  // Default fallback data matching Dhruv's actual profile and the user's requested screenshot stats
-  const fallbackData = {
-    username,
-    totalContributions: 818,
-    currentStreak: 5,
-    longestStreak: 9,
-    streakStart: "Jul 2, 2026",
-    streakEnd: "Jul 6, 2026",
-    longestStart: "Jun 22, 2026",
-    longestEnd: "Jun 30, 2026",
-    startDate: "Mar 8, 2024",
-    contributions: [] as { date: string; count: number; level: number }[],
-  };
+// Memory-based cache for SWR (Stale-While-Revalidate)
+let cachedGithub: any = null;
+let cacheTimestamp: number = 0;
+const CACHE_TTL = 10 * 60 * 1000; // 10 minutes Cache TTL
 
-  // Generate realistic calendar data for the last 100 days to render a gorgeous heatmap/activity chart
-  const fallbackContributions = [];
+// Default fallback data matching Dhruv's actual profile and the user's requested screenshot stats
+const fallbackData = {
+  username: "DhruvPatil123",
+  totalContributions: 818,
+  currentStreak: 5,
+  longestStreak: 9,
+  streakStart: "Jul 2, 2026",
+  streakEnd: "Jul 6, 2026",
+  longestStart: "Jun 22, 2026",
+  longestEnd: "Jun 30, 2026",
+  startDate: "Mar 8, 2024",
+  contributions: [] as { date: string; count: number; level: number }[],
+};
+
+// Generate realistic calendar data helper
+function generateMockContributions() {
+  const contributions = [];
   const now = new Date();
   for (let i = 99; i >= 0; i--) {
     const d = new Date();
     d.setDate(now.getDate() - i);
     const dateString = d.toISOString().split('T')[0];
     
-    // Simulate some realistic contributions
     let count = 0;
     let level = 0;
     
-    // Make weekends lower, weekdays active, and a streak around late June / early July
     const dayOfWeek = d.getDay();
     const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
     
-    // July 2 to July 6 streak (current streak)
     const isCurrentStreak = d >= new Date("2026-07-02") && d <= new Date("2026-07-06");
-    // June 22 to June 30 streak (longest streak)
     const isLongestStreak = d >= new Date("2026-06-22") && d <= new Date("2026-06-30");
     
     if (isCurrentStreak || isLongestStreak) {
@@ -51,15 +50,18 @@ export async function GET(req: NextRequest) {
       level = 1;
     }
     
-    fallbackContributions.push({
+    contributions.push({
       date: dateString,
       count,
       level,
     });
   }
-  fallbackData.contributions = fallbackContributions;
+  return contributions;
+}
 
-  // Helper for fetching with timeout
+fallbackData.contributions = generateMockContributions();
+
+async function fetchGithubFromAPIs(username: string): Promise<any> {
   const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeoutMs = 4000) => {
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), timeoutMs);
@@ -76,132 +78,126 @@ export async function GET(req: NextRequest) {
     }
   };
 
+  // 1. Primary Source: Attempt to fetch from Deno GitHub Contributions API (highly reliable, returns structured JSON)
   try {
-    // 1. Primary Source: Attempt to fetch from Deno GitHub Contributions API (highly reliable, returns structured JSON)
-    try {
-      const denoUrl = `https://github-contributions-api.deno.dev/${username}.json`;
-      const denoResponse = await fetchWithTimeout(denoUrl, { cache: 'no-store' }, 4000);
-      
-      if (denoResponse.ok) {
-        const denoData = await denoResponse.json();
-        const totalContributions = denoData.totalContributions || fallbackData.totalContributions;
+    const denoUrl = `https://github-contributions-api.deno.dev/${username}.json`;
+    const denoResponse = await fetchWithTimeout(denoUrl, { cache: 'no-store' }, 4000);
+    
+    if (denoResponse.ok) {
+      const denoData = await denoResponse.json();
+      const totalContributions = denoData.totalContributions || fallbackData.totalContributions;
 
-        // Flatten the 2D weeks-and-days array to a flat 1D days list
-        const days: { date: string; count: number; level: number }[] = [];
-        if (Array.isArray(denoData.contributions)) {
-          for (const week of denoData.contributions) {
-            if (Array.isArray(week)) {
-              for (const day of week) {
-                if (day && typeof day === 'object' && day.date) {
-                  let level = 0;
-                  if (day.contributionLevel === "FIRST_QUARTILE") level = 1;
-                  else if (day.contributionLevel === "SECOND_QUARTILE") level = 2;
-                  else if (day.contributionLevel === "THIRD_QUARTILE") level = 3;
-                  else if (day.contributionLevel === "FOURTH_QUARTILE") level = 4;
-                  
-                  days.push({
-                    date: day.date,
-                    count: day.contributionCount || 0,
-                    level
-                  });
-                }
+      // Flatten the 2D weeks-and-days array to a flat 1D days list
+      const days: { date: string; count: number; level: number }[] = [];
+      if (Array.isArray(denoData.contributions)) {
+        for (const week of denoData.contributions) {
+          if (Array.isArray(week)) {
+            for (const day of week) {
+              if (day && typeof day === 'object' && day.date) {
+                let level = 0;
+                if (day.contributionLevel === "FIRST_QUARTILE") level = 1;
+                else if (day.contributionLevel === "SECOND_QUARTILE") level = 2;
+                else if (day.contributionLevel === "THIRD_QUARTILE") level = 3;
+                else if (day.contributionLevel === "FOURTH_QUARTILE") level = 4;
+                
+                days.push({
+                  date: day.date,
+                  count: day.contributionCount || 0,
+                  level
+                });
               }
             }
           }
-        }
-
-        if (days.length > 0) {
-          // Sort days chronologically
-          days.sort((a, b) => a.date.localeCompare(b.date));
-
-          // Calculate streaks
-          let longestStreak = 0;
-          let tempStreak = 0;
-          let streakStart = "";
-          let streakEnd = "";
-          let longestStart = "";
-          let longestEnd = "";
-          let tempStart = "";
-          let tempEnd = "";
-
-          for (let i = 0; i < days.length; i++) {
-            const day = days[i];
-            if (day.level > 0) {
-              if (tempStreak === 0) {
-                tempStart = day.date;
-              }
-              tempStreak++;
-              tempEnd = day.date;
-              
-              if (tempStreak > longestStreak) {
-                longestStreak = tempStreak;
-                longestStart = tempStart;
-                longestEnd = tempEnd;
-              }
-            } else {
-              tempStreak = 0;
-            }
-          }
-
-          // Calculate current streak (ends today or yesterday)
-          let curStreakCount = 0;
-          let curStart = "";
-          let curEnd = "";
-          const todayStr = new Date().toISOString().split('T')[0];
-          const yesterday = new Date();
-          yesterday.setDate(yesterday.getDate() - 1);
-          const yesterdayStr = yesterday.toISOString().split('T')[0];
-          
-          let hasStreakTodayOrYesterday = false;
-          let index = days.length - 1;
-          
-          // Skip trailing future days
-          while (index >= 0 && days[index].date > todayStr) {
-            index--;
-          }
-          
-          if (index >= 0 && (days[index].date === todayStr || days[index].date === yesterdayStr) && days[index].level > 0) {
-            hasStreakTodayOrYesterday = true;
-            curEnd = days[index].date;
-            while (index >= 0 && days[index].level > 0) {
-              curStreakCount++;
-              curStart = days[index].date;
-              index--;
-            }
-          }
-
-          const formatDate = (dateStr: string) => {
-            if (!dateStr) return "";
-            const d = new Date(dateStr);
-            return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-          };
-
-          return NextResponse.json({
-            username,
-            totalContributions,
-            currentStreak: hasStreakTodayOrYesterday ? curStreakCount : fallbackData.currentStreak,
-            longestStreak: longestStreak > 0 ? longestStreak : fallbackData.longestStreak,
-            streakStart: hasStreakTodayOrYesterday ? formatDate(curStart) : fallbackData.streakStart,
-            streakEnd: hasStreakTodayOrYesterday ? formatDate(curEnd) : fallbackData.streakEnd,
-            longestStart: longestStart ? formatDate(longestStart) : fallbackData.longestStart,
-            longestEnd: longestEnd ? formatDate(longestEnd) : fallbackData.longestEnd,
-            startDate: fallbackData.startDate,
-            contributions: days.slice(-100), // return last 100 days for heatmap
-            source: "live-api"
-          }, {
-            headers: {
-              "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
-              "Pragma": "no-cache",
-              "Expires": "0",
-            }
-          });
         }
       }
-    } catch (apiErr) {
-      console.warn("GitHub Deno JSON API failed, falling back to scraping:", apiErr);
-    }
 
-    // 2. Secondary Source: Scraping fallback (if Deno JSON proxy is down or blocked)
+      if (days.length > 0) {
+        // Sort days chronologically
+        days.sort((a, b) => a.date.localeCompare(b.date));
+
+        // Calculate streaks
+        let longestStreak = 0;
+        let tempStreak = 0;
+        let streakStart = "";
+        let streakEnd = "";
+        let longestStart = "";
+        let longestEnd = "";
+        let tempStart = "";
+        let tempEnd = "";
+
+        for (let i = 0; i < days.length; i++) {
+          const day = days[i];
+          if (day.level > 0) {
+            if (tempStreak === 0) {
+              tempStart = day.date;
+            }
+            tempStreak++;
+            tempEnd = day.date;
+            
+            if (tempStreak > longestStreak) {
+              longestStreak = tempStreak;
+              longestStart = tempStart;
+              longestEnd = tempEnd;
+            }
+          } else {
+            tempStreak = 0;
+          }
+        }
+
+        // Calculate current streak (ends today or yesterday)
+        let curStreakCount = 0;
+        let curStart = "";
+        let curEnd = "";
+        const todayStr = new Date().toISOString().split('T')[0];
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = yesterday.toISOString().split('T')[0];
+        
+        let hasStreakTodayOrYesterday = false;
+        let index = days.length - 1;
+        
+        // Skip trailing future days
+        while (index >= 0 && days[index].date > todayStr) {
+          index--;
+        }
+        
+        if (index >= 0 && (days[index].date === todayStr || days[index].date === yesterdayStr) && days[index].level > 0) {
+          hasStreakTodayOrYesterday = true;
+          curEnd = days[index].date;
+          while (index >= 0 && days[index].level > 0) {
+            curStreakCount++;
+            curStart = days[index].date;
+            index--;
+          }
+        }
+
+        const formatDate = (dateStr: string) => {
+          if (!dateStr) return "";
+          const d = new Date(dateStr);
+          return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+        };
+
+        return {
+          username,
+          totalContributions,
+          currentStreak: hasStreakTodayOrYesterday ? curStreakCount : fallbackData.currentStreak,
+          longestStreak: longestStreak > 0 ? longestStreak : fallbackData.longestStreak,
+          streakStart: hasStreakTodayOrYesterday ? formatDate(curStart) : fallbackData.streakStart,
+          streakEnd: hasStreakTodayOrYesterday ? formatDate(curEnd) : fallbackData.streakEnd,
+          longestStart: longestStart ? formatDate(longestStart) : fallbackData.longestStart,
+          longestEnd: longestEnd ? formatDate(longestEnd) : fallbackData.longestEnd,
+          startDate: fallbackData.startDate,
+          contributions: days.slice(-100), // return last 100 days for heatmap
+          source: "live-api"
+        };
+      }
+    }
+  } catch (apiErr) {
+    console.warn("GitHub Deno JSON API failed, falling back to scraping:", apiErr);
+  }
+
+  // 2. Secondary Source: Scraping fallback (if Deno JSON proxy is down or blocked)
+  try {
     const url = `https://github.com/users/${username}/contributions`;
     const response = await fetchWithTimeout(url, {
       headers: {
@@ -234,7 +230,6 @@ export async function GET(req: NextRequest) {
       if (days.length > 0) {
         days.sort((a, b) => a.date.localeCompare(b.date));
 
-        let currentStreak = 0;
         let longestStreak = 0;
         let tempStreak = 0;
         
@@ -296,7 +291,7 @@ export async function GET(req: NextRequest) {
           return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
         };
 
-        return NextResponse.json({
+        return {
           username,
           totalContributions,
           currentStreak: hasStreakTodayOrYesterday ? curStreakCount : fallbackData.currentStreak,
@@ -308,28 +303,91 @@ export async function GET(req: NextRequest) {
           startDate: fallbackData.startDate,
           contributions: days.slice(-100),
           source: "live-scrape"
-        }, {
-          headers: {
-            "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
-            "Pragma": "no-cache",
-            "Expires": "0",
-          }
-        });
+        };
       }
     }
   } catch (err) {
-    console.warn("GitHub live contributions scrape and API both failed:", err);
+    console.warn("GitHub live contributions scrape failed:", err);
   }
 
-  // 3. Graceful mock fallback with Cache-Control headers disabled
-  return NextResponse.json({
-    ...fallbackData,
-    source: "fallback"
-  }, {
-    headers: {
-      "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
-      "Pragma": "no-cache",
-      "Expires": "0",
+  throw new Error("All GitHub sources failed");
+}
+
+async function fetchAndUpdateGithub(username: string): Promise<any> {
+  try {
+    const data = await fetchGithubFromAPIs(username);
+    cachedGithub = data;
+    cacheTimestamp = Date.now();
+    return data;
+  } catch (err) {
+    console.error("Failed to refresh GitHub cache:", err);
+    if (!cachedGithub) {
+      cachedGithub = {
+        ...fallbackData,
+        source: "fallback-error"
+      };
+      cacheTimestamp = Date.now();
     }
-  });
+    return cachedGithub;
+  }
+}
+
+export async function GET(req: NextRequest) {
+  const username = "DhruvPatil123";
+  const now = Date.now();
+
+  // If there's fresh cache, serve immediately
+  if (cachedGithub && (now - cacheTimestamp < CACHE_TTL)) {
+    return NextResponse.json({
+      ...cachedGithub,
+      cacheStatus: "HIT_FRESH",
+      cacheAgeMs: now - cacheTimestamp
+    }, {
+      headers: {
+        "Cache-Control": "public, max-age=600, s-maxage=600, stale-while-revalidate=86400",
+      }
+    });
+  }
+
+  // If there's stale cache, serve it immediately and trigger background update (SWR)
+  if (cachedGithub) {
+    fetchAndUpdateGithub(username).catch(err => {
+      console.error("Background GitHub refresh failed:", err);
+    });
+
+    return NextResponse.json({
+      ...cachedGithub,
+      cacheStatus: "HIT_STALE",
+      cacheAgeMs: now - cacheTimestamp
+    }, {
+      headers: {
+        "Cache-Control": "public, max-age=600, s-maxage=600, stale-while-revalidate=86400",
+      }
+    });
+  }
+
+  // If cache is empty, fetch synchronously
+  try {
+    const data = await fetchAndUpdateGithub(username);
+    return NextResponse.json({
+      ...data,
+      cacheStatus: "MISS"
+    }, {
+      headers: {
+        "Cache-Control": "public, max-age=600, s-maxage=600, stale-while-revalidate=86400",
+      }
+    });
+  } catch (err) {
+    return NextResponse.json({
+      ...fallbackData,
+      source: "fallback",
+      cacheStatus: "FALLBACK_ERROR"
+    }, {
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+        "Pragma": "no-cache",
+        "Expires": "0",
+      }
+    });
+  }
 }

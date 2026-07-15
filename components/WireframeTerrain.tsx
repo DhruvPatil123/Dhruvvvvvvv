@@ -11,6 +11,7 @@ export default function WireframeTerrain() {
   const materialRef = useRef<THREE.ShaderMaterial>(null)
   const theme = useThemeStore((state) => state.theme)
   const scrollProgress = useScrollStore((state) => state.scrollProgress)
+  const isCanvasVisible = useScrollStore((state) => state.isCanvasVisible)
 
   // Delayed mount fade-in animation (Point 12)
   const fadeInRef = useRef(0)
@@ -124,6 +125,7 @@ export default function WireframeTerrain() {
   const tempV = new THREE.Vector3()
 
   useFrame((state) => {
+    if (!isCanvasVisible) return
     const t = state.clock.getElapsedTime()
     const currentPointer = state.pointer
 

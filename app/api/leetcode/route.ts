@@ -2,35 +2,108 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(req: NextRequest) {
-  const username = "Dhruv_Patil_18";
-  
-  // Default fallback data matching Dhruv's current actual high-level profile
-  const fallbackData = {
-    username,
-    ranking: 370720,
-    streak: 12,
-    solvedTotal: 367,
-    solvedEasy: 95,
-    solvedMedium: 210,
-    solvedHard: 62,
-    // Generate a realistic submission calendar for the last 100 days
-    submissionCalendar: (() => {
-      const cal: Record<string, number> = {};
-      const now = Math.floor(Date.now() / 1000);
-      const daySec = 86400;
-      for (let i = 0; i < 100; i++) {
-        // Randomly simulate submission counts for some days to draw a gorgeous heat-map
-        if (Math.random() > 0.4) {
-          const timestamp = now - i * daySec;
-          cal[timestamp.toString()] = Math.floor(Math.random() * 5) + 1;
-        }
-      }
-      return JSON.stringify(cal);
-    })()
-  };
+// Memory-based cache for SWR (Stale-While-Revalidate)
+let cachedLeetcode: any = null;
+let cacheTimestamp: number = 0;
+const CACHE_TTL = 10 * 60 * 1000; // 10 minutes Cache TTL
 
-  // Helper function for fetching with timeout
+function calculateStreakFromCalendar(submissionCalendar: any): number {
+  if (!submissionCalendar) return 0;
+  
+  let calendarObj: Record<string, number> = {};
+  if (typeof submissionCalendar === 'string') {
+    try {
+      calendarObj = JSON.parse(submissionCalendar);
+    } catch (e) {
+      return 0;
+    }
+  } else if (typeof submissionCalendar === 'object') {
+    calendarObj = submissionCalendar;
+  }
+
+  // Extract all unique YYYY-MM-DD dates with submissions > 0
+  const activeDates = new Set<string>();
+  for (const [timestampStr, count] of Object.entries(calendarObj)) {
+    if (count > 0) {
+      const timestampMs = parseInt(timestampStr, 10) * 1000;
+      if (!isNaN(timestampMs)) {
+        // Convert Unix timestamp to date in YYYY-MM-DD format in UTC
+        const dateStr = new Date(timestampMs).toISOString().split('T')[0];
+        activeDates.add(dateStr);
+      }
+    }
+  }
+
+  if (activeDates.size === 0) return 0;
+
+  // Let's get today in UTC
+  const today = new Date();
+  const todayStr = today.toISOString().split('T')[0];
+
+  // Filter out any active dates that are in the future
+  const validDates = Array.from(activeDates)
+    .filter(dateStr => dateStr <= todayStr)
+    .sort();
+
+  if (validDates.length === 0) return 0;
+
+  const mostRecentStr = validDates[validDates.length - 1];
+
+  // Calculate difference in days between today and mostRecentStr
+  const d1 = new Date(todayStr + "T00:00:00Z");
+  const d2 = new Date(mostRecentStr + "T00:00:00Z");
+  const diffTime = d1.getTime() - d2.getTime();
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+  // If the last activity was more than 1 day ago, the streak is broken (0)
+  if (diffDays > 1) {
+    return 0;
+  }
+
+  // Count backwards from mostRecentStr
+  let currentStreak = 0;
+  let checkDate = new Date(mostRecentStr + "T00:00:00Z");
+
+  while (true) {
+    const checkStr = checkDate.toISOString().split('T')[0];
+    if (activeDates.has(checkStr)) {
+      currentStreak++;
+      // Subtract 1 day
+      checkDate.setUTCDate(checkDate.getUTCDate() - 1);
+    } else {
+      break;
+    }
+  }
+
+  return currentStreak;
+}
+
+// Generate realistic calendar data helper
+function generateMockSubmissionCalendar(): string {
+  const cal: Record<string, number> = {};
+  const now = Math.floor(Date.now() / 1000);
+  const daySec = 86400;
+  for (let i = 0; i < 100; i++) {
+    if (Math.random() > 0.4) {
+      const timestamp = now - i * daySec;
+      cal[timestamp.toString()] = Math.floor(Math.random() * 5) + 1;
+    }
+  }
+  return JSON.stringify(cal);
+}
+
+const fallbackData = {
+  username: "Dhruv_Patil_18",
+  ranking: 239343,
+  streak: 29,
+  solvedTotal: 466,
+  solvedEasy: 121,
+  solvedMedium: 261,
+  solvedHard: 84,
+  submissionCalendar: generateMockSubmissionCalendar()
+};
+
+async function fetchLeetcodeFromAPIs(username: string): Promise<any> {
   const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeoutMs = 4000) => {
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), timeoutMs);
@@ -49,23 +122,27 @@ export async function GET(req: NextRequest) {
 
   // 1. Try Alfa LeetCode API (Render)
   try {
-    const response = await fetchWithTimeout(`https://alfa-leetcode-api.onrender.com/userProfile/${username}`);
+    const response = await fetchWithTimeout(`https://alfa-leetcode-api.onrender.com/userProfile/${username}`, { cache: 'no-store' });
     if (response.ok) {
       const data = await response.json();
       if (data && (data.totalSolved !== undefined || data.easySolved !== undefined)) {
-        return NextResponse.json({
+        const calendar = typeof data.submissionCalendar === 'string'
+          ? data.submissionCalendar
+          : (data.submissionCalendar ? JSON.stringify(data.submissionCalendar) : fallbackData.submissionCalendar);
+        
+        const calculatedStreak = calculateStreakFromCalendar(calendar);
+
+        return {
           username,
           ranking: data.ranking || fallbackData.ranking,
-          streak: data.streak !== undefined ? data.streak : fallbackData.streak,
+          streak: calculatedStreak || data.streak || fallbackData.streak,
           solvedTotal: data.totalSolved || data.solvedProblem || fallbackData.solvedTotal,
           solvedEasy: data.easySolved || fallbackData.solvedEasy,
           solvedMedium: data.mediumSolved || fallbackData.solvedMedium,
           solvedHard: data.hardSolved || fallbackData.solvedHard,
-          submissionCalendar: typeof data.submissionCalendar === 'string'
-            ? data.submissionCalendar
-            : (data.submissionCalendar ? JSON.stringify(data.submissionCalendar) : fallbackData.submissionCalendar),
+          submissionCalendar: calendar,
           source: "alfa-api"
-        });
+        };
       }
     }
   } catch (err) {
@@ -74,30 +151,34 @@ export async function GET(req: NextRequest) {
 
   // 2. Try Faisal Shohag's LeetCode API (Vercel)
   try {
-    const response = await fetchWithTimeout(`https://leetcode-api-faisalshohag.vercel.app/${username}`);
+    const response = await fetchWithTimeout(`https://leetcode-api-faisalshohag.vercel.app/${username}`, { cache: 'no-store' });
     if (response.ok) {
       const data = await response.json();
       if (data && (data.totalSolved !== undefined || data.easySolved !== undefined)) {
-        return NextResponse.json({
+        const calendar = typeof data.submissionCalendar === 'string'
+          ? data.submissionCalendar
+          : (data.submissionCalendar ? JSON.stringify(data.submissionCalendar) : fallbackData.submissionCalendar);
+
+        const calculatedStreak = calculateStreakFromCalendar(calendar);
+
+        return {
           username,
           ranking: data.ranking || fallbackData.ranking,
-          streak: data.streak !== undefined ? data.streak : fallbackData.streak,
+          streak: calculatedStreak || data.streak || fallbackData.streak,
           solvedTotal: data.totalSolved || fallbackData.solvedTotal,
           solvedEasy: data.easySolved || fallbackData.solvedEasy,
           solvedMedium: data.mediumSolved || fallbackData.solvedMedium,
           solvedHard: data.hardSolved || fallbackData.solvedHard,
-          submissionCalendar: typeof data.submissionCalendar === 'string'
-            ? data.submissionCalendar
-            : (data.submissionCalendar ? JSON.stringify(data.submissionCalendar) : fallbackData.submissionCalendar),
+          submissionCalendar: calendar,
           source: "faisal-api"
-        });
+        };
       }
     }
   } catch (err) {
     console.warn("Faisal Shohag API Proxy failed, trying direct GraphQL...", err);
   }
 
-  // 3. Try Direct GraphQL (Original fallback approach)
+  // 3. Try Direct GraphQL
   try {
     const query = `
       query userProfile($username: String!) {
@@ -135,7 +216,6 @@ export async function GET(req: NextRequest) {
 
     if (response.ok) {
       const json = await response.json();
-      
       if (!json.errors) {
         const matchedUser = json.data?.matchedUser;
         if (matchedUser) {
@@ -149,39 +229,107 @@ export async function GET(req: NextRequest) {
           const streak = matchedUser.userCalendar?.streak || fallbackData.streak;
           const submissionCalendar = matchedUser.userCalendar?.submissionCalendar || fallbackData.submissionCalendar;
 
-          return NextResponse.json({
+          const calculatedStreak = calculateStreakFromCalendar(submissionCalendar);
+
+          return {
             username,
             ranking,
-            streak,
+            streak: calculatedStreak || streak || fallbackData.streak,
             solvedTotal,
             solvedEasy,
             solvedMedium,
             solvedHard,
             submissionCalendar,
             source: "live"
-          }, {
-            headers: {
-              "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
-              "Pragma": "no-cache",
-              "Expires": "0",
-            }
-          });
+          };
         }
       }
     }
   } catch (err) {
-    console.warn("Direct LeetCode GraphQL fetch failed, continuing with fallback data:", err);
+    console.warn("Direct LeetCode GraphQL fetch failed, throwing error:", err);
   }
 
-  // 4. Fallback to resilient default data
-  return NextResponse.json({
-    ...fallbackData,
-    source: "fallback"
-  }, {
-    headers: {
-      "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
-      "Pragma": "no-cache",
-      "Expires": "0",
+  throw new Error("All LeetCode sources failed");
+}
+
+async function fetchAndUpdateLeetcode(username: string): Promise<any> {
+  try {
+    const data = await fetchLeetcodeFromAPIs(username);
+    cachedLeetcode = data;
+    cacheTimestamp = Date.now();
+    return data;
+  } catch (err) {
+    console.error("Failed to refresh LeetCode cache:", err);
+    // If we already have cached data, don't clear it or overwrite it with fallback
+    if (!cachedLeetcode) {
+      cachedLeetcode = {
+        ...fallbackData,
+        source: "fallback-error"
+      };
+      cacheTimestamp = Date.now();
     }
-  });
+    return cachedLeetcode;
+  }
+}
+
+export async function GET(req: NextRequest) {
+  const username = "Dhruv_Patil_18";
+  const now = Date.now();
+
+  // If there's fresh cache, serve immediately
+  if (cachedLeetcode && (now - cacheTimestamp < CACHE_TTL)) {
+    return NextResponse.json({
+      ...cachedLeetcode,
+      cacheStatus: "HIT_FRESH",
+      cacheAgeMs: now - cacheTimestamp
+    }, {
+      headers: {
+        "Cache-Control": "public, max-age=600, s-maxage=600, stale-while-revalidate=86400",
+      }
+    });
+  }
+
+  // If there's stale cache, serve it immediately and trigger background update (SWR)
+  if (cachedLeetcode) {
+    // Non-blocking trigger to update
+    fetchAndUpdateLeetcode(username).catch(err => {
+      console.error("Background LeetCode refresh failed:", err);
+    });
+
+    return NextResponse.json({
+      ...cachedLeetcode,
+      cacheStatus: "HIT_STALE",
+      cacheAgeMs: now - cacheTimestamp
+    }, {
+      headers: {
+        "Cache-Control": "public, max-age=600, s-maxage=600, stale-while-revalidate=86400",
+      }
+    });
+  }
+
+  // If cache is empty, we must fetch synchronously
+  try {
+    const data = await fetchAndUpdateLeetcode(username);
+    return NextResponse.json({
+      ...data,
+      cacheStatus: "MISS"
+    }, {
+      headers: {
+        "Cache-Control": "public, max-age=600, s-maxage=600, stale-while-revalidate=86400",
+      }
+    });
+  } catch (err) {
+    // In case of total failure during synchronous fetch
+    return NextResponse.json({
+      ...fallbackData,
+      source: "fallback",
+      cacheStatus: "FALLBACK_ERROR"
+    }, {
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+        "Pragma": "no-cache",
+        "Expires": "0",
+      }
+    });
+  }
 }

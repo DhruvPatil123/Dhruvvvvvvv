@@ -44,7 +44,7 @@ const EXPERIENCE = [
 
 export default function Timeline() {
   return (
-    <section id="experience" className="relative w-full min-h-[auto] md:min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-20 md:py-32 lg:py-48">
+    <section id="experience" className="relative w-full min-h-[auto] md:min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-32 md:py-48 lg:py-64">
       <div className="max-w-4xl w-full">
         <div className="text-center mb-16 md:mb-20 space-y-4">
         {/* Section Indicator */}

@@ -32,7 +32,19 @@ The resume downloading module integrates on-the-fly customizable styles:
 
 ### 6. 📊 Live-Synchronized LeetCode Dashboard
 - Fully automated frontend-to-backend pipeline integration fetching real-time LeetCode statistics.
-- Dynamic fallback layers querying resilient API proxies (Vercel & Render) or direct GraphQL queries to automatically display current global rank (now **370,720**), streaks, and exact problem difficulties solved.
+- Dynamic fallback layers querying resilient API proxies (Vercel & Render) or direct GraphQL queries to automatically display current global rank, streaks, and exact problem difficulties solved.
+
+### 7. 🎨 Atmospheric Contrast & Monospace Accents
+- **Breathable Layouts**: Maximized negative space (`py-32 md:py-48 lg:py-64`) between distinct sections like the Timeline, About, Skills, and Projects for a deliberate, spacious, and high-end editorial feel.
+- **Consistent Typographic Contrasts**: Paired elegant, modern display headers with meticulous `font-mono` (JetBrains Mono) accents applied consistently to all precise data elements—including dates, stats, file badges, and ranking metrics.
+
+### 8. ⚡ Premium Transitions & Tactile Interactive Feedback
+- **Cubic-Bezier Motion**: Card hovers and buttons feature custom-tuned fluid motion transitions (`cubic-bezier(0.16, 1, 0.3, 1)`) for high-fidelity responses.
+- **Tactile Active Clicks**: Added immediate tactile micro-scale-down feedback (`active:scale-[0.98]`) on buttons to deliver satisfying, physical responses to user actions.
+
+### 9. 📱 Rich Open Graph (OG) Social Optimization
+- Fully configured Open Graph and Twitter Card tags in Next.js metadata structures.
+- Generates beautiful, customized social cards with precise descriptions, roles, and high-fidelity preview images when shared on LinkedIn, Twitter/X, or GitHub.
 
 ---
 
