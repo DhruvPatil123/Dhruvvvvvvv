@@ -1,8 +1,11 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter, Cormorant_Garamond, JetBrains_Mono } from 'next/font/google'
+import BootPreloader from '@/components/BootPreloader'
+import CursorTrail from '@/components/CursorTrail'
+import AudioDock from '@/components/AudioDock'
 
-const inter = Inter({ 
+const inter = Inter({
   subsets: ['latin'],
   variable: '--font-sans',
 })
@@ -79,7 +82,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${cormorantGaramond.variable} ${jetbrainsMono.variable}`}>
       <body className="font-sans antialiased text-white select-none">
+        <BootPreloader />
+        <CursorTrail />
         {children}
+        <AudioDock />
       </body>
     </html>
   )
