@@ -583,11 +583,6 @@ function ProjectDetailsModal({ project, onClose }: { project: Project; onClose: 
   const [generatedSvgPrompt, setGeneratedSvgPrompt] = useState<string | null>(null)
   const [generationLogs, setGenerationLogs] = useState<string[]>([])
 
-  // New VisionCraft Parameters
-  const [complexity, setComplexity] = useState(12)
-  const [spinSpeed, setSpinSpeed] = useState(15)
-  const [hueOffset, setHueOffset] = useState(0)
-
   // EncryptX Sandbox State
   const [isDragging, setIsDragging] = useState(false)
   const [fileContent, setFileContent] = useState<string | null>(null)
@@ -598,7 +593,6 @@ function ProjectDetailsModal({ project, onClose }: { project: Project; onClose: 
   const [cipherText, setCipherText] = useState<string>('')
   const [binaryStreams, setBinaryStreams] = useState<string[]>([])
   const [isDecrypted, setIsDecrypted] = useState(true)
-  const [viewMode, setViewMode] = useState<'binary' | 'hex'>('binary')
 
   useEffect(() => {
     // Auto scroll terminal to bottom
@@ -793,35 +787,8 @@ function ProjectDetailsModal({ project, onClose }: { project: Project; onClose: 
     }
   }, [])
 
-  const downloadSvg = () => {
-    if (!generatedSvgPrompt) return;
-
-    // Create a temporary div to render the SVG
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = renderProceduralVector(generatedSvgPrompt).props.children as any;
-    // This is tricky because it's a React element.
-    // Better approach: maintain the SVG string separately.
-
-    // Let's use a simpler way: find the svg element in the DOM
-    const svgElement = document.querySelector('svg[viewBox="0 0 400 400"]');
-    if (!svgElement) return;
-
-    const svgData = new XMLSerializer().serializeToString(svgElement);
-    const svgBlob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
-    const url = URL.createObjectURL(svgBlob);
-
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `visioncraft-artwork-${hashString(generatedSvgPrompt).toString(16)}.svg`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-    playTick();
-  }
-
-
-const renderProceduralVector = (prompt: string) => {
+  // Procedural SVG renderer
+  const renderProceduralVector = (prompt: string) => {
     const seed = hashString(prompt || "abstract")
     const lowercasePrompt = (prompt || "").toLowerCase()
     
@@ -1007,7 +974,7 @@ const renderProceduralVector = (prompt: string) => {
   }
 
   return (
-    <motion.div
+    <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}

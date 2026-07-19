@@ -8,21 +8,11 @@
 let audioCtx: AudioContext | null = null
 let currentPan = 0 // Stereo panning state updated via cursor tracking (-1.0 left to 1.0 right)
 
-// Drone State Management
-let droneActive = false;
-let droneGain: GainNode | null = null;
-let dronePanner: StereoPannerNode | null = null;
-
 if (typeof window !== 'undefined') {
   window.addEventListener('mousemove', (e) => {
     // Map mouse X position to a stereo panning range [-1.0, 1.0]
     const x = e.clientX / window.innerWidth
     currentPan = (x * 2) - 1
-
-    // Update active drone panning in real-time
-    if (dronePanner && audioCtx) {
-      dronePanner.pan.setTargetAtTime(currentPan, audioCtx.currentTime, 0.05);
-    }
   })
 }
 
@@ -39,96 +29,6 @@ function getAudioContext(): AudioContext | null {
     audioCtx.resume()
   }
   return audioCtx
-}
-
-/**
- * Synthesizes a continuous, luxurious F-Major-9 chord drone.
- * Designed to be an unobtrusive, atmospheric background layer.
- */
-export function startAmbientDrone() {
-  const ctx = getAudioContext();
-  if (!ctx || droneActive) return;
-
-  try {
-    const now = ctx.currentTime;
-    droneActive = true;
-
-    // F Major 9 Chord: F2, C3, A3, E4, G4
-    const chordFreqs = [87.31, 130.81, 220.00, 329.63, 392.00];
-
-    // Signal Chain: Oscillators -> Individual Gains -> LowPass Filter -> Master Drone Gain -> Panner -> Destination
-    dronePanner = ctx.createStereoPanner();
-    dronePanner.connect(ctx.destination);
-
-    droneGain = ctx.createGain();
-    droneGain.gain.setValueAtTime(0, now);
-    droneGain.gain.linearRampToValueAtTime(0.04, now + 1.5); // Slow fade-in
-    droneGain.connect(dronePanner);
-
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(550, now);
-    filter.Q.setValueAtTime(1.0, now);
-    filter.connect(droneGain);
-
-    chordFreqs.forEach((freq, idx) => {
-      const osc = ctx.createOscillator();
-      const g = ctx.createGain();
-
-      osc.type = idx % 2 === 0 ? 'sine' : 'triangle';
-      osc.frequency.setValueAtTime(freq, now);
-
-      // Subtle detune for organic richness
-      const detune = (idx - 2) * 0.5;
-      osc.detune.setValueAtTime(detune, now);
-
-      let vol = 0.15;
-      if (idx === 0) vol = 0.25; // Root boost
-      if (osc.type === 'triangle') vol *= 0.6;
-
-      g.gain.setValueAtTime(vol, now);
-      osc.connect(g);
-      g.connect(filter);
-      osc.start(now);
-    });
-  } catch (error) {
-    console.warn('Drone synthesis failed', error);
-    droneActive = false;
-  }
-}
-
-/**
- * Smoothly mutes or unmutes the ambient drone.
- */
-export function setDroneMute(muted: boolean) {
-  const ctx = getAudioContext();
-  if (!ctx || !droneGain) return;
-
-  const now = ctx.currentTime;
-  const targetGain = muted ? 0 : 0.04;
-  droneGain.gain.linearRampToValueAtTime(targetGain, now + 0.5);
-}
-
-/**
- * Stops the ambient drone entirely.
- */
-export function stopAmbientDrone() {
-  if (!droneActive) return;
-
-  const ctx = getAudioContext();
-  if (!ctx || !droneGain) {
-    droneActive = false;
-    return;
-  }
-
-  const now = ctx.currentTime;
-  droneGain.gain.linearRampToValueAtTime(0, now + 0.5);
-
-  setTimeout(() => {
-    droneActive = false;
-    droneGain = null;
-    dronePanner = null;
-  }, 600);
 }
 
 /**
