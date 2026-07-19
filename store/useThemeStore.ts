@@ -8,6 +8,6 @@ interface ThemeState {
 }
 
 export const useThemeStore = create<ThemeState>((set) => ({
-  theme: 'cobalt', // Default to Cobalt
+  theme: 'charcoal', // Default to charcoal
   setTheme: (theme) => set({ theme }),
 }))

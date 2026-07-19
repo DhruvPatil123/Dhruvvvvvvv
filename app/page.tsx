@@ -3,6 +3,10 @@
 import React, { useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import Overlay from '@/components/Overlay'
+import RomanSidebar from '@/components/RomanSidebar'
+import BackgroundParallax from '@/components/BackgroundParallax'
+
+const Scene = dynamic(() => import('@/components/Scene'), { ssr: false })
 import Footer from '@/components/Footer'
 import Hero from '@/components/sections/Hero'
 import About from '@/components/sections/About'
@@ -14,14 +18,15 @@ import Timeline from '@/components/sections/Timeline'
 import Testimonials from '@/components/sections/Testimonials'
 import Contact from '@/components/sections/Contact'
 import Chatbot from '@/components/Chatbot'
+import LenisProvider from '@/components/LenisProvider'
 import { useScrollStore } from '@/store/useScrollStore'
 import { useChatStore } from '@/store/useChatStore'
 import { useThemeStore } from '@/store/useThemeStore'
 
-const Scene = dynamic(() => import('@/components/Scene'), { ssr: false })
 
 export default function Home() {
   const setScrollProgress = useScrollStore((state) => state.setScrollProgress)
+  const setActiveSection = useScrollStore((state) => state.setActiveSection)
   const isChatOpen = useChatStore((state) => state.isOpen)
   const closeChat = useChatStore((state) => state.closeChat)
   const theme = useThemeStore((state) => state.theme)
@@ -47,35 +52,78 @@ export default function Home() {
   }, [setScrollProgress])
 
   useEffect(() => {
+    const sectionIds = ['hero', 'about', 'skills', 'work', 'credentials', 'achievements', 'experience', 'testimonials', 'contact']
+
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + window.innerHeight / 3
+
+      let active = 'hero'
+      for (const id of sectionIds) {
+        const el = document.getElementById(id)
+        if (el) {
+          const top = el.offsetTop
+          const bottom = top + el.offsetHeight
+          if (scrollPosition >= top && scrollPosition < bottom) {
+            active = id
+            break
+          }
+        }
+      }
+
+      // Handle edge cases
+      if (window.scrollY < 100) {
+        active = 'hero'
+      } else if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 120) {
+        active = 'contact'
+      }
+
+      setActiveSection(active)
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    // Run once initially with a small delay to ensure elements are mounted
+    const timer = setTimeout(handleScroll, 100)
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      clearTimeout(timer)
+    }
+  }, [setActiveSection])
+
+  useEffect(() => {
     // Sync class list with current theme
     document.documentElement.classList.remove('theme-charcoal', 'theme-emerald', 'theme-cobalt')
     document.documentElement.classList.add(`theme-${theme}`)
   }, [theme])
 
   return (
-    <main className="relative w-full min-h-screen">
-      {/* 3D Background */}
-      <Scene />
+    <LenisProvider>
+      <main className="relative w-full min-h-screen">
+        {/* 3D Background Scene */}
+        <Scene />
 
-      {/* Persistent Navigation */}
-      <Overlay />
+        {/* Persistent Navigation */}
+        <BackgroundParallax />
+        <Overlay />
+        <RomanSidebar />
 
-      {/* Content Layers */}
-      <div className="relative z-10 w-full flex flex-col">
-        <Hero />
-        <About />
-        <Skills />
-        <Projects />
-        <Credentials />
-        <Achievements />
-        <Timeline />
-        <Testimonials />
-        <Contact />
-        <Footer />
-      </div >
+        {/* Content Layers */}
+        <div className="relative z-10 w-full flex flex-col">
+          <Hero />
+          <About />
+          <Skills />
+          <Projects />
+          <Credentials />
+          <Achievements />
+          <Timeline />
+          <Testimonials />
+          <Contact />
+          <Footer />
+        </div >
 
-      {/* Chatbot Assistant */}
-      <Chatbot isOpen={isChatOpen} onClose={closeChat} />
-    </main>
+        {/* Chatbot Assistant */}
+        <Chatbot isOpen={isChatOpen} onClose={closeChat} />
+      </main>
+    </LenisProvider>
   )
 }

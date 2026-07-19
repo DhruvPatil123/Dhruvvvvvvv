@@ -6,7 +6,6 @@ import { Float } from '@react-three/drei'
 import * as THREE from 'three'
 import { useScrollStore } from '@/store/useScrollStore'
 import { useThemeStore } from '@/store/useThemeStore'
-import CosmicDust from './CosmicDust'
 import WireframeTerrain from './WireframeTerrain'
 
 // Custom camera controller for smooth cinematic drift and cursor parallax
@@ -48,7 +47,20 @@ export default function Experience() {
   const ribbonRef = useRef<THREE.Mesh>(null)
   const ribbon2Ref = useRef<THREE.Mesh>(null)
   const orbitRingRef = useRef<THREE.Mesh>(null)
+  
+  // Outer wrapping placement group
   const monolithGroupRef = useRef<THREE.Group>(null)
+
+  // Explicit refs for all 9 section groups for high-performance direct scaling animation
+  const group0Ref = useRef<THREE.Group>(null)
+  const group1Ref = useRef<THREE.Group>(null)
+  const group2Ref = useRef<THREE.Group>(null)
+  const group3Ref = useRef<THREE.Group>(null)
+  const group4Ref = useRef<THREE.Group>(null)
+  const group5Ref = useRef<THREE.Group>(null)
+  const group6Ref = useRef<THREE.Group>(null)
+  const group7Ref = useRef<THREE.Group>(null)
+  const group8Ref = useRef<THREE.Group>(null)
 
   const scrollProgress = useScrollStore((state) => state.scrollProgress)
   const theme = useThemeStore((state) => state.theme)
@@ -91,38 +103,50 @@ export default function Experience() {
     themeColor.lerp(new THREE.Color(targetRibbonHex), 0.05)
     glassColor.lerp(new THREE.Color(targetGlassHex), 0.05)
 
-    // 2. Responsive scroll positions matching original layouts
+    // Compute active section index based on scroll progress mapped over 9 sections
+    const activeIndex = Math.min(8, Math.max(0, Math.round(scrollProgress * 8)))
+
+    // Direct mutation of group scales for ultra-smooth rendering transitions
+    const groupRefs = [group0Ref, group1Ref, group2Ref, group3Ref, group4Ref, group5Ref, group6Ref, group7Ref, group8Ref]
+    groupRefs.forEach((ref, i) => {
+      if (ref.current) {
+        const targetScale = (i === activeIndex) ? 1.0 : 0.0
+        const currentScale = ref.current.scale.x
+        const nextScale = THREE.MathUtils.lerp(currentScale, targetScale, 0.12)
+        ref.current.scale.set(nextScale, nextScale, nextScale)
+        ref.current.visible = nextScale > 0.001
+      }
+    })
+
+    // 2. Dynamic, responsive scroll positions alternating side-to-side to clear content text
     let targetX = 0
     let targetY = 0.2
     let targetZ = 0
-    let targetScale = isMobile ? 0.65 : 1.15
-    let targetRotationY = t * 0.25
+    let targetScale = isMobile ? 0.6 : 1.1
 
-    if (scrollProgress < 0.2) {
-      // Hero: Centered
-      targetX = 0
-    } else if (scrollProgress < 0.4) {
-      // About: Shifts to the right (leaves left clear for bio text)
-      targetX = THREE.MathUtils.lerp(0, isMobile ? 0 : 2.0, (scrollProgress - 0.2) / 0.2)
-      targetRotationY = t * 0.5
-      targetScale = isMobile ? 0.6 : 1.1
-    } else if (scrollProgress < 0.6) {
-      // Projects: Shifts back to center, slightly larger
-      targetX = THREE.MathUtils.lerp(isMobile ? 0 : 2.0, 0, (scrollProgress - 0.4) / 0.2)
-      targetScale = THREE.MathUtils.lerp(isMobile ? 0.6 : 1.1, isMobile ? 0.75 : 1.4, (scrollProgress - 0.4) / 0.2)
-    } else if (scrollProgress < 0.8) {
-      // Timeline: Shifts to the left (leaves right clear for timeline)
-      targetX = THREE.MathUtils.lerp(0, isMobile ? 0 : -2.0, (scrollProgress - 0.6) / 0.2)
-      targetZ = THREE.MathUtils.lerp(0, 0.4, (scrollProgress - 0.6) / 0.2)
-      targetScale = isMobile ? 0.6 : 1.1
-    } else {
-      // Contact: Back to center, focus view
-      targetX = THREE.MathUtils.lerp(isMobile ? 0 : -2.0, 0, (scrollProgress - 0.8) / 0.2)
-      targetZ = THREE.MathUtils.lerp(0.4, 0, (scrollProgress - 0.8) / 0.2)
-      targetScale = THREE.MathUtils.lerp(isMobile ? 0.6 : 1.1, isMobile ? 0.7 : 1.25, (scrollProgress - 0.8) / 0.2)
+    if (activeIndex === 0) {
+      targetX = 0 // Hero: Center
+    } else if (activeIndex === 1) {
+      targetX = isMobile ? 0 : 2.0 // About: Right
+    } else if (activeIndex === 2) {
+      targetX = isMobile ? 0 : -2.0 // Skills: Left
+    } else if (activeIndex === 3) {
+      targetX = 0 // Work: Center
+      targetScale = isMobile ? 0.52 : 0.9
+    } else if (activeIndex === 4) {
+      targetX = isMobile ? 0 : 2.0 // Credentials: Right
+    } else if (activeIndex === 5) {
+      targetX = isMobile ? 0 : -2.0 // Achievements: Left
+    } else if (activeIndex === 6) {
+      targetX = isMobile ? 0 : 2.0 // Experience/Timeline: Right
+    } else if (activeIndex === 7) {
+      targetX = isMobile ? 0 : -2.0 // Testimonials: Left
+    } else if (activeIndex === 8) {
+      targetX = 0 // Contact: Center
+      targetScale = isMobile ? 0.55 : 0.95
     }
 
-    // 3. Smooth group placement
+    // 3. Smooth group placement translation
     if (monolithGroupRef.current) {
       monolithGroupRef.current.position.x = THREE.MathUtils.lerp(monolithGroupRef.current.position.x, targetX, dynamicLerp)
       monolithGroupRef.current.position.y = THREE.MathUtils.lerp(monolithGroupRef.current.position.y, targetY, dynamicLerp)
@@ -132,9 +156,9 @@ export default function Experience() {
       monolithGroupRef.current.scale.set(currentScale, currentScale, currentScale)
     }
 
-    // 4. Subtle, tactile interactive rotation on the Monolith
+    // 4. Subtle, tactile interactive rotation on the Monolith structure
     if (monolithRef.current) {
-      const targetRotY = targetRotationY + state.pointer.x * 0.35
+      const targetRotY = (t * 0.25) + state.pointer.x * 0.35
       const targetRotX = -state.pointer.y * 0.25
       monolithRef.current.rotation.y = THREE.MathUtils.lerp(monolithRef.current.rotation.y, targetRotY, dynamicLerp)
       monolithRef.current.rotation.x = THREE.MathUtils.lerp(monolithRef.current.rotation.x, targetRotX, dynamicLerp)
@@ -161,67 +185,67 @@ export default function Experience() {
       {/* 1. Cinematic Camera Control */}
       <CameraController />
 
-      {/* 2. Base: Infinite Wireframe Terrain */}
-      <WireframeTerrain />
+      {/* 2. Base Layer: Removed WireframeTerrain to prevent collision with static painting backgrounds */}
 
-      {/* 3. Mid layer: Floating Particle Galaxy */}
-      <CosmicDust />
-
-      {/* 4. Hero object: Glass Monolith with glowing twisting ribbon inside */}
+      {/* 4. Hero object wrapper and interactive float behaviors */}
       <Float speed={1.5} rotationIntensity={0.15} floatIntensity={0.4}>
         <group ref={monolithGroupRef}>
-          {/* Glass Monolith Shell */}
-          <mesh ref={monolithRef}>
-            <boxGeometry args={[1.3, 2.7, 0.32]} />
-            <meshPhysicalMaterial
-              transmission={0.98}
-              thickness={2.2}
-              roughness={0.02}
-              clearcoat={1.0}
-              clearcoatRoughness={0.0}
-              ior={1.65}
-              metalness={0.05}
-              color={glassColor}
-              attenuationColor={glassColor}
-              attenuationDistance={1.2}
-            />
-          </mesh>
+          
+          {/* ==========================================
+              ASSET 0: HERO (Glass Monolith) - REMOVED VISUALS
+              ========================================== */}
+          <group ref={group0Ref}>
+            {/* Kept empty to satisfy refs and prevent runtime errors */}
+          </group>
 
-          {/* Twisting ribbon inside the glass container - Outer Helix */}
-          <mesh ref={ribbonRef} scale={[0.55, 1.85, 0.55]}>
-            <torusKnotGeometry args={[0.5, 0.038, 200, 16, 2, 9]} />
-            <meshStandardMaterial
-              color={themeColor}
-              emissive={themeColor}
-              emissiveIntensity={3.2}
-              roughness={0.15}
-              metalness={0.85}
-            />
-          </mesh>
+          {/* ==========================================
+              ASSET 1: ABOUT (Sacred Polyhedron) - REMOVED VISUALS
+              ========================================== */}
+          <group ref={group1Ref}>
+          </group>
 
-          {/* Inner counter-rotating twisting ribbon - Inner Helix */}
-          <mesh ref={ribbon2Ref} scale={[0.42, 1.45, 0.42]}>
-            <torusKnotGeometry args={[0.5, 0.024, 180, 12, 3, 5]} />
-            <meshStandardMaterial
-              color={themeColor}
-              emissive={themeColor}
-              emissiveIntensity={2.5}
-              roughness={0.2}
-              metalness={0.9}
-            />
-          </mesh>
+          {/* ==========================================
+              ASSET 2: SKILLS (Floating Constellation Matrix) - REMOVED VISUALS
+              ========================================== */}
+          <group ref={group2Ref}>
+          </group>
 
-          {/* Tilted orbital ring wrapping the monolith planetary-style */}
-          <mesh ref={orbitRingRef} rotation={[Math.PI / 3, 0, Math.PI / 6]}>
-            <torusGeometry args={[1.52, 0.009, 16, 100]} />
-            <meshStandardMaterial
-              color={themeColor}
-              emissive={themeColor}
-              emissiveIntensity={4.5}
-              transparent
-              opacity={0.5}
-            />
-          </mesh>
+          {/* ==========================================
+              ASSET 3: WORK / PROJECTS (Holographic Torus Rings) - REMOVED VISUALS
+              ========================================== */}
+          <group ref={group3Ref}>
+          </group>
+
+          {/* ==========================================
+              ASSET 4: CREDENTIALS (Octahedral Diamond Prism) - REMOVED VISUALS
+              ========================================== */}
+          <group ref={group4Ref}>
+          </group>
+
+          {/* ==========================================
+              ASSET 5: ACHIEVEMENTS (Supernova Star Core) - REMOVED VISUALS
+              ========================================== */}
+          <group ref={group5Ref}>
+          </group>
+
+          {/* ==========================================
+              ASSET 6: TIMELINE (Triple-Axis Gyroscope) - REMOVED VISUALS
+              ========================================== */}
+          <group ref={group6Ref}>
+          </group>
+
+          {/* ==========================================
+              ASSET 7: TESTIMONIALS (Möbius Collaboration Knot) - REMOVED VISUALS
+              ========================================== */}
+          <group ref={group7Ref}>
+          </group>
+
+          {/* ==========================================
+              ASSET 8: CONTACT (Signal Transmitter Hyper-Sphere) - REMOVED VISUALS
+              ========================================== */}
+          <group ref={group8Ref}>
+          </group>
+
         </group>
       </Float>
     </group>

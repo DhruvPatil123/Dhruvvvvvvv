@@ -7,6 +7,8 @@ interface ScrollState {
   setSkillsHovered: (hovered: boolean) => void
   isCanvasVisible: boolean
   setIsCanvasVisible: (visible: boolean) => void
+  activeSection: string
+  setActiveSection: (section: string) => void
 }
 
 export const useScrollStore = create<ScrollState>((set) => ({
@@ -16,4 +18,7 @@ export const useScrollStore = create<ScrollState>((set) => ({
   setSkillsHovered: (hovered) => set({ skillsHovered: hovered }),
   isCanvasVisible: true,
   setIsCanvasVisible: (visible) => set({ isCanvasVisible: visible }),
+  activeSection: 'hero',
+  setActiveSection: (section) => set({ activeSection: section }),
 }))
+

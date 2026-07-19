@@ -4,11 +4,12 @@ import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useChatStore } from '@/store/useChatStore'
 import { Menu, X } from 'lucide-react'
+import { useScrollStore } from '@/store/useScrollStore'
 
 export default function Overlay() {
   const openChat = useChatStore((state) => state.openChat)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [activeSection, setActiveSection] = useState<string>('')
+  const activeSection = useScrollStore((state) => state.activeSection)
 
   const navLinks = [
     { name: 'About', href: '#about' },
@@ -18,72 +19,11 @@ export default function Overlay() {
     { name: 'Contact', href: '#contact' },
   ]
 
-  useEffect(() => {
-    const sectionIds = ['about', 'skills', 'work', 'experience', 'contact']
-    
-    // Find all the elements
-    const elements = sectionIds
-      .map(id => document.getElementById(id))
-      .filter((el): el is HTMLElement => el !== null)
-
-    if (elements.length === 0) return
-
-    const observerOptions = {
-      root: null,
-      rootMargin: '-28% 0px -52% 0px', // Focused band in the upper-middle region
-      threshold: 0.05,
-    }
-
-    const observerCallback = (entries: IntersectionObserverEntry[]) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          setActiveSection(entry.target.id)
-        }
-      })
-    }
-
-    const observer = new IntersectionObserver(observerCallback, observerOptions)
-    elements.forEach(el => observer.observe(el))
-
-    // Handle initial state and scrolling back to top (reset when in hero section)
-    const handleScroll = () => {
-      if (window.scrollY < 200) {
-        setActiveSection('')
-      }
-    }
-    window.addEventListener('scroll', handleScroll, { passive: true })
-
-    return () => {
-      observer.disconnect()
-      window.removeEventListener('scroll', handleScroll)
-    }
-  }, [])
-
   return (
     <nav className="fixed top-0 left-0 w-full z-50 flex flex-col p-6 md:p-8 pointer-events-none">
       <div className="flex justify-between items-center w-full max-w-7xl mx-auto pointer-events-auto">
-        <div className="text-xl font-display font-bold tracking-tight text-white hover:opacity-80 transition-opacity">
-          DHRUV<span className="text-primary font-mono">_</span>
-        </div>
-
-        {/* Cinematic Navigation Links (Point 9) */}
-        <div className="hidden md:flex gap-10 font-mono text-[15px] uppercase tracking-[0.12em]">
-          {navLinks.map((link) => {
-            const isActive = activeSection === link.href.slice(1)
-            return (
-              <a
-                key={link.name}
-                href={link.href}
-                className={`relative py-1 cursor-pointer transition-all duration-300 hover:text-primary hover:opacity-100 group ${
-                  isActive 
-                    ? 'text-primary opacity-100 scale-105 font-medium' 
-                    : 'text-white/60 opacity-80'
-                }`}
-              >
-                {"// "}{link.name}
-              </a>
-            )
-          })}
+        <div className="text-2xl font-display font-light tracking-wide text-white hover:opacity-80 transition-opacity cursor-pointer">
+          Dhruv<span className="text-primary italic font-serif">.</span>
         </div>
 
         <div className="flex items-center gap-3">

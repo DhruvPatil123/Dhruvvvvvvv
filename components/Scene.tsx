@@ -47,12 +47,15 @@ export default function Scene() {
   const containerRef = useRef<HTMLDivElement>(null)
 
   // Premium, atmospheric colors tailored for each active theme
-  const fogColor = theme === 'charcoal' ? '#080a0f' : theme === 'emerald' ? '#03140f' : '#010612'
+  const fogColor = theme === 'charcoal' ? '#140e0a' : theme === 'emerald' ? '#03140f' : '#010612'
   const fallbackBg = theme === 'charcoal' 
-    ? 'from-[#080a0f] to-[#010408]' 
+    ? 'from-[#140e0a] to-[#060403]' 
     : theme === 'emerald' 
     ? 'from-[#03140f] to-[#010503]' 
     : 'from-[#010612] to-[#000206]'
+
+  const pointLightColor = theme === 'charcoal' ? '#ffaa44' : theme === 'emerald' ? '#10b981' : '#00f2ff'
+  const directionalLightColor = theme === 'charcoal' ? '#d4a373' : theme === 'emerald' ? '#34d399' : '#7000ff'
 
   useEffect(() => {
     // Detect WebGL capability safely in the client browser context
@@ -120,15 +123,13 @@ export default function Scene() {
 
   return (
     <SceneErrorBoundary fallback={fallbackStaticBackdrop}>
-      <div ref={containerRef} className="fixed top-0 left-0 w-screen h-screen -z-10 bg-[#050505]">
+      <div ref={containerRef} className="fixed top-0 left-0 w-screen h-screen -z-10 bg-transparent pointer-events-none">
         <Canvas
           dpr={[1, 2]}
-          gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
+          gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
           camera={{ position: [0, 0, 5], fov: 75 }}
         >
           <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={75} />
-
-          <color attach="background" args={['#050505']} />
 
           {/* Dynamic Volumetric Depth Fog (Point 10) */}
           <fog attach="fog" args={[fogColor, 4.2, 11.5]} />
@@ -136,8 +137,8 @@ export default function Scene() {
           <ambientLight intensity={0.4} />
           <spotLight position={[10, 20, 10]} angle={0.15} penumbra={1} intensity={2} castShadow />
           <pointLight position={[-10, -10, -10]} intensity={0.5} />
-          <pointLight position={[0, 0, 3]} intensity={1.5} color="#00f2ff" />
-          <directionalLight position={[0, 5, 5]} intensity={1.5} color="#7000ff" />
+          <pointLight position={[0, 0, 3]} intensity={1.5} color={pointLightColor} />
+          <directionalLight position={[0, 5, 5]} intensity={1.5} color={directionalLightColor} />
 
           <Suspense fallback={null}>
             <Environment preset="city" />

@@ -130,7 +130,7 @@ export default function Achievements() {
   }, [])
 
   return (
-    <section id="achievements" className="relative w-full min-h-[auto] md:min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-32 md:py-48 lg:py-64">
+    <section id="achievements" className="relative w-full min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-24 md:py-32 lg:py-40">
       <div className="max-w-6xl w-full text-center mb-16 md:mb-20 space-y-4">
         {/* Section Indicator */}
         <span className="font-mono text-xs uppercase tracking-[0.2em] text-primary font-medium">
@@ -142,13 +142,13 @@ export default function Achievements() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-4xl md:text-5xl lg:text-6xl font-display font-medium text-white tracking-tight"
+          className="text-4xl md:text-5xl lg:text-6xl font-display font-light text-white tracking-normal leading-tight"
         >
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-400 via-zinc-200 to-white">
-            BEYOND
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-300 via-zinc-100 to-white italic font-light">
+            Beyond
           </span>{" "}
-          <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
-            BENCHMARKS
+          <span className="font-normal text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-200 to-secondary animate-gradient">
+            Benchmarks
           </span>
         </motion.h2>
 

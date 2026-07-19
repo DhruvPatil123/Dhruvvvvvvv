@@ -1,20 +1,35 @@
 "use client"
 
-import React from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import React, { useEffect, useRef, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowRight, Download, Github, Twitter, Linkedin, Instagram } from 'lucide-react'
-import { downloadResume, ResumeTheme } from '@/lib/downloadResume'
+import { downloadResume } from '@/lib/downloadResume'
 import LeetCodeIcon from '../LeetCodeIcon'
 import { useThemeStore } from '@/store/useThemeStore'
-import { playTick, playPopover, playAmbientPad } from '@/lib/sounds'
+import { playPopover, playAmbientPad } from '@/lib/sounds'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import SplitType from 'split-type'
+import Typewriter from 'typewriter-effect'
+// @ts-ignore
+import baffle from 'baffle'
+
+// Register ScrollTrigger
+gsap.registerPlugin(ScrollTrigger)
 
 export default function Hero() {
-  const [showThemes, setShowThemes] = React.useState(false)
-  const themeSelectorRef = React.useRef<HTMLDivElement>(null)
+  const [showThemes, setShowThemes] = useState(false)
+  const [mounted, setMounted] = useState(false)
+  const themeSelectorRef = useRef<HTMLDivElement>(null)
   const currentTheme = useThemeStore((state) => state.theme)
   const setTheme = useThemeStore((state) => state.setTheme)
 
-  React.useEffect(() => {
+  const heroRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
+  const titleRef = useRef<HTMLHeadingElement>(null)
+  const badgeRef = useRef<HTMLSpanElement>(null)
+
+  useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (themeSelectorRef.current && !themeSelectorRef.current.contains(event.target as Node)) {
         setShowThemes(false)
@@ -26,88 +41,157 @@ export default function Hero() {
     }
   }, [])
 
+  useEffect(() => {
+    setMounted(true)
+
+    // 1. Scramble system status badge with baffle
+    let b: any
+    if (badgeRef.current) {
+      b = baffle(badgeRef.current, {
+        characters: '░▒░ █▓▒░/█▒ <░▒ ▓/░> █▓',
+        speed: 80
+      })
+      b.start()
+      b.reveal(1200)
+    }
+
+    // 2. SplitType text animations for Dhruv Dinesh Patil
+    let split: any
+    if (titleRef.current) {
+      split = new SplitType(titleRef.current, { types: 'chars,words' })
+      
+      // Set initial states to prevent flashing
+      gsap.set(split.chars, { opacity: 0, y: 50, rotateX: -45 })
+      
+      gsap.to(split.chars, {
+        opacity: 1,
+        y: 0,
+        rotateX: 0,
+        stagger: 0.02,
+        duration: 1.4,
+        ease: 'power4.out',
+        delay: 0.1,
+        onComplete: () => {
+          // Revert to maintain accessibility and responsive text layout
+          split.revert()
+        }
+      })
+    }
+
+    // 3. Apply smooth scroll-triggered parallax fading to Hero content without pinning
+    const ctx = gsap.context(() => {
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: heroRef.current,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: true,
+        }
+      })
+      .to(contentRef.current, {
+        opacity: 0,
+        y: -120,
+        scale: 0.95,
+        ease: 'none'
+      })
+    }, heroRef)
+
+    return () => {
+      if (b) b.stop()
+      if (split) split.revert()
+      ctx.revert()
+    }
+  }, [])
+
   return (
     <section 
       id="hero" 
+      ref={heroRef}
       className="relative w-full h-screen flex flex-col items-center justify-center px-6 text-center select-none overflow-hidden"
       style={{
         background: 'radial-gradient(circle at center, rgba(6, 18, 31, 0.4) 0%, rgba(5, 5, 5, 0) 75%)'
       }}
     >
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-        className="max-w-4xl flex flex-col items-center justify-center space-y-12 md:space-y-16"
+      <div
+        ref={contentRef}
+        className="hero-content max-w-4xl flex flex-col items-center justify-center space-y-12 md:space-y-16"
       >
         {/* Title and Tagline Group */}
         <div className="space-y-4 md:space-y-6">
-          {/* Hero Title with Cinematic Gradients */}
-          <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-[110px] font-display font-medium tracking-tighter text-white leading-[0.95] uppercase">
-            <span className="text-transparent bg-clip-text bg-gradient-to-b from-zinc-300 via-zinc-100 to-white">
-              DHRUV
+          {/* SECURE TERMINAL STATUS BADGE (Baffle) */}
+          <div className="flex items-center justify-center gap-2.5 mb-3 font-mono text-[10px] tracking-[0.4em] uppercase text-primary/95">
+            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_10px_rgba(var(--primary-rgb),0.8)]" />
+            <span ref={badgeRef} className="opacity-95 tracking-[0.35em]">SYSTEM_COGNITIVE_CORE: ONLINE</span>
+          </div>
+
+          {/* Hero Title with Cinematic Gradients & SplitType */}
+          <h1 
+            ref={titleRef}
+            className="text-6xl sm:text-7xl md:text-8xl lg:text-[115px] font-display font-light tracking-wide text-white leading-[1.0] drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]"
+          >
+            <span className="text-transparent bg-clip-text bg-gradient-to-b from-zinc-100 via-zinc-300 to-white italic font-light">
+              Dhruv
             </span> <br />
-            <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-400 to-secondary animate-gradient">
-              DINESH PATIL
+            <span className="font-normal tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-200 to-secondary animate-gradient pr-4">
+              Dinesh Patil
             </span>
           </h1>
 
-          {/* Subheading Tagline (Point 3) */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.8 }}
-            className="flex items-center justify-center gap-2"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            <p className="font-mono text-xs sm:text-sm uppercase tracking-[0.25em] text-secondary font-bold">
-              AI Engineer • GenAI Developer
-            </p>
-          </motion.div>
+          {/* Subheading Tagline (Typewriter Effect) */}
+          <div className="flex items-center justify-center gap-2 min-h-[24px]">
+            <div className="font-mono text-xs sm:text-sm uppercase tracking-[0.2em] text-secondary font-bold flex items-center justify-center text-center">
+              {mounted ? (
+                <Typewriter
+                  options={{
+                    strings: [
+                      'AI Research Engineer',
+                      'LLM & RAG Systems Architect',
+                      'Agentic AI Tooling Specialist',
+                      'Full-Stack Dev / Product Engineer'
+                    ],
+                    autoStart: true,
+                    loop: true,
+                    delay: 45,
+                    deleteSpeed: 30,
+                    wrapperClassName: 'text-secondary font-bold uppercase tracking-[0.2em]',
+                    cursorClassName: 'text-primary animate-pulse font-mono ml-1'
+                  }}
+                />
+              ) : (
+                <span className="text-secondary font-bold uppercase tracking-[0.2em]">AI Research Engineer</span>
+              )}
+            </div>
+          </div>
         </div>
 
-        {/* Refined Shorter Paragraph (Point 7: only 2 lines, high-readability) */}
-        <motion.p 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.8 }}
-          className="text-gray-300/90 font-sans text-base md:text-lg max-w-2xl mx-auto leading-[1.7] tracking-normal"
-        >
+        {/* Refined Shorter Paragraph */}
+        <p className="text-gray-300/90 font-sans text-base md:text-lg max-w-2xl mx-auto leading-[1.7] tracking-normal">
           Building AI-powered products, autonomous agents, and immersive web experiences with modern technologies.
-        </motion.p>
+        </p>
 
-        {/* Action Buttons with increased spacing (Point 8) */}
-        <motion.div 
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.8 }}
-          className="flex flex-col sm:flex-row gap-6 sm:gap-8 justify-center items-center pt-2"
-        >
+        {/* Action Buttons with increased spacing */}
+        <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 justify-center items-center pt-2">
           {/* Explore Work: Glass effect with bright text and cyan arrow */}
-          <motion.a
+          <a
             href="#work"
-            whileHover={{ scale: 1.05, y: -4 }}
-            whileTap={{ scale: 0.98 }}
-            className="group w-full sm:w-auto glass-effect hover:bg-white/10 text-white font-mono text-xs uppercase tracking-widest px-8 py-4 rounded-full font-bold flex items-center justify-center gap-2 border border-white/10 hover:border-white/25 transition-all duration-300 cursor-pointer"
+            className="group active-tactile w-full sm:w-auto glass-effect hover:bg-white/10 text-white font-mono text-xs uppercase tracking-widest px-8 py-4 rounded-full font-bold flex items-center justify-center gap-2 border border-white/10 hover:border-white/25 transition-all duration-300 cursor-pointer"
           >
             Explore Work 
             <ArrowRight className="w-4 h-4 text-primary transition-transform duration-300 group-hover:translate-x-1.5" />
-          </motion.a>
+          </a>
           
           {/* Download Resume: Glass effect with bright text and emerald/secondary download arrow */}
           <div className="relative w-full sm:w-auto" ref={themeSelectorRef}>
-            <motion.button
+            <button
               onClick={() => {
                 setShowThemes(!showThemes)
                 playPopover()
               }}
-              whileHover={{ scale: 1.05, y: -4 }}
-              whileTap={{ scale: 0.98 }}
-              className="group w-full sm:w-auto glass-effect hover:bg-white/10 text-white font-mono text-xs uppercase tracking-widest px-8 py-4 rounded-full font-bold flex items-center justify-center gap-2 border border-white/10 hover:border-white/25 transition-all duration-300 cursor-pointer"
+              className="group active-tactile w-full sm:w-auto glass-effect hover:bg-white/10 text-white font-mono text-xs uppercase tracking-widest px-8 py-4 rounded-full font-bold flex items-center justify-center gap-2 border border-white/10 hover:border-white/25 transition-all duration-300 cursor-pointer"
             >
               Get Resume 
               <Download className="w-4 h-4 text-secondary transition-transform duration-300 group-hover:translate-y-0.5" />
-            </motion.button>
+            </button>
 
             <AnimatePresence>
               {showThemes && (
@@ -185,15 +269,10 @@ export default function Hero() {
               )}
             </AnimatePresence>
           </div>
-        </motion.div>
+        </div>
 
-        {/* Minimal Social Icons Dock (Point 6: 36px icons, reduced opacity, glows only on hover) */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6, duration: 1.0 }}
-          className="flex gap-4 pt-4"
-        >
+        {/* Minimal Social Icons Dock */}
+        <div className="flex gap-4 pt-4">
           {[
             { href: "https://github.com/DhruvPatil123", icon: <Github className="w-4 h-4" />, label: "GitHub" },
             { href: "https://x.com/DhruvPatil_18", icon: <Twitter className="w-4 h-4" />, label: "X" },
@@ -201,21 +280,19 @@ export default function Hero() {
             { href: "https://www.linkedin.com/in/dhruv-patil-3816043b7/", icon: <Linkedin className="w-4 h-4" />, label: "LinkedIn" },
             { href: "https://leetcode.com/u/Dhruv_Patil_18/", icon: <LeetCodeIcon className="w-4 h-4" />, label: "LeetCode" }
           ].map((soc, i) => (
-            <motion.a 
+            <a 
               key={i}
               href={soc.href} 
               target="_blank" 
               rel="noreferrer" 
               aria-label={soc.label}
-              whileHover={{ scale: 1.1, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-              className="w-9 h-9 flex items-center justify-center rounded-full text-white/50 hover:text-primary hover:bg-primary/5 border border-white/5 hover:border-primary/20 hover:shadow-[0_0_15px_rgba(0,242,255,0.2)] transition-all duration-300"
+              className="active-tactile w-9 h-9 flex items-center justify-center rounded-full text-white/50 hover:text-primary hover:bg-primary/5 border border-white/5 hover:border-primary/20 hover:shadow-[0_0_15px_rgba(0,242,255,0.2)] transition-all duration-300"
             >
               {soc.icon}
-            </motion.a>
+            </a>
           ))}
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     </section>
   )
 }

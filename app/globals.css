@@ -44,20 +44,22 @@ canvas {
 }
 
 .glass-effect {
-  background: rgba(15, 20, 25, 0.65);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  background: rgba(12, 10, 8, 0.22);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(220, 190, 160, 0.12); /* Antique, soft gold-bronze warm border */
+  box-shadow: 
+    0 15px 45px rgba(0, 0, 0, 0.5),
+    inset 0 1px 1px rgba(255, 255, 255, 0.05); /* Soft highlight on inner top edge */
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-effect:hover {
-  background: rgba(15, 20, 25, 0.75);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(22, 18, 14, 0.35); /* Slightly warmed up */
+  border-color: rgba(212, 163, 115, 0.32); /* Radiant warm gold */
   box-shadow: 
-    0 30px 70px rgba(0, 0, 0, 0.6),
-    0 0 30px rgba(var(--primary-rgb), 0.08);
+    0 30px 60px rgba(0, 0, 0, 0.7),
+    0 0 40px rgba(212, 163, 115, 0.15); /* Soft antique golden sunburst halo */
   transform: translateY(-8px) scale(1.02);
 }
 
@@ -77,4 +79,26 @@ canvas {
 .active-tactile:active, button:active, .btn-active:active {
   transform: scale(0.98) !important;
 }
+
+/* Recommended Lenis Smooth Scrolling Styles */
+html.lenis, html.lenis body {
+  height: auto !important;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
 

@@ -485,7 +485,7 @@ function ProjectCard({ project, idx, onOpen }: { project: Project; idx: number; 
       whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
       transition={{ duration: 0.8, delay: idx * 0.12, ease: [0.16, 1, 0.3, 1] }}
       viewport={{ once: true }}
-      className="group relative rounded-3xl overflow-hidden border border-white/5 bg-white/[0.01] hover:bg-white/[0.02] p-6 md:p-10 flex flex-col justify-between gap-6 hover:border-white/20 active:border-white/20 transition-all duration-500 cursor-pointer h-full"
+      className="group relative rounded-3xl overflow-hidden glass-effect p-6 md:p-10 flex flex-col justify-between gap-6 transition-all duration-500 cursor-pointer h-full"
       style={{ perspective: '1000px' }}
     >
       {/* Subtle background glow */}
@@ -1515,7 +1515,7 @@ export default function Projects() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
 
   return (
-    <section id="work" className="relative w-full min-h-[auto] md:min-h-screen flex flex-col items-center py-32 md:py-48 lg:py-64 px-4 sm:px-6">
+    <section id="work" className="relative w-full min-h-screen flex flex-col items-center justify-center py-24 md:py-32 lg:py-40 px-4 sm:px-6">
       <div className="max-w-6xl w-full text-center mb-16 md:mb-20 space-y-4">
         {/* Section Indicator */}
         <span className="font-mono text-xs uppercase tracking-[0.2em] text-primary font-medium">
@@ -1527,13 +1527,13 @@ export default function Projects() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-4xl md:text-5xl lg:text-6xl font-display font-medium text-white tracking-tight"
+          className="text-4xl md:text-5xl lg:text-6xl font-display font-light text-white tracking-normal leading-tight"
         >
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-400 via-zinc-200 to-white">
-            ENGINEERING
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-300 via-zinc-100 to-white italic font-light">
+            Engineering
           </span>{" "}
-          <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
-            PORTFOLIO
+          <span className="font-normal text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-200 to-secondary animate-gradient">
+            Portfolio
           </span>
         </motion.h2>
 
