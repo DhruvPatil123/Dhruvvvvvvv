@@ -23,6 +23,13 @@ import { useScrollStore } from '@/store/useScrollStore'
 import { useChatStore } from '@/store/useChatStore'
 import { useThemeStore } from '@/store/useThemeStore'
 
+// Interactive overlays and preludes
+import CursorTrail from '@/components/CursorTrail'
+import AudioDock from '@/components/AudioDock'
+import BootPreloader from '@/components/BootPreloader'
+import FpsMonitor from '@/components/FpsMonitor'
+import CommandPalette from '@/components/CommandPalette'
+
 
 export default function Home() {
   const setScrollProgress = useScrollStore((state) => state.setScrollProgress)
@@ -99,6 +106,21 @@ export default function Home() {
   return (
     <LenisProvider>
       <main className="relative w-full min-h-screen">
+        {/* Cinematic Preloader */}
+        <BootPreloader />
+
+        {/* Dynamic Cursor Stardust Trail */}
+        <CursorTrail />
+
+        {/* Ambient Drone controller */}
+        <AudioDock />
+
+        {/* Lightweight Telemetry FPS Monitor */}
+        <FpsMonitor />
+
+        {/* Dynamic Interactive Command Console */}
+        <CommandPalette />
+
         {/* 3D Background Scene */}
         <Scene />
 
@@ -106,6 +128,7 @@ export default function Home() {
         <BackgroundParallax />
         <Overlay />
         <RomanSidebar />
+
 
         {/* Content Layers */}
         <div className="relative z-10 w-full flex flex-col">

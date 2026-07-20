@@ -10,6 +10,15 @@ export default function Overlay() {
   const openChat = useChatStore((state) => state.openChat)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const activeSection = useScrollStore((state) => state.activeSection)
+  const [isScrolled, setIsScrolled] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20)
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const navLinks = [
     { name: 'About', href: '#about' },
@@ -20,27 +29,33 @@ export default function Overlay() {
   ]
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-50 flex flex-col p-6 md:p-8 pointer-events-none">
-      <div className="flex justify-between items-center w-full max-w-7xl mx-auto pointer-events-auto">
-        <div className="text-2xl font-display font-light tracking-wide text-white hover:opacity-80 transition-opacity cursor-pointer">
-          Dhruv<span className="text-primary italic font-serif">.</span>
-        </div>
+    <nav className="fixed top-0 left-0 w-full z-50 pointer-events-none">
+      <div className={`w-full transition-all duration-300 ${
+        isScrolled 
+          ? 'bg-black/70 backdrop-blur-md border-b border-white/5 py-4 px-6 md:px-8' 
+          : 'py-6 md:py-8 px-6 md:px-8'
+      }`}>
+        <div className="flex justify-between items-center w-full max-w-7xl mx-auto pointer-events-auto">
+          <div className="text-2xl font-display font-light tracking-wide text-white hover:opacity-80 transition-opacity cursor-pointer">
+            Dhruv<span className="text-primary italic font-serif">.</span>
+          </div>
 
-        <div className="flex items-center gap-3">
-          <button 
-            onClick={openChat}
-            className="glass-effect px-4 sm:px-5.5 py-2 rounded-full font-mono text-[10px] uppercase tracking-widest text-white hover:text-primary hover:bg-white/[0.08] hover:border-primary/20 transition-all border border-white/5 active:scale-95 duration-300"
-          >
-            Let&apos;s Talk
-          </button>
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={openChat}
+              className="glass-effect px-4 sm:px-5.5 py-2 rounded-full font-mono text-[10px] uppercase tracking-widest text-white hover:text-primary hover:bg-white/[0.08] hover:border-primary/20 transition-all border border-white/5 active:scale-95 duration-300"
+            >
+              Let&apos;s Talk
+            </button>
 
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="flex md:hidden glass-effect p-2 rounded-full text-white hover:text-primary border border-white/5 transition-all duration-300 active:scale-95 cursor-pointer"
-            aria-label="Toggle menu"
-          >
-            {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-          </button>
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="flex md:hidden glass-effect p-2 rounded-full text-white hover:text-primary border border-white/5 transition-all duration-300 active:scale-95 cursor-pointer"
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+            </button>
+          </div>
         </div>
       </div>
 

@@ -1,9 +1,11 @@
 "use client"
 
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Send, Bot, User, Sparkles } from 'lucide-react'
+import { X, Send, Bot, User, Sparkles, Volume2, VolumeX } from 'lucide-react'
 import { playTick, playPopover, playNotification } from '@/lib/sounds'
+import { useChatStore } from '@/store/useChatStore'
+
 
 interface Message {
   id: number
@@ -177,11 +179,71 @@ interface ChatbotProps {
 }
 
 export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
+  const openChat = useChatStore((state) => state.openChat)
+  const [isSpoken, setIsSpoken] = useState(false)
+  const [isSpeaking, setIsSpeaking] = useState(false)
+
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  const speak = useCallback((text: string) => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
+
+    window.speechSynthesis.cancel()
+
+    if (!isSpoken) {
+      setIsSpeaking(false)
+      return
+    }
+
+    const cleanText = text
+      .replace(/\*\*/g, '')
+      .replace(/•/g, '')
+      .replace(/`/g, '')
+      .trim()
+
+    const utterance = new SpeechSynthesisUtterance(cleanText)
+    
+    const voices = window.speechSynthesis.getVoices()
+    const englishVoice = voices.find(v => v.lang.startsWith('en'))
+    if (englishVoice) {
+      utterance.voice = englishVoice
+    }
+
+    utterance.onstart = () => {
+      setIsSpeaking(true)
+    }
+
+    utterance.onend = () => {
+      setIsSpeaking(false)
+    }
+
+    utterance.onerror = () => {
+      setIsSpeaking(false)
+    }
+
+    window.speechSynthesis.speak(utterance)
+  }, [isSpoken])
+
+
+  useEffect(() => {
+    if (!isSpoken && typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel()
+      setIsSpeaking(false)
+    }
+  }, [isSpoken])
+
+  useEffect(() => {
+    return () => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel()
+      }
+    }
+  }, [])
+
 
   useEffect(() => {
     setMessages([
@@ -208,6 +270,15 @@ export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
       setTimeout(() => inputRef.current?.focus(), 300)
     }
   }, [isOpen])
+
+  useEffect(() => {
+    if (messages.length === 0) return
+    const lastMsg = messages[messages.length - 1]
+    if (lastMsg.sender === 'bot') {
+      speak(lastMsg.text)
+    }
+  }, [messages, isSpoken, speak])
+
 
   const handleSend = async () => {
     const trimmed = input.trim()
@@ -389,9 +460,10 @@ export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
   ]
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
+    <>
+      <AnimatePresence>
+        {isOpen && (
+          <>
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -428,13 +500,32 @@ export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
                   <p className="text-green-400 text-[10px] uppercase tracking-widest font-medium">Online</p>
                 </div>
               </div>
-              <button
-                onClick={onClose}
-                className="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-all"
-              >
-                <X className="w-4 h-4" />
-              </button>
+              <div className="flex items-center gap-2">
+                {/* Voice Narration Opt-In Button */}
+                <button
+                  onClick={() => {
+                    playTick()
+                    setIsSpoken(!isSpoken)
+                  }}
+                  className={`w-8 h-8 rounded-xl flex items-center justify-center border transition-all cursor-pointer ${
+                    isSpoken 
+                      ? 'bg-primary/20 border-primary text-primary shadow-[0_0_8px_rgba(var(--primary-rgb),0.2)]' 
+                      : 'bg-white/5 border-white/10 text-gray-400 hover:text-white'
+                  }`}
+                  title={isSpoken ? 'Mute voice narratives' : 'Enable voice narratives'}
+                >
+                  {isSpoken ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+                </button>
+
+                <button
+                  onClick={onClose}
+                  className="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-all cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
             </div>
+
 
             {/* Messages */}
             <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 scrollbar-thin">
@@ -503,6 +594,30 @@ export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
               <div ref={messagesEndRef} />
             </div>
 
+            {/* Hologram speaking trace */}
+            {isSpeaking && (
+              <div className="px-6 py-2 bg-primary/10 border-t border-white/5 flex items-center justify-between text-[11px] font-mono text-primary animate-pulse">
+                <span className="flex items-center gap-1.5">
+                  <Bot className="w-3.5 h-3.5 animate-bounce" />
+                  Hologram speaking...
+                </span>
+                {/* Micro-wave audio graphic */}
+                <div className="flex gap-0.5 items-end h-3">
+                  {[1, 2, 3, 4, 5, 6].map((bar) => (
+                    <span 
+                      key={bar} 
+                      className="w-0.5 bg-primary rounded-full animate-bounce" 
+                      style={{ 
+                        height: `${Math.random() * 80 + 20}%`,
+                        animationDuration: `${0.3 + bar * 0.1}s`,
+                        animationDelay: `${bar * 0.05}s`
+                      }} 
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Interactive Quick-Reply Chips */}
             <div 
               className="px-4 py-2 border-t border-white/5 bg-black/10 overflow-x-auto scrollbar-none"
@@ -552,5 +667,28 @@ export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
         </>
       )}
     </AnimatePresence>
+
+    {/* Floating Holographic Chatbot Orb Launcher */}
+    {!isOpen && (
+      <motion.button
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.8 }}
+        onClick={() => {
+          playPopover()
+          openChat()
+        }}
+        className="fixed bottom-24 right-6 w-16 h-16 rounded-full border border-white/20 bg-gradient-to-tr from-cyan-500/20 to-purple-500/20 backdrop-blur-md shadow-[0_0_25px_rgba(6,182,212,0.3)] hover:scale-110 active:scale-95 transition-all duration-300 z-[40] flex items-center justify-center cursor-pointer group"
+      >
+        {/* Rotating halo loop */}
+        <div className="absolute inset-1 rounded-full border border-dashed border-cyan-400/40 animate-spin" style={{ animationDuration: '8s' }} />
+        <div className="absolute inset-2 rounded-full border border-dashed border-purple-400/40 animate-spin" style={{ animationDuration: '12s', animationDirection: 'reverse' }} />
+
+        {/* AI Bot Icon */}
+        <Bot className="w-6 h-6 text-cyan-300 group-hover:text-purple-300 transition-colors duration-300 relative z-10" />
+      </motion.button>
+    )}
+    </>
   )
 }
+

@@ -14,6 +14,20 @@ if (typeof window !== 'undefined') {
     const x = e.clientX / window.innerWidth
     currentPan = (x * 2) - 1
   })
+
+  // Gracefully suspend sound context when tab is hidden, and resume when user returns
+  document.addEventListener('visibilitychange', () => {
+    if (!audioCtx) return
+    if (document.hidden) {
+      if (audioCtx.state === 'running') {
+        audioCtx.suspend().catch(() => {})
+      }
+    } else {
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(() => {})
+      }
+    }
+  })
 }
 
 function getAudioContext(): AudioContext | null {
@@ -278,4 +292,121 @@ export function playAmbientPad() {
     console.warn('Ambient pad synthesis failed', error)
   }
 }
+
+let ambientDroneOscillators: OscillatorNode[] = []
+let ambientDroneGainNode: GainNode | null = null
+let ambientDronePanNode: StereoPannerNode | null = null
+
+export function startAmbientDrone() {
+  const ctx = getAudioContext()
+  if (!ctx) return
+
+  // If already initialized, do not re-initialize
+  if (ambientDroneGainNode) return
+
+  try {
+    const now = ctx.currentTime
+
+    // Create master gain
+    ambientDroneGainNode = ctx.createGain()
+    // Start at 0 volume (initially muted)
+    ambientDroneGainNode.gain.setValueAtTime(0, now)
+
+    // Create StereoPannerNode
+    ambientDronePanNode = ctx.createStereoPanner ? ctx.createStereoPanner() : null
+    
+    // Connect nodes
+    const filter = ctx.createBiquadFilter()
+    filter.type = 'lowpass'
+    filter.frequency.setValueAtTime(550, now) // 550Hz warm filter
+    filter.Q.setValueAtTime(1.0, now)
+
+    filter.connect(ambientDroneGainNode)
+
+    if (ambientDronePanNode) {
+      ambientDroneGainNode.connect(ambientDronePanNode)
+      ambientDronePanNode.connect(ctx.destination)
+    } else {
+      ambientDroneGainNode.connect(ctx.destination)
+    }
+
+    // F-Major-9 chord: F2 (87.31), C3 (130.81), A3 (220.00), E4 (329.63), G4 (392.00)
+    const chordFreqs = [87.31, 130.81, 220.00, 329.63, 392.00]
+
+    chordFreqs.forEach((freq, idx) => {
+      const osc = ctx.createOscillator()
+      const oscGain = ctx.createGain()
+
+      // Layered waveforms (sine and triangle)
+      osc.type = idx % 2 === 0 ? 'sine' : 'triangle'
+      osc.frequency.setValueAtTime(freq, now)
+
+      // Balance amplitudes
+      let relativeVolume = 0.12
+      if (idx === 0) relativeVolume = 0.22 // warm deep bass
+      if (osc.type === 'triangle') relativeVolume *= 0.25 // damp harmonics
+
+      oscGain.gain.setValueAtTime(relativeVolume, now)
+
+      osc.connect(oscGain)
+      oscGain.connect(filter)
+
+      osc.start(now)
+      ambientDroneOscillators.push(osc)
+    })
+
+    // Track mouse coordinate for stereo pan balance dynamically
+    if (typeof window !== 'undefined') {
+      window.addEventListener('mousemove', (e) => {
+        if (ambientDronePanNode && ctx.state !== 'closed') {
+          const x = e.clientX / window.innerWidth
+          const panVal = (x * 2) - 1 // -1.0 to 1.0
+          // Smooth panning transition
+          try {
+            ambientDronePanNode.pan.setTargetAtTime(panVal, ctx.currentTime, 0.1)
+          } catch (_) {}
+        }
+      })
+    }
+  } catch (error) {
+    console.warn('Ambient drone initialization failed', error)
+  }
+}
+
+export function setAmbientDroneVolume(volume: number) {
+  const ctx = getAudioContext()
+  if (!ctx || !ambientDroneGainNode) return
+  const now = ctx.currentTime
+  try {
+    ambientDroneGainNode.gain.cancelScheduledValues(now)
+    ambientDroneGainNode.gain.setValueAtTime(ambientDroneGainNode.gain.value, now)
+    ambientDroneGainNode.gain.linearRampToValueAtTime(volume, now + 0.5) // fade over 0.5s
+  } catch (_) {}
+}
+
+export function playCryptoTick() {
+  const ctx = getAudioContext()
+  if (!ctx) return
+
+  try {
+    const now = ctx.currentTime
+    const osc = ctx.createOscillator()
+    const gainNode = ctx.createGain()
+
+    osc.type = 'square'
+    osc.frequency.setValueAtTime(2200, now) // High digital frequency
+
+    // Extremely short transient envelope
+    gainNode.gain.setValueAtTime(0.015, now)
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.012)
+
+    osc.connect(gainNode)
+    gainNode.connect(ctx.destination)
+
+    osc.start(now)
+    osc.stop(now + 0.015)
+  } catch (_) {}
+}
+
+
 

@@ -6,6 +6,7 @@ import { PerspectiveCamera, Environment } from '@react-three/drei'
 import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing'
 import { useThemeStore } from '@/store/useThemeStore'
 import { useScrollStore } from '@/store/useScrollStore'
+import { usePerformanceStore } from '@/store/usePerformanceStore'
 import Experience from './Experience'
 
 // Robust Error Boundary to isolate 3D failures and prevent site-wide blank screen crashes
@@ -43,6 +44,7 @@ class SceneErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryStat
 export default function Scene() {
   const theme = useThemeStore((state) => state.theme)
   const setIsCanvasVisible = useScrollStore((state) => state.setIsCanvasVisible)
+  const performanceMode = usePerformanceStore((state) => state.performanceMode)
   const [webglSupported, setWebglSupported] = useState<boolean | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -113,11 +115,7 @@ export default function Scene() {
     </div>
   )
 
-  if (webglSupported === null) {
-    return fallbackStaticBackdrop
-  }
-
-  if (!webglSupported) {
+  if (webglSupported === null || !webglSupported || performanceMode) {
     return fallbackStaticBackdrop
   }
 

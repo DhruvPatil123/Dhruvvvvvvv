@@ -7,7 +7,7 @@ const EXPERIENCE = [
   {
     role: 'B.Tech in Artificial Intelligence',
     company: 'J.D. College of Engineering and Management',
-    period: 'Aug 2023 - Present',
+    period: 'Aug 2025 - Present',
     description: 'Pursuing degree with a strong focus on NLP, LLMs, Generative AI, and Agentic workflows. Maintaining an outstanding academic standing with a CGPA of 8.76.',
     skills: ['GenAI', 'LLMs', 'Agentic AI']
   },

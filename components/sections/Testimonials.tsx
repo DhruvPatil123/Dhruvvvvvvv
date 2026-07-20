@@ -31,7 +31,7 @@ const TESTIMONIALS = [
   {
     name: 'Prof. Rajesh Mehta',
     role: 'Department of AI, JDCOEM',
-    content: "Dhruv demonstrates a strong research mindset in Agentic AI and RAG systems. His project TenderScan.AI showed remarkable natural language processing classification performance."
+    content: "Dhruv demonstrates a strong research mindset in Agentic AI and RAG systems. His project Dockmind showed remarkable natural language processing classification performance."
   }
 ]
 

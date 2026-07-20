@@ -20,9 +20,11 @@ import {
   RefreshCw,
   FileText,
   Check,
-  Shield
+  Shield,
+  Download
 } from 'lucide-react'
-import { playTick, playPopover, playAmbientPad, playNotification } from '@/lib/sounds'
+import { playTick, playPopover, playAmbientPad, playNotification, playCryptoTick } from '@/lib/sounds'
+
 
 interface ProjectMetric {
   label: string
@@ -369,14 +371,14 @@ const PROJECTS: Project[] = [
   {
     title: 'EncryptX',
     category: 'Cryptography',
-    description: 'Security desktop toolkit implementing multi-layered algorithms (AES, DES, RSA) for bulletproof digital asset encryption.',
+    description: 'Security desktop toolkit implementing multi-layered algorithms (AES, DES, RSA) for hardware-accelerated digital asset encryption.',
     longDescription: 'A high-grade encryption environment packaged for secure computing. It maps modern encryption algorithms to simple visual interfaces, utilizing multithreaded system threads to encrypt massive digital assets and directories without blocking user interactions.',
     link: 'https://github.com/DhruvPatil123/EncryptX-Encryption-Decryption-Tool',
     github: 'https://github.com/DhruvPatil123/EncryptX-Encryption-Decryption-Tool',
     tech: ['Electron', 'AES-256', 'RSA', 'C++'],
     metrics: [
       { label: 'Encrypt Speed', value: '450 MB / sec', percent: 95 },
-      { label: 'Cracking Def', value: 'Mathematically Immune', percent: 100 },
+      { label: 'Cracking Def', value: 'AES-256 / RSA-4096', percent: 100 },
       { label: 'Memory Cost', value: '28 MB base', percent: 91 }
     ],
     architecture: [
@@ -531,12 +533,26 @@ function ProjectCard({ project, idx, onOpen }: { project: Project; idx: number; 
           {project.description}
         </p>
 
-        {/* Tech Stack Chips */}
-        <div className="flex flex-wrap gap-2 pt-2">
+        {/* Outcomes & Performance Metrics - Leads over tech tags to establish high technical credibility */}
+        <div className="grid grid-cols-3 gap-3 bg-white/[0.02] border border-white/5 rounded-2xl p-4.5">
+          {project.metrics.slice(0, 3).map((metric) => (
+            <div key={metric.label} className="flex flex-col gap-1 text-left">
+              <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest leading-none">
+                {metric.label}
+              </span>
+              <span className="text-sm md:text-base font-sans font-bold text-primary tracking-tight leading-none">
+                {metric.value}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* Tech Stack Chips - Secondary weight below outcomes */}
+        <div className="flex flex-wrap gap-1.5 pt-1">
           {project.tech.map((tech) => (
             <span 
               key={tech} 
-              className="px-3 py-1 rounded-full bg-white/[0.03] border border-white/5 text-gray-400 font-mono text-[10px] tracking-wider uppercase"
+              className="px-2.5 py-1 rounded-lg bg-white/[0.01] border border-white/5 text-gray-400 font-mono text-[9px] tracking-wider uppercase"
             >
               {tech}
             </span>
@@ -583,6 +599,29 @@ function ProjectDetailsModal({ project, onClose }: { project: Project; onClose: 
   const [generatedSvgPrompt, setGeneratedSvgPrompt] = useState<string | null>(null)
   const [generationLogs, setGenerationLogs] = useState<string[]>([])
 
+  // VisionCraft Parameters State
+  const [complexity, setComplexity] = useState(12)
+  const [spinSpeed, setSpinSpeed] = useState(15)
+  const [hueOffset, setHueOffset] = useState(0)
+
+  const handleDownloadSvg = () => {
+    const svgElement = document.getElementById('visioncraft-svg')
+    if (!svgElement) return
+
+    playAmbientPad()
+    const svgString = new XMLSerializer().serializeToString(svgElement)
+    const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' })
+    const url = URL.createObjectURL(svgBlob)
+
+    const downloadLink = document.createElement('a')
+    downloadLink.href = url
+    downloadLink.download = 'visioncraft-artwork.svg'
+    document.body.appendChild(downloadLink)
+    downloadLink.click()
+    document.body.removeChild(downloadLink)
+    URL.revokeObjectURL(url)
+  }
+
   // EncryptX Sandbox State
   const [isDragging, setIsDragging] = useState(false)
   const [fileContent, setFileContent] = useState<string | null>(null)
@@ -593,6 +632,18 @@ function ProjectDetailsModal({ project, onClose }: { project: Project; onClose: 
   const [cipherText, setCipherText] = useState<string>('')
   const [binaryStreams, setBinaryStreams] = useState<string[]>([])
   const [isDecrypted, setIsDecrypted] = useState(true)
+
+  // EncryptX Hex State
+  const [isHexInspector, setIsHexInspector] = useState(false)
+
+  const convertToHexStream = (str: string) => {
+    if (!str) return ''
+    return str
+      .split('')
+      .map(char => char.charCodeAt(0).toString(16).toUpperCase().padStart(2, '0'))
+      .join(' ')
+  }
+
 
   useEffect(() => {
     // Auto scroll terminal to bottom
@@ -658,6 +709,8 @@ function ProjectDetailsModal({ project, onClose }: { project: Project; onClose: 
         ])
       } else {
         setEncryptionProgress(currentProgress)
+        playCryptoTick()
+
 
         // Scramble the binary display grid randomly
         setBinaryStreams(prev => prev.map(row => {
@@ -797,30 +850,30 @@ function ProjectDetailsModal({ project, onClose }: { project: Project; onClose: 
     let themeType = "cosmic"
 
     if (lowercasePrompt.includes("neon") || lowercasePrompt.includes("cyberpunk") || lowercasePrompt.includes("synthwave")) {
-      primaryColor = "#f43f5e"
-      secondaryColor = "#a855f7"
+      primaryColor = `hsl(${(340 + hueOffset) % 360}, 95%, 60%)`
+      secondaryColor = `hsl(${(270 + hueOffset) % 360}, 95%, 60%)`
       themeType = "neon"
     } else if (lowercasePrompt.includes("forest") || lowercasePrompt.includes("green") || lowercasePrompt.includes("emerald") || lowercasePrompt.includes("nature")) {
-      primaryColor = "#10b981"
-      secondaryColor = "#06b6d4"
+      primaryColor = `hsl(${(150 + hueOffset) % 360}, 85%, 50%)`
+      secondaryColor = `hsl(${(190 + hueOffset) % 360}, 85%, 50%)`
       themeType = "forest"
     } else if (lowercasePrompt.includes("monolith") || lowercasePrompt.includes("dark") || lowercasePrompt.includes("minimal")) {
-      primaryColor = "#f59e0b"
-      secondaryColor = "#64748b"
+      primaryColor = `hsl(${(35 + hueOffset) % 360}, 95%, 50%)`
+      secondaryColor = `hsl(${(210 + hueOffset) % 360}, 15%, 45%)`
       themeType = "monolith"
     } else if (lowercasePrompt.includes("cobalt") || lowercasePrompt.includes("vortex") || lowercasePrompt.includes("blue") || lowercasePrompt.includes("ocean")) {
-      primaryColor = "#3b82f6"
-      secondaryColor = "#06b6d4"
+      primaryColor = `hsl(${(220 + hueOffset) % 360}, 85%, 55%)`
+      secondaryColor = `hsl(${(190 + hueOffset) % 360}, 85%, 50%)`
       themeType = "cobalt"
     } else {
       const hues = [190, 260, 310, 150, 35]
-      const chosenHue = hues[seed % hues.length]
+      const chosenHue = (hues[seed % hues.length] + hueOffset) % 360
       primaryColor = `hsl(${chosenHue}, 90%, 65%)`
       secondaryColor = `hsl(${(chosenHue + 130) % 360}, 90%, 55%)`
     }
 
     const points: {x: number; y: number; r: number}[] = []
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < complexity; i++) {
       const angle = ((seed + i * 31) % 360) * (Math.PI / 180)
       const distance = 40 + ((seed * (i + 1)) % 90)
       const x = 200 + Math.cos(angle) * distance
@@ -831,7 +884,7 @@ function ProjectDetailsModal({ project, onClose }: { project: Project; onClose: 
 
     return (
       <div className="relative w-full aspect-square rounded-2xl overflow-hidden border border-white/5 bg-zinc-950/40 p-4 flex items-center justify-center">
-        <svg viewBox="0 0 400 400" className="w-full h-full max-w-[340px] max-h-[340px] drop-shadow-[0_0_15px_rgba(255,255,255,0.03)]">
+        <svg id="visioncraft-svg" viewBox="0 0 400 400" className="w-full h-full max-w-[340px] max-h-[340px] drop-shadow-[0_0_15px_rgba(255,255,255,0.03)]">
           <defs>
             <radialGradient id={`bgGlow-${seed}`} cx="50%" cy="50%" r="70%">
               <stop offset="0%" stopColor={primaryColor} stopOpacity="0.2" />
@@ -866,8 +919,8 @@ function ProjectDetailsModal({ project, onClose }: { project: Project; onClose: 
 
           {themeType === "neon" && (
             <g>
-              <circle cx="200" cy="200" r="105" fill="none" stroke={`url(#grad-${seed})`} strokeWidth="3" strokeDasharray="120 50" className="animate-spin" style={{ transformOrigin: 'center', animationDuration: '18s' }} />
-              <circle cx="200" cy="200" r="75" fill="none" stroke={secondaryColor} strokeWidth="1.5" strokeDasharray="50 15" className="animate-spin" style={{ transformOrigin: 'center', animationDuration: '9s', animationDirection: 'reverse' }} />
+              <circle cx="200" cy="200" r="105" fill="none" stroke={`url(#grad-${seed})`} strokeWidth="3" strokeDasharray="120 50" className="animate-spin" style={{ transformOrigin: 'center', animationDuration: `${spinSpeed}s` }} />
+              <circle cx="200" cy="200" r="75" fill="none" stroke={secondaryColor} strokeWidth="1.5" strokeDasharray="50 15" className="animate-spin" style={{ transformOrigin: 'center', animationDuration: `${spinSpeed / 2}s`, animationDirection: 'reverse' }} />
               <polygon points="200,110 280,240 120,240" fill="none" stroke={primaryColor} strokeWidth="2.5" opacity="0.7" />
               <polygon points="200,290 280,160 120,160" fill="none" stroke={secondaryColor} strokeWidth="1" opacity="0.5" />
               <circle cx="200" cy="200" r="12" fill={`url(#grad-${seed})`} filter="url(#glowFilter)" className="animate-pulse" />
@@ -876,8 +929,8 @@ function ProjectDetailsModal({ project, onClose }: { project: Project; onClose: 
 
           {themeType === "forest" && (
             <g>
-              {Array.from({ length: 6 }).map((_, i) => {
-                const rotateAngle = i * 60 + (seed % 30)
+              {Array.from({ length: Math.max(3, Math.floor(complexity / 2)) }).map((_, i) => {
+                const rotateAngle = i * (360 / Math.max(3, Math.floor(complexity / 2))) + (seed % 30)
                 return (
                   <path
                     key={i}
@@ -910,8 +963,8 @@ function ProjectDetailsModal({ project, onClose }: { project: Project; onClose: 
 
           {themeType === "cobalt" && (
             <g>
-              {Array.from({ length: 6 }).map((_, i) => {
-                const r = 50 + i * 22
+              {Array.from({ length: Math.max(3, Math.floor(complexity / 2)) }).map((_, i) => {
+                const r = 50 + i * (120 / Math.max(3, Math.floor(complexity / 2)))
                 return (
                   <circle
                     key={i}
@@ -923,7 +976,7 @@ function ProjectDetailsModal({ project, onClose }: { project: Project; onClose: 
                     strokeWidth="1.25"
                     strokeDasharray={`${r / 2} ${r / 3}`}
                     className="animate-spin"
-                    style={{ transformOrigin: 'center', animationDuration: `${10 + i * 2.5}s`, animationDirection: i % 2 === 0 ? 'normal' : 'reverse' }}
+                    style={{ transformOrigin: 'center', animationDuration: `${spinSpeed + i * 2.5}s`, animationDirection: i % 2 === 0 ? 'normal' : 'reverse' }}
                   />
                 )
               })}
@@ -1262,6 +1315,73 @@ function ProjectDetailsModal({ project, onClose }: { project: Project; onClose: 
 
                     {/* Inputs & Quick Prompt Options */}
                     <div className="space-y-3">
+                      {generatedSvgPrompt && !isGenerating && (
+                        <div className="p-3.5 rounded-xl border border-white/5 bg-zinc-950/40 space-y-3">
+                          <div className="flex justify-between items-center">
+                            <span className="text-[9px] font-mono text-gray-400 uppercase tracking-widest font-semibold">Artwork Parameters</span>
+                            <button
+                              onClick={handleDownloadSvg}
+                              className="px-2.5 py-1 rounded bg-primary/10 hover:bg-primary/20 border border-primary/20 hover:border-primary/40 text-[9px] text-primary font-mono transition-all flex items-center gap-1.5 cursor-pointer shadow-[0_0_12px_rgba(var(--primary-rgb),0.1)]"
+                            >
+                              <Download className="w-3 h-3" /> Download Vector Asset
+                            </button>
+                          </div>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-[10px] font-mono">
+                             {/* Complexity slider */}
+                            <div className="space-y-1.5">
+                              <div className="flex justify-between text-zinc-500 text-[9px]">
+                                <span>COMPLEXITY</span>
+                                <span className="text-primary font-bold">{complexity} shapes</span>
+                              </div>
+                              <input
+                                type="range"
+                                min="3"
+                                max="18"
+                                value={complexity}
+                                onChange={(e) => { playTick(); setComplexity(parseInt(e.target.value)); }}
+                                className="w-full accent-primary h-1 bg-white/5 rounded-lg appearance-none cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/60 focus-visible:ring-offset-1 focus-visible:ring-offset-black"
+                                aria-label="Artwork complexity (number of shapes)"
+                              />
+                            </div>
+
+                            {/* Spin Speed slider */}
+                            <div className="space-y-1.5">
+                              <div className="flex justify-between text-zinc-500 text-[9px]">
+                                <span>SPIN DURATION</span>
+                                <span className="text-primary font-bold">{spinSpeed}s</span>
+                              </div>
+                              <input
+                                type="range"
+                                min="5"
+                                max="30"
+                                value={spinSpeed}
+                                onChange={(e) => { playTick(); setSpinSpeed(parseInt(e.target.value)); }}
+                                className="w-full accent-primary h-1 bg-white/5 rounded-lg appearance-none cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/60 focus-visible:ring-offset-1 focus-visible:ring-offset-black"
+                                aria-label="Artwork spin duration in seconds"
+                              />
+                            </div>
+
+                            {/* Hue Offset slider */}
+                            <div className="space-y-1.5">
+                              <div className="flex justify-between text-zinc-500 text-[9px]">
+                                <span>HUE SHIFT</span>
+                                <span className="text-primary font-bold">{hueOffset}°</span>
+                              </div>
+                              <input
+                                type="range"
+                                min="0"
+                                max="360"
+                                value={hueOffset}
+                                onChange={(e) => { playTick(); setHueOffset(parseInt(e.target.value)); }}
+                                className="w-full accent-primary h-1 bg-white/5 rounded-lg appearance-none cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/60 focus-visible:ring-offset-1 focus-visible:ring-offset-black"
+                                aria-label="Artwork hue shift in degrees"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
                       <div className="flex flex-wrap gap-1.5 items-center">
                         <span className="text-[9px] text-gray-500 uppercase font-mono tracking-wider mr-1">Inspirations:</span>
                         {[
@@ -1436,7 +1556,21 @@ function ProjectDetailsModal({ project, onClose }: { project: Project; onClose: 
                         <div className="p-4 rounded-xl border border-white/5 bg-zinc-950/50 space-y-2">
                           <div className="flex justify-between items-center text-[10px] font-mono">
                             <span className="text-gray-400 uppercase tracking-wider">CRYPTOGRAPHIC BUFFER</span>
-                            <span className="text-primary font-bold">{isEncrypting ? `${encryptionProgress}% SCRAMBLING` : "LOCKED"}</span>
+                            <div className="flex items-center gap-2">
+                              {!isEncrypting && (
+                                <button
+                                  onClick={() => { playTick(); setIsHexInspector(!isHexInspector); }}
+                                  className={`px-2 py-0.5 rounded border text-[9px] font-mono transition-all flex items-center gap-1 cursor-pointer ${
+                                    isHexInspector 
+                                      ? 'bg-primary/20 border-primary text-primary shadow-[0_0_8px_rgba(var(--primary-rgb),0.15)]' 
+                                      : 'bg-white/[0.02] border-white/10 text-gray-400 hover:border-white/25'
+                                  }`}
+                                >
+                                  HEX INSPECTOR {isHexInspector ? 'ON' : 'OFF'}
+                                </button>
+                              )}
+                              <span className="text-primary font-bold">{isEncrypting ? `${encryptionProgress}% SCRAMBLING` : "LOCKED"}</span>
+                            </div>
                           </div>
 
                           {isEncrypting ? (
@@ -1450,7 +1584,15 @@ function ProjectDetailsModal({ project, onClose }: { project: Project; onClose: 
                             <div className="space-y-3">
                               <div className="p-2.5 rounded bg-black border border-white/5 text-[10.5px] font-mono text-zinc-300 break-all select-all flex justify-between items-center">
                                 <span className="font-mono text-gray-300">
-                                  {isDecrypted ? fileContent?.substring(0, 42) + (fileContent && fileContent.length > 42 ? "..." : "") : cipherText}
+                                  {isHexInspector ? (
+                                    isDecrypted 
+                                      ? convertToHexStream(fileContent?.substring(0, 20) || '') + (fileContent && fileContent.length > 20 ? " ..." : "")
+                                      : convertToHexStream(cipherText.substring(0, 20)) + (cipherText.length > 20 ? " ..." : "")
+                                  ) : (
+                                    isDecrypted 
+                                      ? fileContent?.substring(0, 42) + (fileContent && fileContent.length > 42 ? "..." : "") 
+                                      : cipherText
+                                  )}
                                 </span>
                                 {isDecrypted ? (
                                   <span className="text-[8px] uppercase tracking-wider font-bold bg-gray-500/10 text-gray-400 px-1.5 py-0.5 rounded">
@@ -1462,6 +1604,7 @@ function ProjectDetailsModal({ project, onClose }: { project: Project; onClose: 
                                   </span>
                                 )}
                               </div>
+
 
                               <div className="flex gap-2">
                                 <button

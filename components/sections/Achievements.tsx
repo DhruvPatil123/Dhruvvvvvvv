@@ -216,7 +216,7 @@ export default function Achievements() {
                   )}
                 </div>
                 <p className="text-[11px] font-sans text-gray-400 mt-1">
-                  Active tier standing among global algorithmic problem solvers.
+                  Active tier standing among millions of global algorithmic problem solvers (Top 8%).
                 </p>
               </div>
 

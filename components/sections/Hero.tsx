@@ -137,60 +137,41 @@ export default function Hero() {
             </span>
           </h1>
 
-          {/* Subheading Tagline (Typewriter Effect) */}
-          <div className="flex items-center justify-center gap-2 min-h-[24px]">
-            <div className="font-mono text-xs sm:text-sm uppercase tracking-[0.2em] text-secondary font-bold flex items-center justify-center text-center">
-              {mounted ? (
-                <Typewriter
-                  options={{
-                    strings: [
-                      'AI Research Engineer',
-                      'LLM & RAG Systems Architect',
-                      'Agentic AI Tooling Specialist',
-                      'Full-Stack Dev / Product Engineer'
-                    ],
-                    autoStart: true,
-                    loop: true,
-                    delay: 45,
-                    deleteSpeed: 30,
-                    wrapperClassName: 'text-secondary font-bold uppercase tracking-[0.2em]',
-                    cursorClassName: 'text-primary animate-pulse font-mono ml-1'
-                  }}
-                />
-              ) : (
-                <span className="text-secondary font-bold uppercase tracking-[0.2em]">AI Research Engineer</span>
-              )}
-            </div>
+          {/* Subheading Tagline (Recruiter Suggested Clear Positioning) */}
+          <div className="flex flex-col items-center justify-center gap-2 mt-2">
+            <p className="font-mono text-sm sm:text-base md:text-lg uppercase tracking-[0.25em] text-secondary font-bold">
+              AI Engineer <span className="text-primary/60 mx-1.5">•</span> Full-Stack Developer
+            </p>
           </div>
         </div>
 
-        {/* Refined Shorter Paragraph */}
-        <p className="text-gray-300/90 font-sans text-base md:text-lg max-w-2xl mx-auto leading-[1.7] tracking-normal">
-          Building AI-powered products, autonomous agents, and immersive web experiences with modern technologies.
+        {/* Refined Shorter Paragraph (Recruiter Suggested Goal) */}
+        <p className="text-gray-200 font-sans text-lg sm:text-xl md:text-2xl font-light max-w-2xl mx-auto leading-relaxed tracking-wide glow-text-subtle">
+          Building AI products that solve real-world problems.
         </p>
 
-        {/* Action Buttons with increased spacing */}
-        <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 justify-center items-center pt-2">
-          {/* Explore Work: Glass effect with bright text and cyan arrow */}
+        {/* Action Buttons simplified to exactly ONE primary CTA for absolute focal clarity */}
+        <div className="flex flex-col items-center pt-2">
+          {/* Primary CTA: High-end glowing glass capsule */}
           <a
             href="#work"
-            className="group active-tactile w-full sm:w-auto glass-effect hover:bg-white/10 text-white font-mono text-xs uppercase tracking-widest px-8 py-4 rounded-full font-bold flex items-center justify-center gap-2 border border-white/10 hover:border-white/25 transition-all duration-300 cursor-pointer"
+            className="group active-tactile w-full sm:w-auto bg-primary text-black font-mono text-xs uppercase tracking-widest px-10 py-4.5 rounded-full font-bold flex items-center justify-center gap-2 hover:bg-white transition-all duration-300 shadow-[0_0_30px_rgba(var(--primary-rgb),0.3)] hover:shadow-[0_0_40px_rgba(255,255,255,0.4)] cursor-pointer"
           >
             Explore Work 
-            <ArrowRight className="w-4 h-4 text-primary transition-transform duration-300 group-hover:translate-x-1.5" />
+            <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1.5" />
           </a>
           
-          {/* Download Resume: Glass effect with bright text and emerald/secondary download arrow */}
-          <div className="relative w-full sm:w-auto" ref={themeSelectorRef}>
+          {/* Secondary Action: Muted, humble text link for resume downloading that doesn't compete visually */}
+          <div className="relative mt-4" ref={themeSelectorRef}>
             <button
               onClick={() => {
                 setShowThemes(!showThemes)
                 playPopover()
               }}
-              className="group active-tactile w-full sm:w-auto glass-effect hover:bg-white/10 text-white font-mono text-xs uppercase tracking-widest px-8 py-4 rounded-full font-bold flex items-center justify-center gap-2 border border-white/10 hover:border-white/25 transition-all duration-300 cursor-pointer"
+              className="group text-[10px] font-mono uppercase tracking-[0.2em] text-zinc-400 hover:text-white transition-colors duration-300 cursor-pointer flex items-center gap-1.5"
             >
-              Get Resume 
-              <Download className="w-4 h-4 text-secondary transition-transform duration-300 group-hover:translate-y-0.5" />
+              <Download className="w-3.5 h-3.5 text-zinc-500 group-hover:text-primary transition-colors" />
+              Download Resume / Theme Selector
             </button>
 
             <AnimatePresence>
@@ -200,7 +181,7 @@ export default function Hero() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 15, scale: 0.95 }}
                   transition={{ duration: 0.2, ease: 'easeOut' }}
-                  className="absolute z-50 mt-3 left-1/2 -translate-x-1/2 sm:left-auto sm:right-0 sm:translate-x-0 w-64 glass-effect border border-white/10 rounded-2xl p-4 shadow-[0_10px_40px_rgba(0,0,0,0.5)] backdrop-blur-xl space-y-3"
+                  className="absolute z-50 mt-3 left-1/2 -translate-x-1/2 w-64 glass-effect border border-white/10 rounded-2xl p-4 shadow-[0_10px_40px_rgba(0,0,0,0.5)] backdrop-blur-xl space-y-3"
                 >
                   <div className="text-left">
                     <p className="text-white text-xs font-mono uppercase tracking-wider font-bold mb-1">Select Resume Theme</p>
