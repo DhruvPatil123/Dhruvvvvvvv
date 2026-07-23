@@ -34,9 +34,9 @@ const PORTFOLIO_DATA = {
   },
 
   skills: {
-    ai: ['PyTorch', 'TensorFlow', 'Hugging Face', 'LangChain', 'LlamaIndex', 'RAG', 'LLMs', 'Agentic Workflows', 'Computer Vision'],
-    web: ['React 19', 'Next.js', 'Node.js', 'TypeScript', 'FastAPI', 'PostgreSQL', 'Tailwind CSS', 'Firebase', 'WebSockets'],
-    systems: ['C++', 'Java (Advanced)', '.NET Core', 'C#', 'Cryptography', 'Software Testing', 'Git', 'Figma Prototyping'],
+    ai: ['Python', 'LLM', 'RAG', 'BI/DA/DS', 'PyTorch', 'TensorFlow', 'Hugging Face', 'LangChain', 'Agentic Workflows'],
+    web: ['React', 'Node.js', 'TypeScript', 'Java', 'Supabase', 'Vercel', 'Next.js', 'FastAPI', 'PostgreSQL'],
+    systems: ['Docker', 'Kubernetes', 'GitHub Actions', 'CI/CD', 'C++', 'Git', '.NET Core', 'Software Testing'],
   },
 
   education: [
@@ -69,6 +69,21 @@ const PORTFOLIO_DATA = {
 // ── Intent Matching ──────────────────────────────────────────────────
 function generateResponse(input: string): string {
   const q = input.toLowerCase().trim()
+
+  // Strongest backend stack
+  if (/strongest backend|backend stack|backend tech/i.test(q)) {
+    return `Dhruv's strongest backend stack combines **Node.js, Next.js App Router, FastAPI (Python), and Java/C++** for high-performance microservices, paired with **PostgreSQL, Supabase**, and **Docker** containerization. He designs low-latency WebSocket streaming APIs and robust RESTful architectures.`
+  }
+
+  // Cloud & AI
+  if (/cloud & ai|cloud and ai|cloud.*ai|experience with cloud/i.test(q)) {
+    return `Dhruv's Cloud & AI expertise includes:\n\n• **GenAI & Deep Learning Internship** @ EduSkills / AICTE — optimizing LLM pipelines and GAN architectures.\n• **Multimodal Live APIs & RAG Systems**: Built **Raincrew.AI** (Google Gemini Live WebSocket streaming) and **Dockmind** (vector-based RAG engine).\n• **Cloud & DevOps Tools**: Containerization with **Docker**, orchestration with **Kubernetes**, automated CI/CD with **GitHub Actions**, and cloud deployments on Vercel & GCP.`
+  }
+
+  // C++ and Docker
+  if (/(c\+\+.*docker|docker.*c\+\+|projects showcase c\+\+)/i.test(q)) {
+    return `Projects showcasing Dhruv's proficiency in **C++ and Docker**:\n\n1. **EncryptX**: Desktop encryption toolkit utilizing C++ native hardware bindings for lightning-fast AES-256 and RSA cryptography.\n2. **AutoForge.AI**: Autonomous software agent utilizing **Docker container sandboxes** for isolated code execution, test automation, and self-healing build loops.`
+  }
 
   // Greetings
   if (/^(hi|hello|hey|yo|sup|what'?s? up|howdy|hola)/i.test(q)) {
@@ -179,7 +194,7 @@ interface ChatbotProps {
 }
 
 export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
-  const openChat = useChatStore((state) => state.openChat)
+  const { openChat, pendingPrompt, clearPendingPrompt } = useChatStore()
   const [isSpoken, setIsSpoken] = useState(false)
   const [isSpeaking, setIsSpeaking] = useState(false)
 
@@ -188,6 +203,63 @@ export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
   const [isTyping, setIsTyping] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  const sendPrompt = useCallback(async (query: string, displayText?: string) => {
+    playTick()
+
+    const userMsg: Message = {
+      id: Date.now(),
+      text: displayText || query,
+      sender: 'user',
+      timestamp: new Date(),
+    }
+
+    setMessages((prev) => {
+      const updatedMessages = [...prev, userMsg]
+      
+      fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: updatedMessages }),
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error('API failed')
+          return res.json()
+        })
+        .then((data) => {
+          setIsTyping(false)
+          setMessages((p) => [
+            ...p,
+            { id: Date.now() + 1, text: data.text, sender: 'bot', timestamp: new Date() },
+          ])
+          playNotification()
+        })
+        .catch((error) => {
+          console.warn('Dynamic prompt failing, falling back to local database:', error)
+          setTimeout(() => {
+            const botResponse = generateResponse(query)
+            setIsTyping(false)
+            setMessages((p) => [
+              ...p,
+              { id: Date.now() + 1, text: botResponse, sender: 'bot', timestamp: new Date() },
+            ])
+            playNotification()
+          }, 800)
+        })
+
+      return updatedMessages
+    })
+
+    setInput('')
+    setIsTyping(true)
+  }, [])
+
+  useEffect(() => {
+    if (isOpen && pendingPrompt) {
+      sendPrompt(pendingPrompt.query, pendingPrompt.label)
+      clearPendingPrompt()
+    }
+  }, [isOpen, pendingPrompt, clearPendingPrompt, sendPrompt])
 
   const speak = useCallback((text: string) => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
@@ -340,53 +412,6 @@ export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
     }
   }
 
-  const sendPrompt = async (query: string, displayText?: string) => {
-    playTick()
-
-    const userMsg: Message = {
-      id: Date.now(),
-      text: displayText || query,
-      sender: 'user',
-      timestamp: new Date(),
-    }
-
-    const updatedMessages = [...messages, userMsg]
-    setMessages(updatedMessages)
-    setInput('')
-    setIsTyping(true)
-
-    try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: updatedMessages }),
-      })
-
-      if (!response.ok) {
-        throw new Error('API failed')
-      }
-
-      const data = await response.json()
-      setIsTyping(false)
-      setMessages((prev) => [
-        ...prev,
-        { id: Date.now() + 1, text: data.text, sender: 'bot', timestamp: new Date() },
-      ])
-      playNotification()
-    } catch (error) {
-      console.warn('Dynamic prompt failing, falling back to local database:', error)
-      setTimeout(() => {
-        const botResponse = generateResponse(query)
-        setIsTyping(false)
-        setMessages((prev) => [
-          ...prev,
-          { id: Date.now() + 1, text: botResponse, sender: 'bot', timestamp: new Date() },
-        ])
-        playNotification()
-      }, 1000)
-    }
-  }
-
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
@@ -452,11 +477,14 @@ export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
   }
 
   const quickQuestions = [
-    { label: '🏆 LeetCode Rank', query: 'LeetCode Rank' },
-    { label: '🚀 Top Projects', query: 'Best AI projects?' },
-    { label: '📬 Let\'s Connect', query: 'How to contact?' },
-    { label: '💼 Experience', query: 'Experience' },
-    { label: '🎓 Education', query: 'Education' },
+    { label: "⚡ Strongest Backend Stack", query: "What is Dhruv's strongest backend stack?" },
+    { label: "☁️ Cloud & AI Experience", query: "Summarize Dhruv's experience with Cloud & AI" },
+    { label: "🛠️ Projects with C++ & Docker", query: "Which projects showcase C++ and Docker?" },
+    { label: '🏆 LeetCode Rank & Stats', query: 'What is Dhruv\'s LeetCode rank and stats?' },
+    { label: '🚀 Top AI Projects', query: 'What are Dhruv\'s top AI projects?' },
+    { label: '💼 Experience & Internships', query: 'Summarize Dhruv\'s experience and internships' },
+    { label: '🎓 Education & CGPA', query: 'What is Dhruv\'s education and CGPA?' },
+    { label: '📬 Let\'s Connect', query: 'How to contact Dhruv?' },
   ]
 
   return (
@@ -620,18 +648,24 @@ export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
 
             {/* Interactive Quick-Reply Chips */}
             <div 
-              className="px-4 py-2 border-t border-white/5 bg-black/10 overflow-x-auto scrollbar-none"
-              style={{
-                scrollbarWidth: 'none',
-                msOverflowStyle: 'none',
-              }}
+              className="px-4 py-2 border-t border-white/10 bg-black/20"
             >
-              <div className="flex gap-2 flex-nowrap pb-0.5">
+              <div className="flex items-center gap-1.5 mb-1.5 text-[10px] uppercase font-mono tracking-widest text-primary/80">
+                <Sparkles className="w-3 h-3 text-primary animate-pulse" />
+                <span>Suggested AI Prompts</span>
+              </div>
+              <div 
+                className="flex gap-2 overflow-x-auto pb-1 scrollbar-none"
+                style={{
+                  scrollbarWidth: 'none',
+                  msOverflowStyle: 'none',
+                }}
+              >
                 {quickQuestions.map((q) => (
                   <button
                     key={q.label}
                     onClick={() => sendPrompt(q.query, q.label)}
-                    className="px-3 py-1.5 rounded-full text-[11px] font-medium bg-white/5 text-zinc-300 hover:text-primary hover:bg-primary/10 border border-white/5 hover:border-primary/30 transition-all duration-300 shadow-sm flex items-center gap-1.5 whitespace-nowrap active:scale-95 cursor-pointer hover:shadow-[0_0_12px_rgba(0,242,255,0.12)]"
+                    className="px-3 py-1.5 rounded-full text-[11px] font-medium bg-white/5 text-zinc-300 hover:text-primary hover:bg-primary/10 border border-white/10 hover:border-primary/40 transition-all duration-300 shadow-sm flex items-center gap-1.5 whitespace-nowrap active:scale-95 cursor-pointer hover:shadow-[0_0_12px_rgba(0,242,255,0.15)]"
                   >
                     {q.label}
                   </button>

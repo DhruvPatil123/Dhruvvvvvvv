@@ -2,7 +2,9 @@
 
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Send, Mail, Phone, Globe } from 'lucide-react'
+import { Send, Mail, Phone, Globe, Calendar, MessageSquare, Zap } from 'lucide-react'
+import MeetingScheduler from '@/components/MeetingScheduler'
+import { useRecruiterStore } from '@/store/useRecruiterStore'
 
 const CONTACT_EMAIL = 'sujalpatil8657231278@gmail.com'
 
@@ -12,8 +14,10 @@ type ContactResponse = {
 }
 
 export default function Contact() {
+  const [activeTab, setActiveTab] = useState<'message' | 'schedule'>('message')
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')
   const [feedback, setFeedback] = useState('')
+  const openRecruiterView = useRecruiterStore((state) => state.openRecruiterView)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -131,6 +135,20 @@ export default function Contact() {
                 <p className="text-base md:text-lg font-display font-medium mt-0.5">Nagpur, Maharashtra, India</p>
               </div>
             </div>
+
+            {/* Recruiter View Callout Badge */}
+            <div className="pt-4">
+              <button
+                onClick={openRecruiterView}
+                className="w-full p-4 rounded-2xl bg-cyan-950/40 hover:bg-cyan-900/30 border border-cyan-500/30 text-cyan-300 font-mono text-xs uppercase tracking-wider font-bold flex items-center justify-between transition-all group cursor-pointer"
+              >
+                <div className="flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-cyan-400" />
+                  <span>In a hurry? Open 30s Recruiter Brief</span>
+                </div>
+                <span className="text-cyan-400 group-hover:translate-x-1 transition-transform">→</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -139,64 +157,97 @@ export default function Contact() {
           whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="glass-effect p-6 sm:p-8 md:p-12 rounded-3xl border border-white/5"
+          className="space-y-4"
         >
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-gray-400 font-mono text-[10px] uppercase tracking-widest font-bold ml-1">Name</label>
-                <input
-                  required
-                  name="name"
-                  type="text"
-                  placeholder="Your Name"
-                  className="w-full bg-white/[0.03] border border-white/5 rounded-xl px-4 py-3.5 text-white outline-none focus:border-primary focus:ring-1 focus:ring-primary/25 focus:shadow-[0_0_15px_rgba(0,242,255,0.12)] transition-all duration-300 font-sans text-sm"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-gray-400 font-mono text-[10px] uppercase tracking-widest font-bold ml-1">Email</label>
-                <input
-                  required
-                  name="email"
-                  type="email"
-                  placeholder="your@email.com"
-                  className="w-full bg-white/[0.03] border border-white/5 rounded-xl px-4 py-3.5 text-white outline-none focus:border-primary focus:ring-1 focus:ring-primary/25 focus:shadow-[0_0_15px_rgba(0,242,255,0.12)] transition-all duration-300 font-sans text-sm"
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <label className="text-gray-400 font-mono text-[10px] uppercase tracking-widest font-bold ml-1">Message</label>
-              <textarea
-                required
-                name="message"
-                rows={4}
-                placeholder="How can we collaborate?"
-                className="w-full bg-white/[0.03] border border-white/5 rounded-xl px-4 py-3.5 text-white outline-none focus:border-primary focus:ring-1 focus:ring-primary/25 focus:shadow-[0_0_15px_rgba(0,242,255,0.12)] transition-all duration-300 font-sans text-sm resize-none"
-              />
-            </div>
-            <motion.button
-              disabled={status === 'sending'}
-              whileHover={{ scale: 1.015 }}
-              whileTap={{ scale: 0.985 }}
-              className={`w-full py-4 rounded-xl font-mono text-xs uppercase tracking-widest font-bold flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer ${
-                status === 'success'
-                ? 'bg-green-500 text-white'
-                : status === 'error'
-                ? 'bg-red-500 text-white'
-                : 'bg-primary text-black hover:bg-primary/80 hover:shadow-[0_0_20px_rgba(0,242,255,0.35)]'
+          {/* Tab Selection Controls */}
+          <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-white/[0.03] border border-white/10 font-mono text-xs">
+            <button
+              onClick={() => setActiveTab('message')}
+              className={`flex-1 py-3 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                activeTab === 'message'
+                  ? 'bg-primary text-black font-bold shadow-lg'
+                  : 'text-gray-400 hover:text-white'
               }`}
             >
-              {status === 'idle' && <>Send Message <Send className="w-3.5 h-3.5" /></>}
-              {status === 'sending' && <span>Sending...</span>}
-              {status === 'success' && <span>Message Sent</span>}
-              {status === 'error' && <span>Try Again</span>}
-            </motion.button>
-            {feedback && (
-              <p className={`text-xs font-mono text-center mt-2 ${status === 'error' ? 'text-red-300' : 'text-green-350'}`}>
-                {"// "}{feedback}
-              </p>
-            )}
-          </form>
+              <MessageSquare className="w-4 h-4" />
+              <span>Direct Message</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('schedule')}
+              className={`flex-1 py-3 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                activeTab === 'schedule'
+                  ? 'bg-secondary text-black font-bold shadow-lg'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              <Calendar className="w-4 h-4" />
+              <span>Interactive Call Scheduler</span>
+            </button>
+          </div>
+
+          {/* Form or Scheduler */}
+          {activeTab === 'schedule' ? (
+            <MeetingScheduler />
+          ) : (
+            <div className="glass-effect p-6 sm:p-8 md:p-12 rounded-3xl border border-white/5">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-gray-400 font-mono text-[10px] uppercase tracking-widest font-bold ml-1">Name</label>
+                    <input
+                      required
+                      name="name"
+                      type="text"
+                      placeholder="Your Name"
+                      className="w-full bg-white/[0.03] border border-white/5 rounded-xl px-4 py-3.5 text-white outline-none focus:border-primary focus:ring-1 focus:ring-primary/25 focus:shadow-[0_0_15px_rgba(0,242,255,0.12)] transition-all duration-300 font-sans text-sm"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-gray-400 font-mono text-[10px] uppercase tracking-widest font-bold ml-1">Email</label>
+                    <input
+                      required
+                      name="email"
+                      type="email"
+                      placeholder="your@email.com"
+                      className="w-full bg-white/[0.03] border border-white/5 rounded-xl px-4 py-3.5 text-white outline-none focus:border-primary focus:ring-1 focus:ring-primary/25 focus:shadow-[0_0_15px_rgba(0,242,255,0.12)] transition-all duration-300 font-sans text-sm"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-gray-400 font-mono text-[10px] uppercase tracking-widest font-bold ml-1">Message</label>
+                  <textarea
+                    required
+                    name="message"
+                    rows={4}
+                    placeholder="How can we collaborate?"
+                    className="w-full bg-white/[0.03] border border-white/5 rounded-xl px-4 py-3.5 text-white outline-none focus:border-primary focus:ring-1 focus:ring-primary/25 focus:shadow-[0_0_15px_rgba(0,242,255,0.12)] transition-all duration-300 font-sans text-sm resize-none"
+                  />
+                </div>
+                <motion.button
+                  disabled={status === 'sending'}
+                  whileHover={{ scale: 1.015 }}
+                  whileTap={{ scale: 0.985 }}
+                  className={`w-full py-4 rounded-xl font-mono text-xs uppercase tracking-widest font-bold flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer ${
+                    status === 'success'
+                    ? 'bg-green-500 text-white'
+                    : status === 'error'
+                    ? 'bg-red-500 text-white'
+                    : 'bg-primary text-black hover:bg-primary/80 hover:shadow-[0_0_20px_rgba(0,242,255,0.35)]'
+                  }`}
+                >
+                  {status === 'idle' && <>Send Message <Send className="w-3.5 h-3.5" /></>}
+                  {status === 'sending' && <span>Sending...</span>}
+                  {status === 'success' && <span>Message Sent</span>}
+                  {status === 'error' && <span>Try Again</span>}
+                </motion.button>
+                {feedback && (
+                  <p className={`text-xs font-mono text-center mt-2 ${status === 'error' ? 'text-red-300' : 'text-green-350'}`}>
+                    {"// "}{feedback}
+                  </p>
+                )}
+              </form>
+            </div>
+          )}
         </motion.div>
       </div>
     </section>

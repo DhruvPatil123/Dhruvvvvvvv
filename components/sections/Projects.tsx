@@ -21,9 +21,12 @@ import {
   FileText,
   Check,
   Shield,
-  Download
+  Download,
+  Search
 } from 'lucide-react'
-import { playTick, playPopover, playAmbientPad, playNotification, playCryptoTick } from '@/lib/sounds'
+import { playTick, playPopover, playAmbientPad, playNotification, playCryptoTick, playParchmentOpen, playQuillClick } from '@/lib/sounds'
+import ProjectArchitectureDiagram from '@/components/ProjectArchitectureDiagram'
+import { useProjectStore } from '@/store/useProjectStore'
 
 
 interface ProjectMetric {
@@ -590,7 +593,7 @@ function ProjectDetailsModal({ project, onClose }: { project: Project; onClose: 
   const isEncryptX = project.title === 'EncryptX'
   const isTopTier = isVisionCraft || isEncryptX
 
-  const [activeTab, setActiveTab] = useState<'terminal' | 'playground'>(isTopTier ? 'playground' : 'terminal')
+  const [activeTab, setActiveTab] = useState<'architecture' | 'terminal' | 'playground'>('architecture')
 
   // VisionCraft Sandbox State
   const [mockPrompt, setMockPrompt] = useState('neon cyberpunk grid of geometric monoliths')
@@ -1166,35 +1169,47 @@ function ProjectDetailsModal({ project, onClose }: { project: Project; onClose: 
               </span>
             </div>
 
-            {isTopTier && (
-              <div className="flex gap-2 p-1 bg-white/[0.03] border border-white/5 rounded-xl">
+            <div className="flex gap-1.5 p-1 bg-white/[0.03] border border-white/5 rounded-xl font-mono text-[11px]">
+              <button
+                onClick={() => { playTick(); setActiveTab('architecture'); }}
+                className={`flex-1 py-2 px-2 rounded-lg font-mono uppercase tracking-wider font-bold transition-all cursor-pointer ${
+                  activeTab === 'architecture'
+                    ? 'bg-primary text-black shadow-[0_0_15px_rgba(255,255,255,0.15)]'
+                    : 'text-gray-400 hover:text-white hover:bg-white/[0.02]'
+                }`}
+              >
+                Architecture
+              </button>
+              <button
+                onClick={() => { playTick(); setActiveTab('terminal'); }}
+                className={`flex-1 py-2 px-2 rounded-lg font-mono uppercase tracking-wider font-bold transition-all cursor-pointer ${
+                  activeTab === 'terminal'
+                    ? 'bg-primary text-black shadow-[0_0_15px_rgba(255,255,255,0.15)]'
+                    : 'text-gray-400 hover:text-white hover:bg-white/[0.02]'
+                }`}
+              >
+                Terminal Shell
+              </button>
+              {isTopTier && (
                 <button
                   onClick={() => { playTick(); setActiveTab('playground'); }}
-                  className={`flex-1 py-2 px-3 rounded-lg text-xs font-mono uppercase tracking-wider font-bold transition-all ${
+                  className={`flex-1 py-2 px-2 rounded-lg font-mono uppercase tracking-wider font-bold transition-all cursor-pointer ${
                     activeTab === 'playground'
                       ? 'bg-primary text-black shadow-[0_0_15px_rgba(255,255,255,0.15)]'
                       : 'text-gray-400 hover:text-white hover:bg-white/[0.02]'
                   }`}
                 >
-                  Playground Bento
+                  Playground
                 </button>
-                <button
-                  onClick={() => { playTick(); setActiveTab('terminal'); }}
-                  className={`flex-1 py-2 px-3 rounded-lg text-xs font-mono uppercase tracking-wider font-bold transition-all ${
-                    activeTab === 'terminal'
-                      ? 'bg-primary text-black shadow-[0_0_15px_rgba(255,255,255,0.15)]'
-                      : 'text-gray-400 hover:text-white hover:bg-white/[0.02]'
-                  }`}
-                >
-                  Terminal Shell
-                </button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
           {/* Tab Content */}
           <div className="flex-grow my-4 flex flex-col justify-between relative min-h-[350px]">
-            {activeTab === 'terminal' ? (
+            {activeTab === 'architecture' ? (
+              <ProjectArchitectureDiagram projectTitle={project.title} />
+            ) : activeTab === 'terminal' ? (
               <>
                 {/* Drag and Drop Overlay for Terminal drop */}
                 {isDragging && isEncryptX && (
@@ -1654,12 +1669,81 @@ function ProjectDetailsModal({ project, onClose }: { project: Project; onClose: 
   )
 }
 
+const TAG_FILTERS = ['All', 'AI/ML', 'Full Stack', 'DevOps/Cloud', 'Systems']
+
 export default function Projects() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [activeFilter, setActiveFilter] = useState('All')
+
+  const storeSelectedTitle = useProjectStore((s) => s.selectedProjectTitle)
+  const closeStoreModal = useProjectStore((s) => s.closeProjectModal)
+
+  useEffect(() => {
+    if (storeSelectedTitle) {
+      const matched = PROJECTS.find((p) => p.title.toLowerCase() === storeSelectedTitle.toLowerCase())
+      if (matched) {
+        setSelectedProject(matched)
+      }
+    }
+  }, [storeSelectedTitle])
+
+  const handleClose = () => {
+    setSelectedProject(null)
+    closeStoreModal()
+  }
+
+  const filteredProjects = PROJECTS.filter((p) => {
+    // 1. Tag filter matching
+    let matchesCategory = true
+    const catLower = p.category.toLowerCase()
+    const techLower = p.tech.map((t) => t.toLowerCase())
+
+    if (activeFilter === 'AI/ML') {
+      matchesCategory =
+        catLower.includes('genai') ||
+        catLower.includes('agentic') ||
+        catLower.includes('generative') ||
+        catLower.includes('llm') ||
+        catLower.includes('ai') ||
+        techLower.some((t) => ['gemini', 'pytorch', 'gans', 'hugging face', 'langchain', 'vector db'].some((k) => t.includes(k)))
+    } else if (activeFilter === 'Full Stack') {
+      matchesCategory =
+        catLower.includes('full-stack') ||
+        catLower.includes('ux') ||
+        catLower.includes('design') ||
+        techLower.some((t) => ['next.js', 'react', 'typescript', 'fastapi', 'streamlit', 'supabase', 'tailwind'].some((k) => t.includes(k)))
+    } else if (activeFilter === 'DevOps/Cloud') {
+      matchesCategory =
+        catLower.includes('dev tools') ||
+        catLower.includes('multimodal') ||
+        catLower.includes('rag') ||
+        techLower.some((t) => ['docker', 'websockets', 'node.js', 'vector db', 'fastapi'].some((k) => t.includes(k)))
+    } else if (activeFilter === 'Systems') {
+      matchesCategory =
+        catLower.includes('cryptography') ||
+        catLower.includes('compiler') ||
+        catLower.includes('database') ||
+        techLower.some((t) => ['c++', 'docker sandbox', 'postgresql', 'drizzle', 'aes-256', 'rsa', 'qt'].some((k) => t.includes(k)))
+    }
+
+    if (!matchesCategory) return false
+
+    // 2. Keyword search matching
+    if (!searchQuery.trim()) return true
+    const q = searchQuery.toLowerCase().trim()
+    return (
+      p.title.toLowerCase().includes(q) ||
+      p.category.toLowerCase().includes(q) ||
+      p.description.toLowerCase().includes(q) ||
+      p.longDescription.toLowerCase().includes(q) ||
+      p.tech.some((t) => t.toLowerCase().includes(q))
+    )
+  })
 
   return (
     <section id="work" className="relative w-full min-h-screen flex flex-col items-center justify-center py-24 md:py-32 lg:py-40 px-4 sm:px-6">
-      <div className="max-w-6xl w-full text-center mb-16 md:mb-20 space-y-4">
+      <div className="max-w-6xl w-full text-center mb-12 space-y-4">
         {/* Section Indicator */}
         <span className="font-mono text-xs uppercase tracking-[0.2em] text-primary font-medium">
           [ 03 // COGNITIVE WORKS ]
@@ -1691,26 +1775,95 @@ export default function Projects() {
         </motion.p>
       </div>
 
-      <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-8">
-        {PROJECTS.map((project, idx) => (
-          <ProjectCard 
-            key={project.title} 
-            project={project} 
-            idx={idx} 
-            onOpen={(p) => {
-              playAmbientPad()
-              setSelectedProject(p)
-            }}
+      {/* Search and Category Filter Toolbar */}
+      <motion.div 
+        initial={{ opacity: 0, y: 15 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        viewport={{ once: true }}
+        className="max-w-6xl w-full mb-12 flex flex-col md:flex-row items-center justify-between gap-4 bg-zinc-900/60 border border-white/10 rounded-2xl p-4 backdrop-blur-md shadow-lg"
+      >
+        {/* Search input */}
+        <div className="relative w-full md:w-80">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search projects, stack, keywords..."
+            className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-9 py-2 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-primary/50 transition-colors font-sans"
           />
-        ))}
-      </div>
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white transition-colors cursor-pointer"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+
+        {/* Tag Filters */}
+        <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 scrollbar-none">
+          {TAG_FILTERS.map((filter) => {
+            const isActive = activeFilter === filter
+            return (
+              <button
+                key={filter}
+                onClick={() => {
+                  playTick()
+                  setActiveFilter(filter)
+                }}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-mono font-medium transition-all cursor-pointer whitespace-nowrap active:scale-95 border ${
+                  isActive
+                    ? 'bg-primary/20 border-primary text-primary shadow-[0_0_15px_rgba(var(--primary-rgb),0.2)]'
+                    : 'bg-white/5 border-white/10 text-zinc-400 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                {filter}
+              </button>
+            )
+          })}
+        </div>
+      </motion.div>
+
+      {/* Projects Grid or Empty State */}
+      {filteredProjects.length === 0 ? (
+        <div className="max-w-md w-full my-12 text-center py-12 px-6 rounded-3xl bg-zinc-900/40 border border-white/10 backdrop-blur-md space-y-4">
+          <p className="text-zinc-400 text-sm font-sans">No projects match your current filter or search query.</p>
+          <button
+            onClick={() => {
+              playTick()
+              setSearchQuery('')
+              setActiveFilter('All')
+            }}
+            className="px-4 py-2 rounded-xl text-xs font-mono bg-primary/20 text-primary border border-primary/40 hover:bg-primary/30 transition-all cursor-pointer"
+          >
+            Reset Search & Filters
+          </button>
+        </div>
+      ) : (
+        <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-8">
+          {filteredProjects.map((project, idx) => (
+            <ProjectCard 
+              key={project.title} 
+              project={project} 
+              idx={idx} 
+              onOpen={(p) => {
+                playAmbientPad()
+                setSelectedProject(p)
+              }}
+            />
+          ))}
+        </div>
+      )}
 
       {/* High-Fidelity Specifications Slide-In Panel / Modal */}
       <AnimatePresence>
         {selectedProject && (
           <ProjectDetailsModal 
             project={selectedProject} 
-            onClose={() => setSelectedProject(null)} 
+            onClose={handleClose} 
           />
         )}
       </AnimatePresence>

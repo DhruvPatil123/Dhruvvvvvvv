@@ -29,6 +29,8 @@ import AudioDock from '@/components/AudioDock'
 import BootPreloader from '@/components/BootPreloader'
 import FpsMonitor from '@/components/FpsMonitor'
 import CommandPalette from '@/components/CommandPalette'
+import RecruiterViewModal from '@/components/RecruiterViewModal'
+import BackgroundSettingsDrawer from '@/components/BackgroundSettingsDrawer'
 
 
 export default function Home() {
@@ -120,6 +122,12 @@ export default function Home() {
 
         {/* Dynamic Interactive Command Console */}
         <CommandPalette />
+
+        {/* 30-Second Recruiter Fast View Overlay */}
+        <RecruiterViewModal />
+
+        {/* Environment & Aesthetics Settings Drawer */}
+        <BackgroundSettingsDrawer />
 
         {/* 3D Background Scene */}
         <Scene />

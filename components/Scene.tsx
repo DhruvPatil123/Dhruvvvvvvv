@@ -108,7 +108,7 @@ export default function Scene() {
 
   // Render a clean, premium static backdrop during detection or as a safe WebGL fallback
   const fallbackStaticBackdrop = (
-    <div className={`fixed top-0 left-0 w-screen h-screen -z-10 bg-gradient-to-b ${fallbackBg}`}>
+    <div className="fixed top-0 left-0 w-screen h-screen -z-20 bg-transparent pointer-events-none">
       {/* Abstract light orb to simulate three.js lighting on fallback */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[60vw] h-[60vw] max-w-[600px] max-h-[600px] rounded-full bg-[#00f2ff]/5 blur-[120px] pointer-events-none" />
       <div className="absolute bottom-1/4 left-1/3 w-[50vw] h-[50vw] max-w-[500px] max-h-[500px] rounded-full bg-[#7000ff]/3 blur-[100px] pointer-events-none" />
@@ -121,7 +121,7 @@ export default function Scene() {
 
   return (
     <SceneErrorBoundary fallback={fallbackStaticBackdrop}>
-      <div ref={containerRef} className="fixed top-0 left-0 w-screen h-screen -z-10 bg-transparent pointer-events-none">
+      <div ref={containerRef} className="fixed top-0 left-0 w-screen h-screen -z-20 bg-transparent pointer-events-none">
         <Canvas
           dpr={[1, 2]}
           gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}

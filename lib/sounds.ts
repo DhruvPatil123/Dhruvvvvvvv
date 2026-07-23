@@ -5,6 +5,8 @@
  * and eliminates the need for hosting/loading heavy static audio assets.
  */
 
+import { useAudioStore } from '@/store/useAudioStore'
+
 let audioCtx: AudioContext | null = null
 let currentPan = 0 // Stereo panning state updated via cursor tracking (-1.0 left to 1.0 right)
 
@@ -45,12 +47,17 @@ function getAudioContext(): AudioContext | null {
   return audioCtx
 }
 
+function checkIsMuted(): boolean {
+  return useAudioStore.getState().isMuted
+}
+
 /**
  * Play a high-fidelity retro-modern mechanical keyboard / mouse click.
  * Very fast, dry, high-pitched transient with exponential decay.
  * Panned dynamically depending on cursor coordinates.
  */
 export function playTick() {
+  if (checkIsMuted()) return
   const ctx = getAudioContext()
   if (!ctx) return
 
@@ -103,7 +110,6 @@ export function playTick() {
     clickOsc.start(now)
     clickOsc.stop(now + 0.015)
   } catch (error) {
-    // Fail silently to prevent interrupting UI flow
     console.warn('Audio playback failed', error)
   }
 }
@@ -114,6 +120,7 @@ export function playTick() {
  * Panned dynamically depending on cursor coordinates.
  */
 export function playPopover() {
+  if (checkIsMuted()) return
   const ctx = getAudioContext()
   if (!ctx) return
 
@@ -153,11 +160,105 @@ export function playPopover() {
 }
 
 /**
+ * Play a tactile Renaissance Parchment Rustle sound effect.
+ * Synthesizes soft paper friction with filtered white noise and lowpass sweep.
+ * Triggers on modal/drawer open.
+ */
+export function playParchmentOpen() {
+  if (checkIsMuted()) return
+  const ctx = getAudioContext()
+  if (!ctx) return
+
+  try {
+    const now = ctx.currentTime
+    const duration = 0.28
+    const bufferSize = ctx.sampleRate * duration
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate)
+    const data = buffer.getChannelData(0)
+
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1
+    }
+
+    const noise = ctx.createBufferSource()
+    noise.buffer = buffer
+
+    const filter = ctx.createBiquadFilter()
+    filter.type = 'bandpass'
+    filter.frequency.setValueAtTime(400, now)
+    filter.frequency.exponentialRampToValueAtTime(1400, now + 0.15)
+    filter.frequency.exponentialRampToValueAtTime(250, now + duration)
+    filter.Q.setValueAtTime(1.8, now)
+
+    const gain = ctx.createGain()
+    gain.gain.setValueAtTime(0.001, now)
+    gain.gain.linearRampToValueAtTime(0.08, now + 0.04)
+    gain.gain.exponentialRampToValueAtTime(0.001, now + duration)
+
+    const panner = ctx.createStereoPanner ? ctx.createStereoPanner() : null
+    if (panner) {
+      panner.pan.setValueAtTime(currentPan * 0.3, now)
+      filter.connect(panner)
+      panner.connect(ctx.destination)
+    } else {
+      filter.connect(ctx.destination)
+    }
+
+    noise.connect(filter)
+    filter.connect(gain)
+
+    noise.start(now)
+    noise.stop(now + duration)
+  } catch (error) {
+    console.warn('Parchment sound failed', error)
+  }
+}
+
+/**
+ * Play a delicate Renaissance Quill Click / Scratch sound effect.
+ * Synthesizes a wood pen tap on textured paper.
+ * Triggers on button clicks or selection controls.
+ */
+export function playQuillClick() {
+  if (checkIsMuted()) return
+  const ctx = getAudioContext()
+  if (!ctx) return
+
+  try {
+    const now = ctx.currentTime
+    const osc = ctx.createOscillator()
+    const gainNode = ctx.createGain()
+
+    osc.type = 'sine'
+    osc.frequency.setValueAtTime(950, now)
+    osc.frequency.exponentialRampToValueAtTime(320, now + 0.025)
+
+    gainNode.gain.setValueAtTime(0.04, now)
+    gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.03)
+
+    const panner = ctx.createStereoPanner ? ctx.createStereoPanner() : null
+    if (panner) {
+      panner.pan.setValueAtTime(currentPan, now)
+      gainNode.connect(panner)
+      panner.connect(ctx.destination)
+    } else {
+      gainNode.connect(ctx.destination)
+    }
+
+    osc.connect(gainNode)
+    osc.start(now)
+    osc.stop(now + 0.035)
+  } catch (error) {
+    console.warn('Quill click failed', error)
+  }
+}
+
+/**
  * Play a pristine, ambient electronic chime/notification.
  * Double tap of high-frequency crystal resonance, perfect for chatbot responses.
- * Panned dynamically depending on cursor coordinates.
  */
 export function playNotification() {
+  if (checkIsMuted()) return
   const ctx = getAudioContext()
   if (!ctx) return
 
@@ -169,7 +270,6 @@ export function playNotification() {
       panner.connect(ctx.destination)
     }
     
-    // First chime (lower root)
     const osc1 = ctx.createOscillator()
     const gain1 = ctx.createGain()
     osc1.type = 'sine'
@@ -190,7 +290,6 @@ export function playNotification() {
     osc1.start(now)
     osc1.stop(now + 0.4)
 
-    // Second chime (higher harmonic, slightly delayed for double-tap feeling)
     const delay = 0.08
     const osc2 = ctx.createOscillator()
     const gain2 = ctx.createGain()
@@ -218,35 +317,25 @@ export function playNotification() {
 
 /**
  * Play a luxurious, cinematic soft ambient wave pad.
- * Beautifully synthesizes an F Major 9 chord with deep warm analog-like drift, 
- * lowpass filtered to preserve standard ear-friendly frequencies.
- * High-value interactions evoke a spacious spatial environment.
  */
 export function playAmbientPad() {
+  if (checkIsMuted()) return
   const ctx = getAudioContext()
   if (!ctx) return
 
   try {
     const now = ctx.currentTime
     const duration = 4.5
-
-    // F Major 9 Chord: F2 (deep bass foundation), C3 (solid fifth), A3 (warm third), E4 (celestial seventh), G4 (sweet ninth)
     const chordFreqs = [87.31, 130.81, 220.00, 329.63, 392.00]
 
-    // Master swell and fade-out gain stage
     const masterGain = ctx.createGain()
     masterGain.gain.setValueAtTime(0.0, now)
-    // Smooth 1.2s fade-in swell (attack)
     masterGain.gain.linearRampToValueAtTime(0.07, now + 1.2)
-    // 1.0s organic sustain phase
     masterGain.gain.setValueAtTime(0.07, now + 2.2)
-    // 2.3s graceful exponential decay (release)
     masterGain.gain.exponentialRampToValueAtTime(0.001, now + duration)
 
-    // Connect spatial panning
     const panner = ctx.createStereoPanner ? ctx.createStereoPanner() : null
     if (panner) {
-      // Slow stereo pan shift during swell
       panner.pan.setValueAtTime(currentPan * 0.4, now)
       panner.pan.linearRampToValueAtTime(currentPan, now + 2.5)
       masterGain.connect(panner)
@@ -255,30 +344,25 @@ export function playAmbientPad() {
       masterGain.connect(ctx.destination)
     }
 
-    // Warm, low-pass filter to block harsh harmonic high-ends
     const filter = ctx.createBiquadFilter()
     filter.type = 'lowpass'
-    filter.frequency.setValueAtTime(650, now) // warm, round filter envelope
+    filter.frequency.setValueAtTime(650, now)
     filter.Q.setValueAtTime(1.0, now)
     filter.connect(masterGain)
 
-    // Generate individual oscillators with subtle chorus detune
     chordFreqs.forEach((freq, idx) => {
       const osc = ctx.createOscillator()
       const oscGain = ctx.createGain()
 
-      // Alternating waveforms for layered analog complexity (sine for pure fundamental, triangle for warmth)
       osc.type = idx % 2 === 0 ? 'sine' : 'triangle'
       osc.frequency.setValueAtTime(freq, now)
 
-      // Dynamic frequency drift (chorus/vibrato emulation)
       const driftAmount = idx % 2 === 0 ? 0.8 : -1.2
       osc.frequency.linearRampToValueAtTime(freq + driftAmount, now + duration)
 
-      // Balance amplitudes (deeper notes get slightly more weight, triangle waves are quieter)
       let relativeVolume = 0.22
-      if (idx === 0) relativeVolume = 0.35 // warm deep root bass boost
-      if (osc.type === 'triangle') relativeVolume *= 0.4 // damp harsh triangle harmonics
+      if (idx === 0) relativeVolume = 0.35
+      if (osc.type === 'triangle') relativeVolume *= 0.4
 
       oscGain.gain.setValueAtTime(relativeVolume, now)
 
@@ -301,24 +385,19 @@ export function startAmbientDrone() {
   const ctx = getAudioContext()
   if (!ctx) return
 
-  // If already initialized, do not re-initialize
   if (ambientDroneGainNode) return
 
   try {
     const now = ctx.currentTime
 
-    // Create master gain
     ambientDroneGainNode = ctx.createGain()
-    // Start at 0 volume (initially muted)
     ambientDroneGainNode.gain.setValueAtTime(0, now)
 
-    // Create StereoPannerNode
     ambientDronePanNode = ctx.createStereoPanner ? ctx.createStereoPanner() : null
     
-    // Connect nodes
     const filter = ctx.createBiquadFilter()
     filter.type = 'lowpass'
-    filter.frequency.setValueAtTime(550, now) // 550Hz warm filter
+    filter.frequency.setValueAtTime(550, now)
     filter.Q.setValueAtTime(1.0, now)
 
     filter.connect(ambientDroneGainNode)
@@ -330,21 +409,18 @@ export function startAmbientDrone() {
       ambientDroneGainNode.connect(ctx.destination)
     }
 
-    // F-Major-9 chord: F2 (87.31), C3 (130.81), A3 (220.00), E4 (329.63), G4 (392.00)
     const chordFreqs = [87.31, 130.81, 220.00, 329.63, 392.00]
 
     chordFreqs.forEach((freq, idx) => {
       const osc = ctx.createOscillator()
       const oscGain = ctx.createGain()
 
-      // Layered waveforms (sine and triangle)
       osc.type = idx % 2 === 0 ? 'sine' : 'triangle'
       osc.frequency.setValueAtTime(freq, now)
 
-      // Balance amplitudes
       let relativeVolume = 0.12
-      if (idx === 0) relativeVolume = 0.22 // warm deep bass
-      if (osc.type === 'triangle') relativeVolume *= 0.25 // damp harmonics
+      if (idx === 0) relativeVolume = 0.22
+      if (osc.type === 'triangle') relativeVolume *= 0.25
 
       oscGain.gain.setValueAtTime(relativeVolume, now)
 
@@ -355,13 +431,11 @@ export function startAmbientDrone() {
       ambientDroneOscillators.push(osc)
     })
 
-    // Track mouse coordinate for stereo pan balance dynamically
     if (typeof window !== 'undefined') {
       window.addEventListener('mousemove', (e) => {
         if (ambientDronePanNode && ctx.state !== 'closed') {
           const x = e.clientX / window.innerWidth
-          const panVal = (x * 2) - 1 // -1.0 to 1.0
-          // Smooth panning transition
+          const panVal = (x * 2) - 1
           try {
             ambientDronePanNode.pan.setTargetAtTime(panVal, ctx.currentTime, 0.1)
           } catch (_) {}
@@ -380,11 +454,12 @@ export function setAmbientDroneVolume(volume: number) {
   try {
     ambientDroneGainNode.gain.cancelScheduledValues(now)
     ambientDroneGainNode.gain.setValueAtTime(ambientDroneGainNode.gain.value, now)
-    ambientDroneGainNode.gain.linearRampToValueAtTime(volume, now + 0.5) // fade over 0.5s
+    ambientDroneGainNode.gain.linearRampToValueAtTime(volume, now + 0.5)
   } catch (_) {}
 }
 
 export function playCryptoTick() {
+  if (checkIsMuted()) return
   const ctx = getAudioContext()
   if (!ctx) return
 
@@ -394,9 +469,8 @@ export function playCryptoTick() {
     const gainNode = ctx.createGain()
 
     osc.type = 'square'
-    osc.frequency.setValueAtTime(2200, now) // High digital frequency
+    osc.frequency.setValueAtTime(2200, now)
 
-    // Extremely short transient envelope
     gainNode.gain.setValueAtTime(0.015, now)
     gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.012)
 
@@ -407,6 +481,3 @@ export function playCryptoTick() {
     osc.stop(now + 0.015)
   } catch (_) {}
 }
-
-
-

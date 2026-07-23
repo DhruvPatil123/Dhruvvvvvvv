@@ -33,12 +33,12 @@ function Skeleton({ className }: { className?: string }) {
 export default function Achievements() {
   const [leetcode, setLeetcode] = useState({
     username: 'Dhruv_Patil_18',
-    ranking: 239343,
-    streak: 29,
-    solvedTotal: 466,
+    ranking: 226317,
+    streak: 36,
+    solvedTotal: 472,
     solvedEasy: 121,
-    solvedMedium: 261,
-    solvedHard: 84,
+    solvedMedium: 265,
+    solvedHard: 86,
     submissionCalendar: '',
     loading: true,
     source: 'local'
@@ -46,13 +46,13 @@ export default function Achievements() {
 
   const [github, setGithub] = useState({
     username: 'DhruvPatil123',
-    totalContributions: 818,
-    currentStreak: 5,
-    longestStreak: 9,
+    totalContributions: 1005,
+    currentStreak: 20,
+    longestStreak: 20,
     streakStart: 'Jul 2',
-    streakEnd: 'Jul 6',
-    longestStart: 'Jun 22',
-    longestEnd: 'Jun 30',
+    streakEnd: 'Jul 22',
+    longestStart: 'Jul 2',
+    longestEnd: 'Jul 22',
     startDate: 'Mar 8, 2024',
     contributions: [] as any[],
     loading: true,

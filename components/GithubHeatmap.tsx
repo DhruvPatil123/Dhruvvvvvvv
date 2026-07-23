@@ -22,51 +22,73 @@ export default function GithubHeatmap({ contributions }: GithubHeatmapProps) {
     if (!contributions || contributions.length === 0) return cal
 
     contributions.forEach((day) => {
-      cal[day.date] = { count: day.count, level: day.level }
+      let lvl = day.level
+      if (lvl === 0 && day.count > 0) lvl = 1
+      cal[day.date] = { count: day.count, level: lvl }
     })
     return cal
   }, [contributions])
 
-  // Generate grid cells (18 columns x 7 rows = 126 days)
+  // Generate grid cells (18 columns x 7 rows = 126 days, aligned Sun-Sat)
   const { cells, months } = useMemo(() => {
     const cols = 18
     const rows = 7
-    const totalCells = cols * rows
     const today = new Date()
-    const list = []
-    
-    // Go backwards to let the last cell be today
-    for (let i = totalCells - 1; i >= 0; i--) {
-      const d = new Date(today)
-      d.setDate(today.getDate() - i)
-      
-      const yyyy = d.getFullYear()
-      const mm = String(d.getMonth() + 1).padStart(2, '0')
-      const dd = String(d.getDate()).padStart(2, '0')
-      const yyyymmdd = `${yyyy}-${mm}-${dd}`
+    const todayDayOfWeek = today.getDay() // 0 = Sun, 1 = Mon, ..., 6 = Sat
 
-      const dayData = formattedCalendar[yyyymmdd] || { count: 0, level: 0 }
-      list.push({
-        date: d,
-        yyyymmdd,
-        count: dayData.count,
-        level: dayData.level,
-      })
-    }
+    // Find Sunday of current week
+    const currentSunday = new Date(today)
+    currentSunday.setDate(today.getDate() - todayDayOfWeek)
 
-    // Identify month labels and their starting columns
+    // Start date is 17 weeks before currentSunday (total 18 columns)
+    const startDate = new Date(currentSunday)
+    startDate.setDate(currentSunday.getDate() - 17 * 7)
+
+    const list: {
+      col: number
+      row: number
+      date: Date
+      yyyymmdd: string
+      count: number
+      level: number
+      isFuture: boolean
+    }[] = []
+
     const monthLabels: { label: string; colIndex: number }[] = []
     let lastMonth = -1
-    for (let col = 0; col < cols; col++) {
-      const cellIndex = col * rows
-      const cell = list[cellIndex]
-      if (cell) {
-        const m = cell.date.getMonth()
-        if (m !== lastMonth) {
-          const label = cell.date.toLocaleString('default', { month: 'short' })
-          monthLabels.push({ label, colIndex: col })
-          lastMonth = m
-        }
+
+    for (let c = 0; c < cols; c++) {
+      const colFirstDay = new Date(startDate)
+      colFirstDay.setDate(startDate.getDate() + c * 7)
+
+      const monthNum = colFirstDay.getMonth()
+      if (monthNum !== lastMonth) {
+        const label = colFirstDay.toLocaleString('default', { month: 'short' })
+        monthLabels.push({ label, colIndex: c })
+        lastMonth = monthNum
+      }
+
+      for (let r = 0; r < rows; r++) {
+        const d = new Date(startDate)
+        d.setDate(startDate.getDate() + (c * 7 + r))
+
+        const yyyy = d.getFullYear()
+        const mm = String(d.getMonth() + 1).padStart(2, '0')
+        const dd = String(d.getDate()).padStart(2, '0')
+        const yyyymmdd = `${yyyy}-${mm}-${dd}`
+
+        const isFuture = d > today
+        const dayData = formattedCalendar[yyyymmdd] || { count: 0, level: 0 }
+
+        list.push({
+          col: c,
+          row: r,
+          date: d,
+          yyyymmdd,
+          count: isFuture ? 0 : dayData.count,
+          level: isFuture ? -1 : dayData.level,
+          isFuture
+        })
       }
     }
 
@@ -75,7 +97,7 @@ export default function GithubHeatmap({ contributions }: GithubHeatmapProps) {
 
   // Get color based on contribution level
   const getCellColor = (level: number) => {
-    if (level === 0) return 'rgba(255, 255, 255, 0.03)'
+    if (level <= 0) return 'rgba(255, 255, 255, 0.03)'
 
     // Classic GitHub Green Palette
     if (level === 1) return '#0e4429' // Deep dark green
@@ -133,10 +155,23 @@ export default function GithubHeatmap({ contributions }: GithubHeatmapProps) {
 
           {/* Heatmap cells */}
           {cells.map((cell, idx) => {
-            const col = Math.floor(idx / rows)
-            const row = idx % rows
-            const x = col * (cellSize + cellGap)
-            const y = row * (cellSize + cellGap) + 12
+            const x = cell.col * (cellSize + cellGap)
+            const y = cell.row * (cellSize + cellGap) + 12
+
+            if (cell.isFuture) {
+              return (
+                <rect
+                  key={idx}
+                  x={x}
+                  y={y}
+                  width={cellSize}
+                  height={cellSize}
+                  rx={1.5}
+                  ry={1.5}
+                  fill="transparent"
+                />
+              )
+            }
 
             const fillColor = getCellColor(cell.level)
 

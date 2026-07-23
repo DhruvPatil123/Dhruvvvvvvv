@@ -1,44 +1,53 @@
 "use client"
 
-import React, { useEffect, useState, useRef } from 'react'
+import React from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import Image from 'next/image'
 import { useScrollStore } from '@/store/useScrollStore'
+import { useBackgroundSettingsStore } from '@/store/useBackgroundSettingsStore'
 
 const SECTION_BACKGROUNDS: { [key: string]: string } = {
-  hero: 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&q=80&w=1200', // Antique Library Observatory
-  about: '/renaissance_portrait_mask.jpg',
-  skills: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&q=80&w=1200', // Celestial Renaissance Mural
-  work: '/renaissance_library.jpg',
-  achievements: 'https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?auto=format&fit=crop&q=80&w=1200', // Gold leaf fine art canvas
-  credentials: 'https://images.unsplash.com/photo-1541123437800-1bb1317badc2?auto=format&fit=crop&q=80&w=1200', // Italian palazzo fresco ceiling
-  experience: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1200', // High-dimensional space/astrolabe connections
-  testimonials: 'https://images.unsplash.com/photo-1580136579312-94651dfd596d?auto=format&fit=crop&q=80&w=1200', // Classical botanical scholar painting
-  contact: 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&q=80&w=1200', // Classic sculpture in shadow gallery
+  hero: '/renaissance_hero_bg.jpg', // Creation of Adam / Skate & Coffee Renaissance
+  about: '/renaissance_ai_masterpiece.jpg', // Renaissance AI Scholar Masterpiece
+  skills: '/renaissance_library.jpg', // Agentic / Library Catalog Mona Lisa
+  work: '/renaissance_tech.jpg', // Operations / Holographic Globe Renaissance Council
+  credentials: '/renaissance_astronomy.jpg', // Celestial Observatory & Golden Armillary Spheres
+  achievements: '/renaissance_palazzo.jpg', // Italian Palazzo & Gold Leaf Fresco
+  experience: '/renaissance_experience_atelier.jpg', // Leonardo Atelier Workshop & Drafting Blueprints
+  testimonials: '/renaissance_testimonials_academy.jpg', // School of Athens Classical Academy
+  contact: '/renaissance_contact_desk.jpg', // Renaissance Letter Writing Desk & Wax Seals
 }
 
 export default function BackgroundParallax() {
   const activeSection = useScrollStore((state) => state.activeSection)
+  const { bgOpacity, contrastLevel, parallaxIntensity } = useBackgroundSettingsStore()
   const { scrollY } = useScroll()
   
-  // Create slow continuous floating motions for elements
-  const yBg = useTransform(scrollY, [0, 1000], [0, -100])
-  const ySkateboard = useTransform(scrollY, [0, 1000], [40, -120])
-  const yShoppingBag = useTransform(scrollY, [0, 1000], [-60, 100])
-  const yVial = useTransform(scrollY, [0, 1000], [10, -160])
+  // Create slow continuous floating motions scaled by user-selected parallax intensity
+  const yBg = useTransform(scrollY, [0, 1000], [0, -100 * parallaxIntensity])
+  const ySkateboard = useTransform(scrollY, [0, 1000], [40 * parallaxIntensity, -120 * parallaxIntensity])
+  const yShoppingBag = useTransform(scrollY, [0, 1000], [-60 * parallaxIntensity, 100 * parallaxIntensity])
+  const yVial = useTransform(scrollY, [0, 1000], [10 * parallaxIntensity, -160 * parallaxIntensity])
   const opacityHeroElements = useTransform(scrollY, [0, 500], [1, 0])
+
+  const contrastClass = {
+    subtle: 'brightness-[1.05] saturate-[1.08] contrast-[0.92]',
+    standard: 'brightness-[1.12] saturate-[1.22] contrast-[1.08]',
+    dramatic: 'brightness-[1.22] saturate-[1.45] contrast-[1.38]',
+  }[contrastLevel] || 'brightness-[1.12] saturate-[1.22] contrast-[1.08]'
 
   return (
     <div className="fixed inset-0 w-screen h-screen -z-30 pointer-events-none select-none overflow-hidden bg-[#030303]">
-      {/* Layer 1: Parallax active painting backdrop with high-end vibrancy and brightness */}
+      {/* Layer 1: Parallax active painting backdrop with user-controlled vibrancy & opacity */}
       <motion.div style={{ y: yBg }} className="absolute inset-0 w-full h-[115%]">
         {Object.entries(SECTION_BACKGROUNDS).map(([secId, imgSrc]) => {
-          const isActive = activeSection === secId
+          const isActive = activeSection ? activeSection === secId : secId === 'hero'
           return (
             <div
               key={secId}
+              style={{ opacity: isActive ? bgOpacity : 0 }}
               className={`absolute inset-0 transition-all duration-1000 ease-in-out ${
-                isActive ? 'opacity-[0.40] scale-100 blur-none' : 'opacity-0 scale-[1.03] blur-sm'
+                isActive ? 'scale-100 blur-none' : 'scale-[1.03] blur-sm'
               }`}
             >
               <Image
@@ -46,28 +55,28 @@ export default function BackgroundParallax() {
                 alt={`${secId} background painting`}
                 fill
                 priority={secId === 'hero'}
-                className="object-cover brightness-[1.10] saturate-[1.25] contrast-[1.05]"
+                className={`object-cover transition-all duration-500 ${contrastClass}`}
                 referrerPolicy="no-referrer"
               />
-              {/* Premium, consistent scrim layer inside each background block */}
-              <div className="absolute inset-0 bg-gradient-to-b from-[#030303]/90 via-[#030303]/75 to-[#030303]/90" />
+              {/* Subtle scrim layer preserving artwork clarity while maintaining text legibility */}
+              <div className="absolute inset-0 bg-gradient-to-b from-[#030303]/35 via-transparent to-[#030303]/50" />
             </div>
           )
         })}
       </motion.div>
 
       {/* Layer 2: Subtle textured overlay across all layers */}
-      <div className="absolute inset-0 bg-[radial-gradient(#ffffff04_1px,transparent_1px)] [background-size:16px_16px] opacity-40 mix-blend-overlay" />
+      <div className="absolute inset-0 bg-[radial-gradient(#ffffff04_1px,transparent_1px)] [background-size:16px_16px] opacity-30 mix-blend-overlay" />
       
-      {/* Dynamic dark radial vignette guaranteeing extreme high-contrast text readability */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(3,3,3,0.3)_0%,rgba(3,3,3,0.95)_100%)] z-10" />
+      {/* Dynamic dark radial vignette guaranteeing high-contrast text readability */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(3,3,3,0.6)_100%)] z-10" />
 
-      {/* Layer 3: Curated Museum-Style Framed Artifacts - Blends modern assets elegantly */}
+      {/* Layer 3: Curated Museum-Style Framed Artifacts */}
       <motion.div 
         style={{ opacity: opacityHeroElements }} 
         className="absolute inset-0 w-full h-full pointer-events-none hidden md:block z-20"
       >
-        {/* Artifact 1: Neural Graph (Model Diagram) */}
+        {/* Artifact 1: Neural Graph */}
         <motion.div
           style={{ y: ySkateboard }}
           animate={{
@@ -82,7 +91,6 @@ export default function BackgroundParallax() {
           className="absolute left-[3%] lg:left-[8%] xl:left-[12%] top-[14%] md:top-[16%] w-44 md:w-56 border border-primary/20 bg-black/80 backdrop-blur-xl rounded-2xl p-3 shadow-[0_15px_40px_rgba(var(--primary-rgb),0.12)] flex flex-col gap-2 pointer-events-auto group hover:border-primary/50 transition-all duration-500"
         >
           <div className="relative w-full h-24 md:h-32 overflow-hidden rounded-lg bg-[#050505] flex items-center justify-center p-3 border border-white/5">
-            {/* Dynamic Interactive Neural Network SVG representation */}
             <svg className="w-full h-full" viewBox="0 0 100 60">
               <defs>
                 <linearGradient id="neuralGlow" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -90,21 +98,17 @@ export default function BackgroundParallax() {
                   <stop offset="100%" stopColor="rgba(var(--secondary-rgb), 0.2)" />
                 </linearGradient>
               </defs>
-              {/* Layer connections */}
               <line x1="15" y1="30" x2="50" y2="15" stroke="url(#neuralGlow)" strokeWidth="0.5" className="animate-pulse" />
               <line x1="15" y1="30" x2="50" y2="45" stroke="url(#neuralGlow)" strokeWidth="0.5" />
               <line x1="15" y1="30" x2="50" y2="30" stroke="url(#neuralGlow)" strokeWidth="0.7" />
               <line x1="50" y1="15" x2="85" y2="30" stroke="url(#neuralGlow)" strokeWidth="0.5" />
               <line x1="50" y1="30" x2="85" y2="30" stroke="url(#neuralGlow)" strokeWidth="0.8" />
               <line x1="50" y1="45" x2="85" y2="30" stroke="url(#neuralGlow)" strokeWidth="0.5" />
-              {/* Nodes */}
               <circle cx="15" cy="30" r="3" fill="rgb(var(--primary-rgb))" className="animate-ping" style={{ animationDuration: '3s' }} />
               <circle cx="15" cy="30" r="3" fill="rgb(var(--primary-rgb))" />
-              
               <circle cx="50" cy="15" r="3" fill="#ffffff" />
               <circle cx="50" cy="30" r="3.5" fill="rgb(var(--secondary-rgb))" />
               <circle cx="50" cy="45" r="3" fill="#ffffff" />
-              
               <circle cx="85" cy="30" r="3.5" fill="rgb(var(--primary-rgb))" />
               <circle cx="85" cy="30" r="5" stroke="rgb(var(--primary-rgb))" strokeWidth="0.5" fill="none" className="animate-ping" style={{ animationDuration: '2s' }} />
             </svg>
@@ -116,7 +120,7 @@ export default function BackgroundParallax() {
           </div>
         </motion.div>
 
-        {/* Artifact 2: Terminal Snippet (Runtime Console) */}
+        {/* Artifact 2: Terminal Snippet */}
         <motion.div
           style={{ y: yShoppingBag }}
           animate={{
@@ -131,7 +135,6 @@ export default function BackgroundParallax() {
           className="absolute right-[3%] lg:right-[6%] top-[34%] md:top-[30%] w-44 md:w-56 border border-primary/20 bg-black/80 backdrop-blur-xl rounded-2xl p-3 shadow-[0_15px_40px_rgba(var(--primary-rgb),0.12)] flex flex-col gap-2 pointer-events-auto group hover:border-primary/50 transition-all duration-500"
         >
           <div className="relative w-full h-24 md:h-32 overflow-hidden rounded-lg bg-[#050505] flex flex-col p-2.5 border border-white/5 font-mono text-[7px] leading-relaxed text-zinc-400">
-            {/* Real code snippet */}
             <div className="flex items-center gap-1 pb-1.5 border-b border-white/5 mb-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-red-500/60" />
               <span className="w-1.5 h-1.5 rounded-full bg-amber-500/60" />
@@ -155,7 +158,7 @@ export default function BackgroundParallax() {
           </div>
         </motion.div>
 
-        {/* Artifact 3: Knowledge Graph (Semantic Vector Space Clusters) */}
+        {/* Artifact 3: Knowledge Graph */}
         <motion.div
           style={{ y: yVial }}
           animate={{
@@ -170,20 +173,15 @@ export default function BackgroundParallax() {
           className="absolute left-[5%] lg:left-[12%] xl:left-[16%] bottom-[10%] md:bottom-[12%] w-40 md:w-50 border border-primary/20 bg-black/80 backdrop-blur-xl rounded-2xl p-3 shadow-[0_15px_40px_rgba(var(--primary-rgb),0.12)] flex flex-col gap-2 pointer-events-auto group hover:border-primary/50 transition-all duration-500"
         >
           <div className="relative w-full h-20 md:h-26 overflow-hidden rounded-lg bg-[#050505] flex items-center justify-center p-2.5 border border-white/5">
-            {/* Visual Vector Clusters representation */}
             <svg className="w-full h-full" viewBox="0 0 100 60">
-              {/* Axes */}
               <line x1="5" y1="55" x2="95" y2="55" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
               <line x1="5" y1="5" x2="5" y2="55" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
-              {/* Cluster envelopes */}
               <circle cx="30" cy="22" r="12" fill="rgba(var(--primary-rgb), 0.05)" stroke="rgba(var(--primary-rgb), 0.2)" strokeWidth="0.5" strokeDasharray="2 2" />
               <circle cx="70" cy="38" r="14" fill="rgba(var(--secondary-rgb), 0.05)" stroke="rgba(var(--secondary-rgb), 0.2)" strokeWidth="0.5" strokeDasharray="2 2" />
-              {/* Nodes inside cluster A */}
               <circle cx="26" cy="18" r="1.5" fill="rgb(var(--primary-rgb))" className="animate-pulse" />
               <circle cx="34" cy="26" r="1.5" fill="rgb(var(--primary-rgb))" />
               <circle cx="30" cy="20" r="1" fill="#ffffff" />
               <circle cx="22" cy="25" r="1.2" fill="rgb(var(--primary-rgb))" />
-              {/* Nodes inside cluster B */}
               <circle cx="65" cy="42" r="1.5" fill="rgb(var(--secondary-rgb))" />
               <circle cx="74" cy="34" r="1.5" fill="rgb(var(--secondary-rgb))" className="animate-pulse" />
               <circle cx="70" cy="38" r="1.2" fill="#ffffff" />

@@ -2,9 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-// Memory-based cache for SWR (Stale-While-Revalidate)
-let cachedLeetcode: any = null;
-let cacheTimestamp: number = 0;
 const CACHE_TTL = 10 * 60 * 1000; // 10 minutes Cache TTL
 
 function calculateStreakFromCalendar(submissionCalendar: any): number {
@@ -21,13 +18,11 @@ function calculateStreakFromCalendar(submissionCalendar: any): number {
     calendarObj = submissionCalendar;
   }
 
-  // Extract all unique YYYY-MM-DD dates with submissions > 0
   const activeDates = new Set<string>();
   for (const [timestampStr, count] of Object.entries(calendarObj)) {
     if (count > 0) {
       const timestampMs = parseInt(timestampStr, 10) * 1000;
       if (!isNaN(timestampMs)) {
-        // Convert Unix timestamp to date in YYYY-MM-DD format in UTC
         const dateStr = new Date(timestampMs).toISOString().split('T')[0];
         activeDates.add(dateStr);
       }
@@ -36,11 +31,9 @@ function calculateStreakFromCalendar(submissionCalendar: any): number {
 
   if (activeDates.size === 0) return 0;
 
-  // Let's get today in UTC
   const today = new Date();
   const todayStr = today.toISOString().split('T')[0];
 
-  // Filter out any active dates that are in the future
   const validDates = Array.from(activeDates)
     .filter(dateStr => dateStr <= todayStr)
     .sort();
@@ -49,18 +42,15 @@ function calculateStreakFromCalendar(submissionCalendar: any): number {
 
   const mostRecentStr = validDates[validDates.length - 1];
 
-  // Calculate difference in days between today and mostRecentStr
   const d1 = new Date(todayStr + "T00:00:00Z");
   const d2 = new Date(mostRecentStr + "T00:00:00Z");
   const diffTime = d1.getTime() - d2.getTime();
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-  // If the last activity was more than 1 day ago, the streak is broken (0)
   if (diffDays > 1) {
     return 0;
   }
 
-  // Count backwards from mostRecentStr
   let currentStreak = 0;
   let checkDate = new Date(mostRecentStr + "T00:00:00Z");
 
@@ -68,7 +58,6 @@ function calculateStreakFromCalendar(submissionCalendar: any): number {
     const checkStr = checkDate.toISOString().split('T')[0];
     if (activeDates.has(checkStr)) {
       currentStreak++;
-      // Subtract 1 day
       checkDate.setUTCDate(checkDate.getUTCDate() - 1);
     } else {
       break;
@@ -78,7 +67,6 @@ function calculateStreakFromCalendar(submissionCalendar: any): number {
   return currentStreak;
 }
 
-// Generate realistic calendar data helper
 function generateMockSubmissionCalendar(): string {
   const cal: Record<string, number> = {};
   const now = Math.floor(Date.now() / 1000);
@@ -94,14 +82,21 @@ function generateMockSubmissionCalendar(): string {
 
 const fallbackData = {
   username: "Dhruv_Patil_18",
-  ranking: 239343,
-  streak: 29,
-  solvedTotal: 466,
+  ranking: 226317,
+  streak: 36,
+  solvedTotal: 472,
   solvedEasy: 121,
-  solvedMedium: 261,
-  solvedHard: 84,
+  solvedMedium: 265,
+  solvedHard: 86,
   submissionCalendar: generateMockSubmissionCalendar()
 };
+
+// Memory-based cache initialized with complete fallback data
+let cachedLeetcode: any = {
+  ...fallbackData,
+  source: "initial-cache"
+};
+let cacheTimestamp: number = 0;
 
 async function fetchLeetcodeFromAPIs(username: string): Promise<any> {
   const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeoutMs = 4000) => {
@@ -114,15 +109,15 @@ async function fetchLeetcodeFromAPIs(username: string): Promise<any> {
       });
       clearTimeout(id);
       return response;
-    } catch (err) {
+    } catch (err: any) {
       clearTimeout(id);
       throw err;
     }
   };
 
-  // 1. Try Alfa LeetCode API (Render)
+  // 1. Alfa API
   try {
-    const response = await fetchWithTimeout(`https://alfa-leetcode-api.onrender.com/userProfile/${username}`, { cache: 'no-store' });
+    const response = await fetchWithTimeout(`https://alfa-leetcode-api.onrender.com/userProfile/${username}`, { cache: 'no-store' }, 4000);
     if (response.ok) {
       const data = await response.json();
       if (data && (data.totalSolved !== undefined || data.easySolved !== undefined)) {
@@ -135,7 +130,7 @@ async function fetchLeetcodeFromAPIs(username: string): Promise<any> {
         return {
           username,
           ranking: data.ranking || fallbackData.ranking,
-          streak: calculatedStreak || data.streak || fallbackData.streak,
+          streak: calculatedStreak > 0 ? calculatedStreak : (data.streak || fallbackData.streak),
           solvedTotal: data.totalSolved || data.solvedProblem || fallbackData.solvedTotal,
           solvedEasy: data.easySolved || fallbackData.solvedEasy,
           solvedMedium: data.mediumSolved || fallbackData.solvedMedium,
@@ -145,13 +140,13 @@ async function fetchLeetcodeFromAPIs(username: string): Promise<any> {
         };
       }
     }
-  } catch (err) {
-    console.warn("Alfa LeetCode API Proxy failed, trying next proxy...", err);
+  } catch (_e) {
+    // Ignore external proxy errors quietly
   }
 
-  // 2. Try Faisal Shohag's LeetCode API (Vercel)
+  // 2. Faisal Shohag API
   try {
-    const response = await fetchWithTimeout(`https://leetcode-api-faisalshohag.vercel.app/${username}`, { cache: 'no-store' });
+    const response = await fetchWithTimeout(`https://leetcode-api-faisalshohag.vercel.app/${username}`, { cache: 'no-store' }, 3000);
     if (response.ok) {
       const data = await response.json();
       if (data && (data.totalSolved !== undefined || data.easySolved !== undefined)) {
@@ -164,7 +159,7 @@ async function fetchLeetcodeFromAPIs(username: string): Promise<any> {
         return {
           username,
           ranking: data.ranking || fallbackData.ranking,
-          streak: calculatedStreak || data.streak || fallbackData.streak,
+          streak: calculatedStreak > 0 ? calculatedStreak : (data.streak || fallbackData.streak),
           solvedTotal: data.totalSolved || fallbackData.solvedTotal,
           solvedEasy: data.easySolved || fallbackData.solvedEasy,
           solvedMedium: data.mediumSolved || fallbackData.solvedMedium,
@@ -174,11 +169,11 @@ async function fetchLeetcodeFromAPIs(username: string): Promise<any> {
         };
       }
     }
-  } catch (err) {
-    console.warn("Faisal Shohag API Proxy failed, trying direct GraphQL...", err);
+  } catch (_e) {
+    // Ignore external proxy errors quietly
   }
 
-  // 3. Try Direct GraphQL
+  // 3. Direct GraphQL
   try {
     const query = `
       query userProfile($username: String!) {
@@ -212,7 +207,7 @@ async function fetchLeetcodeFromAPIs(username: string): Promise<any> {
         query,
         variables: { username }
       })
-    }, 5000);
+    }, 3000);
 
     if (response.ok) {
       const json = await response.json();
@@ -234,7 +229,7 @@ async function fetchLeetcodeFromAPIs(username: string): Promise<any> {
           return {
             username,
             ranking,
-            streak: calculatedStreak || streak || fallbackData.streak,
+            streak: calculatedStreak > 0 ? calculatedStreak : (streak || fallbackData.streak),
             solvedTotal,
             solvedEasy,
             solvedMedium,
@@ -245,91 +240,46 @@ async function fetchLeetcodeFromAPIs(username: string): Promise<any> {
         }
       }
     }
-  } catch (err) {
-    console.warn("Direct LeetCode GraphQL fetch failed, throwing error:", err);
+  } catch (_e) {
+    // Ignore GraphQL timeout/network error
   }
 
-  throw new Error("All LeetCode sources failed");
+  // Final fallback
+  return {
+    ...fallbackData,
+    source: "fallback"
+  };
 }
 
 async function fetchAndUpdateLeetcode(username: string): Promise<any> {
   try {
     const data = await fetchLeetcodeFromAPIs(username);
-    cachedLeetcode = data;
-    cacheTimestamp = Date.now();
-    return data;
-  } catch (err) {
-    console.error("Failed to refresh LeetCode cache:", err);
-    // If we already have cached data, don't clear it or overwrite it with fallback
-    if (!cachedLeetcode) {
-      cachedLeetcode = {
-        ...fallbackData,
-        source: "fallback-error"
-      };
+    if (data) {
+      cachedLeetcode = data;
       cacheTimestamp = Date.now();
     }
+    return cachedLeetcode;
+  } catch (_e) {
     return cachedLeetcode;
   }
 }
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   const username = "Dhruv_Patil_18";
   const now = Date.now();
 
-  // If there's fresh cache, serve immediately
-  if (cachedLeetcode && (now - cacheTimestamp < CACHE_TTL)) {
-    return NextResponse.json({
-      ...cachedLeetcode,
-      cacheStatus: "HIT_FRESH",
-      cacheAgeMs: now - cacheTimestamp
-    }, {
-      headers: {
-        "Cache-Control": "public, max-age=600, s-maxage=600, stale-while-revalidate=86400",
-      }
-    });
+  // Synchronously fetch live data if initial request or cache TTL expired
+  if (cacheTimestamp === 0 || now - cacheTimestamp > CACHE_TTL) {
+    await fetchAndUpdateLeetcode(username);
   }
 
-  // If there's stale cache, serve it immediately and trigger background update (SWR)
-  if (cachedLeetcode) {
-    // Non-blocking trigger to update
-    fetchAndUpdateLeetcode(username).catch(err => {
-      console.error("Background LeetCode refresh failed:", err);
-    });
-
-    return NextResponse.json({
-      ...cachedLeetcode,
-      cacheStatus: "HIT_STALE",
-      cacheAgeMs: now - cacheTimestamp
-    }, {
-      headers: {
-        "Cache-Control": "public, max-age=600, s-maxage=600, stale-while-revalidate=86400",
-      }
-    });
-  }
-
-  // If cache is empty, we must fetch synchronously
-  try {
-    const data = await fetchAndUpdateLeetcode(username);
-    return NextResponse.json({
-      ...data,
-      cacheStatus: "MISS"
-    }, {
-      headers: {
-        "Cache-Control": "public, max-age=600, s-maxage=600, stale-while-revalidate=86400",
-      }
-    });
-  } catch (err) {
-    // In case of total failure during synchronous fetch
-    return NextResponse.json({
-      ...fallbackData,
-      source: "fallback",
-      cacheStatus: "FALLBACK_ERROR"
-    }, {
-      headers: {
-        "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
-        "Pragma": "no-cache",
-        "Expires": "0",
-      }
-    });
-  }
+  return NextResponse.json({
+    ...cachedLeetcode,
+    cacheStatus: now - cacheTimestamp < CACHE_TTL ? "HIT_FRESH" : "HIT_STALE",
+    cacheAgeMs: now - cacheTimestamp
+  }, {
+    headers: {
+      "Cache-Control": "public, max-age=300, s-maxage=300, stale-while-revalidate=3600",
+    }
+  });
 }

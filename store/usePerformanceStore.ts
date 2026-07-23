@@ -5,19 +5,13 @@ interface PerformanceState {
   setPerformanceMode: (mode: boolean) => void
 }
 
-export const usePerformanceStore = create<PerformanceState>((set) => {
-  // Safe window check for SSR/Next.js
-  const initialMode = typeof window !== 'undefined' 
-    ? localStorage.getItem('performance-mode') === 'true'
-    : false
+export const usePerformanceStore = create<PerformanceState>((set) => ({
+  performanceMode: false,
+  setPerformanceMode: (performanceMode) => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('performance-mode', String(performanceMode))
+    }
+    set({ performanceMode })
+  },
+}))
 
-  return {
-    performanceMode: initialMode,
-    setPerformanceMode: (performanceMode) => {
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('performance-mode', String(performanceMode))
-      }
-      set({ performanceMode })
-    },
-  }
-})

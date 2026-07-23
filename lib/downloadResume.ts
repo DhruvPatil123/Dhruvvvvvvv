@@ -188,10 +188,9 @@ export function downloadResume(theme: ResumeTheme = 'charcoal') {
   addSectionHeader('Core Expertise & Technical Skills')
   
   const skillGroups = [
-    { label: "Languages", skills: "Python, Java, C++, C#, C, JavaScript, TypeScript, SQL" },
-    { label: "Web Frameworks", skills: "React, Node.js, Express.js, Next.js, HTML, CSS, Tailwind, Bootstrap" },
-    { label: "AI & Databases", skills: "Agentic AI, RAG, LLMs, AI/ML Projects, PostgreSQL, Firebase, JDBC" },
-    { label: "Tools & Systems", skills: "Git, GitHub, Vercel, Cryptography, Cybersecurity, Software Testing" }
+    { label: "AI & Analytics", skills: "Python, LLM, RAG, BI/DA/DS, Agentic AI, PyTorch, TensorFlow" },
+    { label: "Web & Cloud", skills: "React, Node.js, TypeScript, Java, Supabase, Vercel, Next.js, FastAPI" },
+    { label: "DevOps & Systems", skills: "Docker, Kubernetes, GitHub Actions, CI/CD, Git, C++, Linux" }
   ]
   
   skillGroups.forEach(group => {

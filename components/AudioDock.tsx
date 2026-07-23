@@ -2,14 +2,25 @@
 
 import React, { useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Volume2, VolumeX, Zap } from 'lucide-react'
+import { Volume2, VolumeX, Zap, Sliders } from 'lucide-react'
 import { useAudioStore } from '@/store/useAudioStore'
 import { usePerformanceStore } from '@/store/usePerformanceStore'
-import { startAmbientDrone, setAmbientDroneVolume, playTick } from '@/lib/sounds'
+import { useBackgroundSettingsStore } from '@/store/useBackgroundSettingsStore'
+import { startAmbientDrone, setAmbientDroneVolume, playTick, playParchmentOpen } from '@/lib/sounds'
 
 export default function AudioDock() {
   const { isMuted, setIsMuted } = useAudioStore()
   const { performanceMode, setPerformanceMode } = usePerformanceStore()
+  const { setIsSettingsOpen } = useBackgroundSettingsStore()
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('performance-mode') === 'true'
+      if (stored) {
+        setPerformanceMode(true)
+      }
+    }
+  }, [setPerformanceMode])
 
   const handleToggleMute = () => {
     if (isMuted) {
@@ -29,13 +40,19 @@ export default function AudioDock() {
     setPerformanceMode(!performanceMode)
   }
 
+  const handleOpenSettings = () => {
+    playParchmentOpen()
+    setIsSettingsOpen(true)
+  }
+
   return (
     <div className="fixed bottom-6 right-6 z-[990] pointer-events-auto">
       <div className="glass-effect border border-white/10 rounded-2xl p-2 bg-black/40 backdrop-blur-xl flex items-center gap-2 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
         <button
           onClick={handleToggleMute}
           className="w-9 h-9 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-white hover:text-primary transition-all duration-300 active:scale-90 cursor-pointer"
-          aria-label={isMuted ? "Unmute Ambient Drone" : "Mute Ambient Drone"}
+          aria-label={isMuted ? "Unmute Ambient Soundscape" : "Mute Ambient Soundscape"}
+          title={isMuted ? "Unmute Ambient Soundscape" : "Mute Ambient Soundscape"}
         >
           {isMuted ? (
             <VolumeX className="w-4 h-4 text-zinc-400" />
@@ -55,6 +72,15 @@ export default function AudioDock() {
           title={performanceMode ? "Disable Performance Mode" : "Enable Performance Mode"}
         >
           <Zap className={`w-4 h-4 ${performanceMode ? "text-amber-400" : "text-zinc-400 opacity-60"}`} />
+        </button>
+
+        <button
+          onClick={handleOpenSettings}
+          className="w-9 h-9 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-zinc-400 hover:text-primary border border-transparent hover:border-primary/20 transition-all duration-300 active:scale-90 cursor-pointer"
+          aria-label="Customize Background & Aesthetics"
+          title="Customize Background & Aesthetics"
+        >
+          <Sliders className="w-4 h-4" />
         </button>
 
         {/* Live SVG Visualizer Bars */}

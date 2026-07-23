@@ -6,6 +6,7 @@ import { ArrowRight, Download, Github, Twitter, Linkedin, Instagram } from 'luci
 import { downloadResume } from '@/lib/downloadResume'
 import LeetCodeIcon from '../LeetCodeIcon'
 import { useThemeStore } from '@/store/useThemeStore'
+import { useRecruiterStore } from '@/store/useRecruiterStore'
 import { playPopover, playAmbientPad } from '@/lib/sounds'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -150,16 +151,29 @@ export default function Hero() {
           Building AI products that solve real-world problems.
         </p>
 
-        {/* Action Buttons simplified to exactly ONE primary CTA for absolute focal clarity */}
-        <div className="flex flex-col items-center pt-2">
-          {/* Primary CTA: High-end glowing glass capsule */}
-          <a
-            href="#work"
-            className="group active-tactile w-full sm:w-auto bg-primary text-black font-mono text-xs uppercase tracking-widest px-10 py-4.5 rounded-full font-bold flex items-center justify-center gap-2 hover:bg-white transition-all duration-300 shadow-[0_0_30px_rgba(var(--primary-rgb),0.3)] hover:shadow-[0_0_40px_rgba(255,255,255,0.4)] cursor-pointer"
-          >
-            Explore Work 
-            <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1.5" />
-          </a>
+        {/* Action Buttons with 30s Recruiter View & Explore Work */}
+        <div className="flex flex-col items-center pt-2 gap-4">
+          <div className="flex flex-col sm:flex-row items-center gap-3.5 w-full sm:w-auto">
+            {/* Primary CTA: High-end glowing glass capsule */}
+            <a
+              href="#work"
+              className="group active-tactile w-full sm:w-auto bg-primary text-black font-mono text-xs uppercase tracking-widest px-8 py-4 rounded-full font-bold flex items-center justify-center gap-2 hover:bg-white transition-all duration-300 shadow-[0_0_30px_rgba(var(--primary-rgb),0.3)] hover:shadow-[0_0_40px_rgba(255,255,255,0.4)] cursor-pointer"
+            >
+              Explore Work 
+              <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1.5" />
+            </a>
+
+            {/* 30-Second Recruiter Fast View Button */}
+            <button
+              onClick={() => {
+                playPopover()
+                useRecruiterStore.getState().openRecruiterView()
+              }}
+              className="group active-tactile w-full sm:w-auto bg-cyan-950/60 hover:bg-cyan-500/20 text-cyan-300 hover:text-white font-mono text-xs uppercase tracking-wider px-7 py-4 rounded-full font-bold flex items-center justify-center gap-2 border border-cyan-500/40 hover:border-cyan-400 transition-all duration-300 shadow-[0_0_20px_rgba(0,242,255,0.2)] hover:shadow-[0_0_30px_rgba(0,242,255,0.4)] cursor-pointer"
+            >
+              <span>⚡ 30s Recruiter View</span>
+            </button>
+          </div>
           
           {/* Secondary Action: Muted, humble text link for resume downloading that doesn't compete visually */}
           <div className="relative mt-4" ref={themeSelectorRef}>

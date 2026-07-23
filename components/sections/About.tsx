@@ -102,10 +102,10 @@ export default function About() {
         >
           {/* Renaissance Masterpiece */}
           <Image
-            src="/renaissance_tech.jpg"
-            alt="Renaissance Technology Masterpiece"
+            src="/renaissance_ai_masterpiece.jpg"
+            alt="Renaissance AI Scholar Masterpiece"
             fill
-            className="object-cover opacity-80 group-hover:opacity-95 group-hover:scale-[1.02] transition-all duration-700 ease-out"
+            className="object-cover opacity-90 group-hover:opacity-100 group-hover:scale-[1.02] transition-all duration-700 ease-out"
             referrerPolicy="no-referrer"
           />
           {/* Absolute tech overlays: corner brackets, glowing status indicator */}

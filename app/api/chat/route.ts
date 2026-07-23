@@ -27,9 +27,9 @@ const PORTFOLIO_DATA = {
     leetcode: 'https://leetcode.com/u/Dhruv_Patil_18/',
   },
   skills: {
-    ai: ['PyTorch', 'TensorFlow', 'Hugging Face', 'LangChain', 'LlamaIndex', 'RAG', 'LLMs', 'Agentic Workflows', 'Computer Vision'],
-    web: ['React 19', 'Next.js', 'Node.js', 'TypeScript', 'FastAPI', 'PostgreSQL', 'Tailwind CSS', 'Firebase', 'WebSockets'],
-    systems: ['C++', 'Java (Advanced)', '.NET Core', 'C#', 'Cryptography', 'Software Testing', 'Git', 'Figma Prototyping'],
+    ai: ['Python', 'LLM', 'RAG', 'BI/DA/DS', 'PyTorch', 'TensorFlow', 'Hugging Face', 'LangChain', 'Agentic Workflows'],
+    web: ['React', 'Node.js', 'TypeScript', 'Java', 'Supabase', 'Vercel', 'Next.js', 'FastAPI', 'PostgreSQL'],
+    systems: ['Docker', 'Kubernetes', 'GitHub Actions', 'CI/CD', 'C++', 'Git', '.NET Core', 'Software Testing'],
   },
   education: [
     { degree: 'B.Tech — Artificial Intelligence', institution: 'J.D. College of Engineering and Management, Nagpur', year: '2025 - 2028', cgpa: '8.76' },

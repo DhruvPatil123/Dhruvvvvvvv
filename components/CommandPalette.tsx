@@ -2,10 +2,14 @@
 
 import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, Terminal, Navigation, Zap, Volume2, VolumeX, Download, ArrowRight, CornerDownLeft, Sparkles } from 'lucide-react'
+import { Search, Terminal, Navigation, Zap, Volume2, VolumeX, Download, ArrowRight, CornerDownLeft, Sparkles, Code2, Cpu, FolderGit2, Trophy, Mail, Calendar, Github, Sliders } from 'lucide-react'
 import { playTick, playPopover, playNotification } from '@/lib/sounds'
 import { usePerformanceStore } from '@/store/usePerformanceStore'
 import { useAudioStore } from '@/store/useAudioStore'
+import { useRecruiterStore } from '@/store/useRecruiterStore'
+import { useProjectStore } from '@/store/useProjectStore'
+import { useSkillsStore } from '@/store/useSkillsStore'
+import { useBackgroundSettingsStore } from '@/store/useBackgroundSettingsStore'
 import { downloadResume } from '@/lib/downloadResume'
 
 interface CommandItem {
@@ -138,6 +142,243 @@ export default function CommandPalette() {
       action: () => scrollToSection('contact'),
     },
     // Action Commands
+    {
+      id: 'action-recruiter-view',
+      title: '⚡ Open 30-Second Recruiter View',
+      subtitle: 'Ultra-clean, high-density fast-scanning summary & metrics',
+      category: 'actions',
+      icon: <Sparkles className="w-4 h-4 text-cyan-400" />,
+      action: () => {
+        setIsOpen(false)
+        useRecruiterStore.getState().openRecruiterView()
+      },
+    },
+    {
+      id: 'action-bg-settings',
+      title: 'Customize Background & Aesthetics',
+      subtitle: 'Adjust opacity, chiaroscuro contrast, parallax depth, and acoustics',
+      category: 'actions',
+      icon: <Sliders className="w-4 h-4 text-amber-400" />,
+      action: () => {
+        setIsOpen(false)
+        useBackgroundSettingsStore.getState().setIsSettingsOpen(true)
+      },
+    },
+    {
+      id: 'action-view-leetcode',
+      title: 'View LeetCode Stats & Profile',
+      subtitle: 'Knight Rank, 500+ Solved, 2026 Rating 1948',
+      category: 'actions',
+      icon: <Trophy className="w-4 h-4 text-amber-400" />,
+      action: () => {
+        setIsOpen(false)
+        scrollToSection('achievements')
+      },
+    },
+    {
+      id: 'action-view-github',
+      title: 'View GitHub Profile',
+      subtitle: 'github.com/Dhruv-Kotadiya',
+      category: 'actions',
+      icon: <Github className="w-4 h-4 text-purple-400" />,
+      action: () => {
+        setIsOpen(false)
+        window.open('https://github.com/Dhruv-Kotadiya', '_blank', 'noopener,noreferrer')
+      },
+    },
+    {
+      id: 'action-contact',
+      title: 'Contact Dhruv Kotadiya',
+      subtitle: 'Send direct encrypted message or schedule meeting',
+      category: 'actions',
+      icon: <Mail className="w-4 h-4 text-emerald-400" />,
+      action: () => {
+        setIsOpen(false)
+        scrollToSection('contact')
+      },
+    },
+    // Project Search Commands
+    {
+      id: 'proj-raincrew',
+      title: 'Case Study: Raincrew.AI',
+      subtitle: 'Real-time AI Interviewer & Biometric Proctoring System',
+      category: 'navigation',
+      icon: <FolderGit2 className="w-4 h-4 text-cyan-400" />,
+      action: () => {
+        setIsOpen(false)
+        scrollToSection('work')
+        useProjectStore.getState().openProjectModal('Raincrew.AI')
+      },
+    },
+    {
+      id: 'proj-autoforge',
+      title: 'Case Study: AutoForge.AI',
+      subtitle: 'Autonomous Code Generation Agent & Self-Healing AST Engine',
+      category: 'navigation',
+      icon: <FolderGit2 className="w-4 h-4 text-purple-400" />,
+      action: () => {
+        setIsOpen(false)
+        scrollToSection('work')
+        useProjectStore.getState().openProjectModal('AutoForge.AI')
+      },
+    },
+    {
+      id: 'proj-visioncraft',
+      title: 'Case Study: VisionCraft.AI',
+      subtitle: 'Generative Neural Canvas with PyTorch GAN Cluster',
+      category: 'navigation',
+      icon: <FolderGit2 className="w-4 h-4 text-pink-400" />,
+      action: () => {
+        setIsOpen(false)
+        scrollToSection('work')
+        useProjectStore.getState().openProjectModal('VisionCraft.AI')
+      },
+    },
+    {
+      id: 'proj-schemaforge',
+      title: 'Case Study: SchemaForge.AI',
+      subtitle: 'LLM Database Schema Architecture & D3 Force Compiler',
+      category: 'navigation',
+      icon: <FolderGit2 className="w-4 h-4 text-blue-400" />,
+      action: () => {
+        setIsOpen(false)
+        scrollToSection('work')
+        useProjectStore.getState().openProjectModal('SchemaForge.AI')
+      },
+    },
+    {
+      id: 'proj-waterflow',
+      title: 'Case Study: WaterFlow',
+      subtitle: 'Generative UX Engine & Fluid Dynamic Theme Compiler',
+      category: 'navigation',
+      icon: <FolderGit2 className="w-4 h-4 text-teal-400" />,
+      action: () => {
+        setIsOpen(false)
+        scrollToSection('work')
+        useProjectStore.getState().openProjectModal('WaterFlow')
+      },
+    },
+    {
+      id: 'proj-hallucination',
+      title: 'Case Study: AI Hallucination Detector',
+      subtitle: 'NLP Vector RAG Verification & Claim Contradiction Matrix',
+      category: 'navigation',
+      icon: <FolderGit2 className="w-4 h-4 text-amber-400" />,
+      action: () => {
+        setIsOpen(false)
+        scrollToSection('work')
+        useProjectStore.getState().openProjectModal('AI Hallucination Detector')
+      },
+    },
+    {
+      id: 'proj-encryptx',
+      title: 'Case Study: EncryptX',
+      subtitle: 'High-Throughput Cryptographic File Encryption System',
+      category: 'navigation',
+      icon: <FolderGit2 className="w-4 h-4 text-emerald-400" />,
+      action: () => {
+        setIsOpen(false)
+        scrollToSection('work')
+        useProjectStore.getState().openProjectModal('EncryptX')
+      },
+    },
+    {
+      id: 'proj-dockmind',
+      title: 'Case Study: Dockmind',
+      subtitle: 'Vector Search Document Intelligence Engine with HNSW RAG',
+      category: 'navigation',
+      icon: <FolderGit2 className="w-4 h-4 text-indigo-400" />,
+      action: () => {
+        setIsOpen(false)
+        scrollToSection('work')
+        useProjectStore.getState().openProjectModal('Dockmind')
+      },
+    },
+    {
+      id: 'proj-studyplanner',
+      title: 'Case Study: AI Study Planner',
+      subtitle: 'Adaptive Spaced-Repetition Study Engine',
+      category: 'navigation',
+      icon: <FolderGit2 className="w-4 h-4 text-sky-400" />,
+      action: () => {
+        setIsOpen(false)
+        scrollToSection('work')
+        useProjectStore.getState().openProjectModal('AI Study Planner')
+      },
+    },
+    {
+      id: 'proj-resunova',
+      title: 'Case Study: ResuNova',
+      subtitle: 'AI Resume Optimization Engine',
+      category: 'navigation',
+      icon: <FolderGit2 className="w-4 h-4 text-rose-400" />,
+      action: () => {
+        setIsOpen(false)
+        scrollToSection('work')
+        useProjectStore.getState().openProjectModal('ResuNova')
+      },
+    },
+    // Skills Filter Commands
+    {
+      id: 'skill-python',
+      title: 'Skill Filter: Python & PyTorch',
+      subtitle: 'Deep Learning, CUDA, Torch, Data Pipelines',
+      category: 'actions',
+      icon: <Code2 className="w-4 h-4 text-amber-400" />,
+      action: () => {
+        setIsOpen(false)
+        scrollToSection('skills')
+        useSkillsStore.getState().setSelectedSkill('Python')
+      },
+    },
+    {
+      id: 'skill-cpp',
+      title: 'Skill Filter: C++ / Systems',
+      subtitle: 'Memory Safety, Pointers, Hardware Acceleration, OOP',
+      category: 'actions',
+      icon: <Cpu className="w-4 h-4 text-blue-400" />,
+      action: () => {
+        setIsOpen(false)
+        scrollToSection('skills')
+        useSkillsStore.getState().setSelectedSkill('C++')
+      },
+    },
+    {
+      id: 'skill-nextjs',
+      title: 'Skill Filter: Next.js & React',
+      subtitle: 'Full-Stack App Router, Server Actions, Tailwind CSS',
+      category: 'actions',
+      icon: <Code2 className="w-4 h-4 text-cyan-400" />,
+      action: () => {
+        setIsOpen(false)
+        scrollToSection('skills')
+        useSkillsStore.getState().setSelectedSkill('Next.js')
+      },
+    },
+    {
+      id: 'skill-gemini',
+      title: 'Skill Filter: Gemini API & Multimodal AI',
+      subtitle: 'Live Audio WebSockets, Gemini Flash, Function Calling',
+      category: 'actions',
+      icon: <Sparkles className="w-4 h-4 text-purple-400" />,
+      action: () => {
+        setIsOpen(false)
+        scrollToSection('skills')
+        useSkillsStore.getState().setSelectedSkill('Gemini API')
+      },
+    },
+    {
+      id: 'skill-docker',
+      title: 'Skill Filter: Docker & Microservices',
+      subtitle: 'Containerization, IPC, CI/CD Pipelines, Kubernetes',
+      category: 'actions',
+      icon: <Cpu className="w-4 h-4 text-emerald-400" />,
+      action: () => {
+        setIsOpen(false)
+        scrollToSection('skills')
+        useSkillsStore.getState().setSelectedSkill('Docker')
+      },
+    },
     {
       id: 'action-perf',
       title: performanceMode ? 'Disable Performance Mode (Enable 3D)' : 'Enable Performance Mode (Lightweight)',

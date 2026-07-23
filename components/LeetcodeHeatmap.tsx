@@ -36,46 +36,64 @@ export default function LeetcodeHeatmap({ submissionCalendar }: LeetcodeHeatmapP
     return cal
   }, [submissionCalendar])
 
-  // Generate grid cells (20 columns x 7 rows = 140 days)
+  // Generate grid cells (18 columns x 7 rows = 126 days, aligned Sun-Sat)
   const { cells, months } = useMemo(() => {
     const cols = 18
     const rows = 7
-    const totalCells = cols * rows
     const today = new Date()
-    const list = []
-    
-    // We want the last cell to be today, so we go backwards
-    for (let i = totalCells - 1; i >= 0; i--) {
-      const d = new Date(today)
-      d.setDate(today.getDate() - i)
-      
-      const yyyy = d.getFullYear()
-      const mm = String(d.getMonth() + 1).padStart(2, '0')
-      const dd = String(d.getDate()).padStart(2, '0')
-      const yyyymmdd = `${yyyy}-${mm}-${dd}`
+    const todayDayOfWeek = today.getDay() // 0 = Sun, 1 = Mon, ..., 6 = Sat
 
-      const count = formattedCalendar[yyyymmdd] || 0
-      list.push({
-        date: d,
-        yyyymmdd,
-        count,
-      })
-    }
+    // Find Sunday of current week
+    const currentSunday = new Date(today)
+    currentSunday.setDate(today.getDate() - todayDayOfWeek)
 
-    // Identify month labels and their starting columns
+    // Start date is 17 weeks before currentSunday (total 18 columns)
+    const startDate = new Date(currentSunday)
+    startDate.setDate(currentSunday.getDate() - 17 * 7)
+
+    const list: {
+      col: number
+      row: number
+      date: Date
+      yyyymmdd: string
+      count: number
+      isFuture: boolean
+    }[] = []
+
     const monthLabels: { label: string; colIndex: number }[] = []
     let lastMonth = -1
-    for (let col = 0; col < cols; col++) {
-      // Look at the first day of the column (Sunday equivalent)
-      const cellIndex = col * rows
-      const cell = list[cellIndex]
-      if (cell) {
-        const m = cell.date.getMonth()
-        if (m !== lastMonth) {
-          const label = cell.date.toLocaleString('default', { month: 'short' })
-          monthLabels.push({ label, colIndex: col })
-          lastMonth = m
-        }
+
+    for (let c = 0; c < cols; c++) {
+      const colFirstDay = new Date(startDate)
+      colFirstDay.setDate(startDate.getDate() + c * 7)
+
+      const monthNum = colFirstDay.getMonth()
+      if (monthNum !== lastMonth) {
+        const label = colFirstDay.toLocaleString('default', { month: 'short' })
+        monthLabels.push({ label, colIndex: c })
+        lastMonth = monthNum
+      }
+
+      for (let r = 0; r < rows; r++) {
+        const d = new Date(startDate)
+        d.setDate(startDate.getDate() + (c * 7 + r))
+
+        const yyyy = d.getFullYear()
+        const mm = String(d.getMonth() + 1).padStart(2, '0')
+        const dd = String(d.getDate()).padStart(2, '0')
+        const yyyymmdd = `${yyyy}-${mm}-${dd}`
+
+        const isFuture = d > today
+        const count = isFuture ? 0 : (formattedCalendar[yyyymmdd] || 0)
+
+        list.push({
+          col: c,
+          row: r,
+          date: d,
+          yyyymmdd,
+          count,
+          isFuture
+        })
       }
     }
 
@@ -154,10 +172,23 @@ export default function LeetcodeHeatmap({ submissionCalendar }: LeetcodeHeatmapP
 
           {/* Heatmap cells */}
           {cells.map((cell, idx) => {
-            const col = Math.floor(idx / rows)
-            const row = idx % rows
-            const x = col * (cellSize + cellGap)
-            const y = row * (cellSize + cellGap) + 12
+            const x = cell.col * (cellSize + cellGap)
+            const y = cell.row * (cellSize + cellGap) + 12
+
+            if (cell.isFuture) {
+              return (
+                <rect
+                  key={idx}
+                  x={x}
+                  y={y}
+                  width={cellSize}
+                  height={cellSize}
+                  rx={1.5}
+                  ry={1.5}
+                  fill="transparent"
+                />
+              )
+            }
 
             const fillColor = getCellColor(cell.count)
 

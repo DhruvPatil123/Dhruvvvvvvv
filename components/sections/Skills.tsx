@@ -4,29 +4,30 @@ import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Brain, Code2, ShieldAlert, Cpu, Play, RefreshCw, Terminal, Sliders, Layers, Activity, Sparkles, CheckCircle2 } from 'lucide-react'
 import { useScrollStore } from '@/store/useScrollStore'
+import { useSkillsStore } from '@/store/useSkillsStore'
 import { playTick, playNotification, playPopover } from '@/lib/sounds'
 
 const SKILL_CATEGORIES = [
   {
-    title: 'AI & Machine Learning',
+    title: 'AI, Data Science & BI/DA',
     icon: <Brain className="w-5 h-5 text-primary" />,
     color: 'text-primary',
     borderHover: 'hover:border-primary/30',
-    skills: ['PyTorch', 'TensorFlow', 'Hugging Face', 'LangChain', 'LlamaIndex', 'RAG', 'LLMs', 'Agentic Workflows', 'Computer Vision']
+    skills: ['Python', 'LLM', 'RAG', 'BI/DA/DS', 'PyTorch', 'TensorFlow', 'Hugging Face', 'LangChain', 'Agentic Workflows']
   },
   {
-    title: 'Web Engineering',
+    title: 'Web & Cloud Engineering',
     icon: <Code2 className="w-5 h-5 text-secondary" />,
     color: 'text-secondary',
     borderHover: 'hover:border-secondary/30',
-    skills: ['React 19', 'Next.js', 'Node.js', 'TypeScript', 'FastAPI', 'PostgreSQL', 'Tailwind CSS', 'Firebase', 'WebSockets']
+    skills: ['React', 'Node.js', 'TypeScript', 'Java', 'Supabase', 'Vercel', 'Next.js', 'FastAPI', 'PostgreSQL']
   },
   {
-    title: 'Systems & Security',
+    title: 'DevOps, CI/CD & Systems',
     icon: <ShieldAlert className="w-5 h-5 text-white" />,
     color: 'text-white',
     borderHover: 'hover:border-zinc-500/30',
-    skills: ['C++', 'Java (Advanced)', '.NET Core', 'C#', 'Cryptography', 'Software Testing', 'Git', 'Figma Prototyping']
+    skills: ['Docker', 'Kubernetes', 'GitHub Actions', 'CI/CD', 'C++', 'Git', '.NET Core', 'Linux', 'Software Testing']
   }
 ]
 
@@ -220,6 +221,12 @@ export default function Skills() {
     setActivePreset(preset)
   }
 
+  const selectedSkill = useSkillsStore((s) => s.selectedSkill)
+  const isSkillHighlighted = (skillName: string) => {
+    if (!selectedSkill) return false
+    return skillName.toLowerCase().includes(selectedSkill.toLowerCase()) || selectedSkill.toLowerCase().includes(skillName.toLowerCase())
+  }
+
   return (
     <section id="skills" className="relative w-full min-h-screen flex flex-col items-center justify-center px-6 py-24 md:py-32 lg:py-40">
       <div className="max-w-6xl w-full text-center mb-20 space-y-4">
@@ -279,19 +286,26 @@ export default function Skills() {
             </div>
             
             <p className="text-gray-400 text-xs font-mono mb-8">
-              {"// Core engineering block specializing in foundational & agentic LLM logic."}
+              {"// Machine learning models, RAG pipelines & BI/DA/DS intelligence engines."}
             </p>
 
             <div className="flex flex-wrap gap-2.5">
-              {SKILL_CATEGORIES[0].skills.map((skill) => (
-                <div 
-                  key={skill} 
-                  className="px-3.5 py-2 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] text-gray-300 hover:text-white border border-white/5 hover:border-primary/20 transition-all duration-300 font-sans text-xs md:text-sm font-medium cursor-default flex items-center gap-2"
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary/40 group-hover:bg-primary transition-all duration-300 animate-pulse" />
-                  {skill}
-                </div>
-              ))}
+              {SKILL_CATEGORIES[0].skills.map((skill) => {
+                const highlighted = isSkillHighlighted(skill)
+                return (
+                  <div 
+                    key={skill} 
+                    className={`px-3.5 py-2 rounded-xl transition-all duration-300 font-sans text-xs md:text-sm font-medium cursor-default flex items-center gap-2 ${
+                      highlighted
+                        ? 'bg-primary/20 text-white border-2 border-primary shadow-[0_0_20px_rgba(var(--primary-rgb),0.4)] scale-105'
+                        : 'bg-white/[0.03] hover:bg-white/[0.08] text-gray-300 hover:text-white border border-white/5 hover:border-primary/20'
+                    }`}
+                  >
+                    <span className={`w-1.5 h-1.5 rounded-full ${highlighted ? 'bg-primary animate-ping' : 'bg-primary/40 group-hover:bg-primary'} transition-all duration-300`} />
+                    {skill}
+                  </div>
+                )
+              })}
             </div>
           </div>
         </motion.div>
@@ -317,19 +331,26 @@ export default function Skills() {
             </div>
 
             <p className="text-gray-400 text-xs font-mono mb-8">
-              {"// Full-stack engineering with real-time reactive engines."}
+              {"// Modern full-stack Web engineering & cloud application platform ecosystems."}
             </p>
 
             <div className="flex flex-wrap gap-2.5">
-              {SKILL_CATEGORIES[1].skills.map((skill) => (
-                <div 
-                  key={skill} 
-                  className="px-3.5 py-2 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] text-gray-300 hover:text-white border border-white/5 hover:border-secondary/20 transition-all duration-300 font-sans text-xs md:text-sm font-medium cursor-default flex items-center gap-2"
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-secondary/40 group-hover:bg-secondary transition-all duration-300" />
-                  {skill}
-                </div>
-              ))}
+              {SKILL_CATEGORIES[1].skills.map((skill) => {
+                const highlighted = isSkillHighlighted(skill)
+                return (
+                  <div 
+                    key={skill} 
+                    className={`px-3.5 py-2 rounded-xl transition-all duration-300 font-sans text-xs md:text-sm font-medium cursor-default flex items-center gap-2 ${
+                      highlighted
+                        ? 'bg-secondary/20 text-white border-2 border-secondary shadow-[0_0_20px_rgba(0,242,255,0.4)] scale-105'
+                        : 'bg-white/[0.03] hover:bg-white/[0.08] text-gray-300 hover:text-white border border-white/5 hover:border-secondary/20'
+                    }`}
+                  >
+                    <span className={`w-1.5 h-1.5 rounded-full ${highlighted ? 'bg-secondary animate-ping' : 'bg-secondary/40 group-hover:bg-secondary'} transition-all duration-300`} />
+                    {skill}
+                  </div>
+                )
+              })}
             </div>
           </div>
         </motion.div>
@@ -355,19 +376,26 @@ export default function Skills() {
             </div>
 
             <p className="text-gray-400 text-xs font-mono mb-8">
-              {"// Lower-level languages, cryptographic verification, and tooling systems."}
+              {"// DevOps orchestration, containerization, automated CI/CD & infrastructure tools."}
             </p>
 
             <div className="flex flex-wrap gap-2.5">
-              {SKILL_CATEGORIES[2].skills.map((skill) => (
-                <div 
-                  key={skill} 
-                  className="px-3.5 py-2 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] text-gray-300 hover:text-white border border-white/5 hover:border-zinc-500/20 transition-all duration-300 font-sans text-xs md:text-sm font-medium cursor-default flex items-center gap-2"
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 group-hover:bg-white transition-all duration-300" />
-                  {skill}
-                </div>
-              ))}
+              {SKILL_CATEGORIES[2].skills.map((skill) => {
+                const highlighted = isSkillHighlighted(skill)
+                return (
+                  <div 
+                    key={skill} 
+                    className={`px-3.5 py-2 rounded-xl transition-all duration-300 font-sans text-xs md:text-sm font-medium cursor-default flex items-center gap-2 ${
+                      highlighted
+                        ? 'bg-white/20 text-white border-2 border-white shadow-[0_0_20px_rgba(255,255,255,0.4)] scale-105'
+                        : 'bg-white/[0.03] hover:bg-white/[0.08] text-gray-300 hover:text-white border border-white/5 hover:border-zinc-500/20'
+                    }`}
+                  >
+                    <span className={`w-1.5 h-1.5 rounded-full ${highlighted ? 'bg-white animate-ping' : 'bg-zinc-400 group-hover:bg-white'} transition-all duration-300`} />
+                    {skill}
+                  </div>
+                )
+              })}
             </div>
           </div>
         </motion.div>
