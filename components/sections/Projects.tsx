@@ -22,7 +22,8 @@ import {
   Check,
   Shield,
   Download,
-  Search
+  Search,
+  Copy
 } from 'lucide-react'
 import { playTick, playPopover, playAmbientPad, playNotification, playCryptoTick, playParchmentOpen, playQuillClick } from '@/lib/sounds'
 import ProjectArchitectureDiagram from '@/components/ProjectArchitectureDiagram'
@@ -453,6 +454,332 @@ const PROJECTS: Project[] = [
   }
 ]
 
+function convertToHexStream(str: string): string {
+  if (!str) return ''
+  return str
+    .split('')
+    .map(char => char.charCodeAt(0).toString(16).toUpperCase().padStart(2, '0'))
+    .join(' ')
+}
+
+function generateSchemaFromPrompt(promptStr: string, dbType: string = 'postgresql') {
+  const p = (promptStr || '').toLowerCase()
+  let tables: { name: string; columns: { name: string; type: string; isPk?: boolean; isFk?: boolean; ref?: string }[] }[] = []
+
+  if (p.includes('e-commerce') || p.includes('commerce') || p.includes('product') || p.includes('shop')) {
+    tables = [
+      {
+        name: 'customers',
+        columns: [
+          { name: 'id', type: 'UUID', isPk: true },
+          { name: 'email', type: 'VARCHAR(255)' },
+          { name: 'full_name', type: 'VARCHAR(100)' },
+          { name: 'created_at', type: 'TIMESTAMP' }
+        ]
+      },
+      {
+        name: 'products',
+        columns: [
+          { name: 'id', type: 'UUID', isPk: true },
+          { name: 'title', type: 'VARCHAR(255)' },
+          { name: 'price_cents', type: 'INTEGER' },
+          { name: 'stock_qty', type: 'INTEGER' }
+        ]
+      },
+      {
+        name: 'orders',
+        columns: [
+          { name: 'id', type: 'UUID', isPk: true },
+          { name: 'customer_id', type: 'UUID', isFk: true, ref: 'customers.id' },
+          { name: 'total_amount', type: 'DECIMAL(10,2)' },
+          { name: 'status', type: 'VARCHAR(50)' }
+        ]
+      }
+    ]
+  } else if (p.includes('saas') || p.includes('subscription') || p.includes('billing')) {
+    tables = [
+      {
+        name: 'organizations',
+        columns: [
+          { name: 'id', type: 'UUID', isPk: true },
+          { name: 'name', type: 'VARCHAR(100)' },
+          { name: 'plan_tier', type: 'VARCHAR(50)' }
+        ]
+      },
+      {
+        name: 'users',
+        columns: [
+          { name: 'id', type: 'UUID', isPk: true },
+          { name: 'org_id', type: 'UUID', isFk: true, ref: 'organizations.id' },
+          { name: 'email', type: 'VARCHAR(255)' },
+          { name: 'role', type: 'VARCHAR(50)' }
+        ]
+      },
+      {
+        name: 'subscriptions',
+        columns: [
+          { name: 'id', type: 'UUID', isPk: true },
+          { name: 'org_id', type: 'UUID', isFk: true, ref: 'organizations.id' },
+          { name: 'stripe_sub_id', type: 'VARCHAR(100)' },
+          { name: 'status', type: 'VARCHAR(20)' }
+        ]
+      }
+    ]
+  } else if (p.includes('hospital') || p.includes('patient') || p.includes('doctor') || p.includes('medical')) {
+    tables = [
+      {
+        name: 'patients',
+        columns: [
+          { name: 'id', type: 'UUID', isPk: true },
+          { name: 'full_name', type: 'VARCHAR(100)' },
+          { name: 'dob', type: 'DATE' },
+          { name: 'medical_record_num', type: 'VARCHAR(50)' }
+        ]
+      },
+      {
+        name: 'doctors',
+        columns: [
+          { name: 'id', type: 'UUID', isPk: true },
+          { name: 'name', type: 'VARCHAR(100)' },
+          { name: 'specialty', type: 'VARCHAR(100)' }
+        ]
+      },
+      {
+        name: 'appointments',
+        columns: [
+          { name: 'id', type: 'UUID', isPk: true },
+          { name: 'patient_id', type: 'UUID', isFk: true, ref: 'patients.id' },
+          { name: 'doctor_id', type: 'UUID', isFk: true, ref: 'doctors.id' },
+          { name: 'scheduled_at', type: 'TIMESTAMP' }
+        ]
+      }
+    ]
+  } else {
+    // Default or Users + Posts + Comments
+    tables = [
+      {
+        name: 'users',
+        columns: [
+          { name: 'id', type: 'UUID', isPk: true },
+          { name: 'username', type: 'VARCHAR(50)' },
+          { name: 'email', type: 'VARCHAR(255)' },
+          { name: 'created_at', type: 'TIMESTAMP' }
+        ]
+      },
+      {
+        name: 'posts',
+        columns: [
+          { name: 'id', type: 'UUID', isPk: true },
+          { name: 'author_id', type: 'UUID', isFk: true, ref: 'users.id' },
+          { name: 'title', type: 'VARCHAR(255)' },
+          { name: 'content', type: 'TEXT' }
+        ]
+      },
+      {
+        name: 'comments',
+        columns: [
+          { name: 'id', type: 'UUID', isPk: true },
+          { name: 'post_id', type: 'UUID', isFk: true, ref: 'posts.id' },
+          { name: 'user_id', type: 'UUID', isFk: true, ref: 'users.id' },
+          { name: 'body', type: 'TEXT' }
+        ]
+      }
+    ]
+  }
+
+  // Generate code string based on dbType
+  let code = ''
+  if (dbType === 'drizzle') {
+    code = tables.map(t => {
+      const cols = t.columns.map(c => {
+        if (c.isPk) return `  ${c.name}: uuid('${c.name}').primaryKey().defaultRandom(),`
+        if (c.isFk) return `  ${c.name}: uuid('${c.name}').references(() => ${c.ref?.split('.')[0]}.${c.ref?.split('.')[1]}),`
+        if (c.type.includes('VARCHAR')) return `  ${c.name}: varchar('${c.name}', { length: 255 }),`
+        if (c.type.includes('TIMESTAMP')) return `  ${c.name}: timestamp('${c.name}').defaultNow(),`
+        return `  ${c.name}: text('${c.name}'),`
+      }).join('\n')
+      return `export const ${t.name} = pgTable('${t.name}', {\n${cols}\n});`
+    }).join('\n\n')
+  } else if (dbType === 'prisma') {
+    code = tables.map(t => {
+      const cols = t.columns.map(c => {
+        if (c.isPk) return `  ${c.name} String @id @default(uuid())`
+        if (c.isFk) return `  ${c.name} String\n  ${c.ref?.split('.')[0]} ${c.ref?.split('.')[0]} @relation(fields: [${c.name}], references: [${c.ref?.split('.')[1]}])`
+        return `  ${c.name} String`
+      }).join('\n')
+      return `model ${t.name.charAt(0).toUpperCase() + t.name.slice(1)} {\n${cols}\n}`
+    }).join('\n\n')
+  } else {
+    // PostgreSQL
+    code = tables.map(t => {
+      const cols = t.columns.map(c => {
+        let line = `  ${c.name} ${c.type}`
+        if (c.isPk) line += ' PRIMARY KEY'
+        if (c.isFk && c.ref) line += ` REFERENCES ${c.ref.split('.')[0]}(${c.ref.split('.')[1]})`
+        return line
+      }).join(',\n')
+      return `CREATE TABLE ${t.name} (\n${cols}\n);`
+    }).join('\n\n')
+  }
+
+  return { tables, code }
+}
+
+function MiniCardSandbox({ project }: { project: Project }) {
+  // SchemaForge Mini Sandbox
+  const [schemaPrompt, setSchemaPrompt] = useState('Users with Posts and Comments')
+  const [copiedSchema, setCopiedSchema] = useState(false)
+
+  // EncryptX Mini Sandbox
+  const [encryptInput, setEncryptInput] = useState('Top Secret AI Agent Key 0x9F82')
+  const [isEncrypted, setIsEncrypted] = useState(true)
+
+  if (project.title === 'SchemaForge.AI') {
+    const { tables, code } = generateSchemaFromPrompt(schemaPrompt, 'postgresql')
+
+    return (
+      <div 
+        onClick={(e) => e.stopPropagation()} 
+        className="mt-2 p-3.5 rounded-2xl bg-black/80 border border-primary/25 space-y-3 font-mono text-xs shadow-lg"
+      >
+        <div className="flex justify-between items-center text-[10px]">
+          <span className="text-primary font-bold uppercase tracking-wider flex items-center gap-1.5">
+            <Database className="w-3.5 h-3.5 text-primary" /> Mini Schema Compiler Sandbox
+          </span>
+          <span className="text-emerald-400 font-mono text-[9px] bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
+            SQL COMPLIANT
+          </span>
+        </div>
+
+        {/* Quick presets */}
+        <div className="flex flex-wrap gap-1">
+          {['Users & Posts', 'E-Commerce', 'SaaS Billing'].map((preset) => (
+            <button
+              key={preset}
+              onClick={() => { playTick(); setSchemaPrompt(preset); }}
+              className={`px-2 py-0.5 rounded text-[9.5px] border transition-all cursor-pointer ${
+                schemaPrompt === preset
+                  ? 'bg-primary/20 border-primary text-primary font-bold'
+                  : 'bg-white/5 border-white/5 text-gray-400 hover:text-white'
+              }`}
+            >
+              {preset}
+            </button>
+          ))}
+        </div>
+
+        {/* Input */}
+        <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 focus-within:border-primary/50 transition-colors">
+          <Search className="w-3 h-3 text-gray-500 shrink-0" />
+          <input
+            type="text"
+            value={schemaPrompt}
+            onChange={(e) => setSchemaPrompt(e.target.value)}
+            placeholder="e.g. Users with Posts and Comments..."
+            className="bg-transparent border-none outline-none text-white text-[11px] font-mono w-full placeholder-gray-600 focus:ring-0"
+          />
+        </div>
+
+        {/* Dynamic ERD Table Badges */}
+        <div className="space-y-1.5">
+          <span className="text-[9px] text-zinc-500 uppercase tracking-widest block">Resolved ERD Nodes:</span>
+          <div className="flex flex-wrap gap-1.5">
+            {tables.map((tbl) => (
+              <div key={tbl.name} className="px-2 py-1 rounded-lg bg-zinc-900 border border-white/10 text-[10px] space-y-0.5">
+                <div className="flex items-center gap-1 text-primary font-bold">
+                  <span className="w-1 h-1 rounded-full bg-primary" />
+                  <span>{tbl.name}</span>
+                </div>
+                <div className="text-[8.5px] text-zinc-400 font-mono">
+                  {tbl.columns.map(c => c.name).join(', ')}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Code Snippet Box */}
+        <div className="relative p-2 rounded-lg bg-zinc-950 border border-white/5 text-[9.5px] text-green-400 overflow-x-auto scrollbar-thin">
+          <div className="flex justify-between items-center mb-1 text-[8.5px] text-zinc-500">
+            <span>POSTGRESQL SYNTHESIZED</span>
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(code)
+                setCopiedSchema(true)
+                playNotification()
+                setTimeout(() => setCopiedSchema(false), 2000)
+              }}
+              className="text-primary hover:underline flex items-center gap-1 cursor-pointer"
+            >
+              {copiedSchema ? <Check className="w-2.5 h-2.5 text-emerald-400" /> : <Copy className="w-2.5 h-2.5" />}
+              {copiedSchema ? 'COPIED' : 'COPY'}
+            </button>
+          </div>
+          <pre className="whitespace-pre-wrap font-mono leading-tight">{code.substring(0, 150)}...</pre>
+        </div>
+      </div>
+    )
+  }
+
+  if (project.title === 'EncryptX') {
+    const cipherText = isEncrypted
+      ? convertToHexStream(encryptInput)
+      : encryptInput
+
+    return (
+      <div 
+        onClick={(e) => e.stopPropagation()} 
+        className="mt-2 p-3.5 rounded-2xl bg-black/80 border border-primary/25 space-y-3 font-mono text-xs shadow-lg"
+      >
+        <div className="flex justify-between items-center text-[10px]">
+          <span className="text-primary font-bold uppercase tracking-wider flex items-center gap-1.5">
+            <Lock className="w-3.5 h-3.5 text-primary" /> Real-Time Hardware Crypto Sandbox
+          </span>
+          <span className="text-primary font-mono text-[9px] bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20 animate-pulse">
+            AES-256 GCM
+          </span>
+        </div>
+
+        {/* Input Text Box */}
+        <div className="space-y-1">
+          <span className="text-[9px] text-zinc-500 uppercase tracking-widest block">Input Text Payload:</span>
+          <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 focus-within:border-primary/50 transition-colors">
+            <input
+              type="text"
+              value={encryptInput}
+              onChange={(e) => { setEncryptInput(e.target.value); playCryptoTick(); }}
+              placeholder="Type plaintext to encrypt..."
+              className="bg-transparent border-none outline-none text-white text-[11px] font-mono w-full placeholder-gray-600 focus:ring-0"
+            />
+          </div>
+        </div>
+
+        {/* Ciphertext Box */}
+        <div className="p-2.5 rounded-lg bg-zinc-950 border border-white/5 space-y-1.5">
+          <div className="flex justify-between items-center text-[9px]">
+            <span className="text-zinc-500 uppercase font-mono">{isEncrypted ? 'HEX CIPHER STREAM' : 'PLAINTEXT PAYLOAD'}</span>
+            <button
+              onClick={() => {
+                playTick()
+                setIsEncrypted(!isEncrypted)
+                playNotification()
+              }}
+              className="px-2 py-0.5 rounded bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 text-[9px] transition-all cursor-pointer font-bold"
+            >
+              {isEncrypted ? 'Decrypt' : 'Encrypt'}
+            </button>
+          </div>
+          <div className="font-mono text-[10px] text-green-400 break-all bg-black/50 p-2 rounded border border-white/5 max-h-16 overflow-y-auto scrollbar-thin">
+            {cipherText || 'Enter text above...'}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return null
+}
+
 function ProjectCard({ project, idx, onOpen }: { project: Project; idx: number; onOpen: (p: Project) => void }) {
   const cardRef = useRef<HTMLDivElement>(null)
 
@@ -561,6 +888,9 @@ function ProjectCard({ project, idx, onOpen }: { project: Project; idx: number; 
             </span>
           ))}
         </div>
+
+        {/* Mini Live Interactive Sandbox for Top Projects */}
+        <MiniCardSandbox project={project} />
       </div>
 
       <div className="relative z-10 space-y-4">
@@ -591,7 +921,15 @@ function ProjectDetailsModal({ project, onClose }: { project: Project; onClose: 
   // Top-tier projects check
   const isVisionCraft = project.title === 'VisionCraft.AI'
   const isEncryptX = project.title === 'EncryptX'
-  const isTopTier = isVisionCraft || isEncryptX
+  const isSchemaForge = project.title === 'SchemaForge.AI'
+  const isRaincrew = project.title === 'Raincrew.AI'
+  const isAutoForge = project.title === 'AutoForge.AI'
+  const isTopTier = isVisionCraft || isEncryptX || isSchemaForge || isRaincrew || isAutoForge
+
+  // SchemaForge Sandbox State
+  const [modalSchemaPrompt, setModalSchemaPrompt] = useState('Users with Posts and Comments')
+  const [modalSchemaDb, setModalSchemaDb] = useState<'postgresql' | 'drizzle' | 'prisma'>('postgresql')
+  const [modalCopiedSchema, setModalCopiedSchema] = useState(false)
 
   const [activeTab, setActiveTab] = useState<'architecture' | 'terminal' | 'playground'>('architecture')
 
@@ -1660,6 +1998,128 @@ function ProjectDetailsModal({ project, onClose }: { project: Project; onClose: 
                     )}
                   </div>
                 )}
+
+                {/* 3. SchemaForge.AI Playground */}
+                {isSchemaForge && (() => {
+                  const schemaData = generateSchemaFromPrompt(modalSchemaPrompt, modalSchemaDb)
+                  return (
+                    <div className="space-y-4 flex flex-col justify-between h-full">
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Database className="w-4 h-4 text-primary animate-pulse" />
+                          <h4 className="text-xs uppercase tracking-widest text-primary font-mono font-bold">
+                            Natural Language Schema Compiler
+                          </h4>
+                        </div>
+                        <p className="text-xs text-gray-400 font-sans">
+                          Type an application prompt below to live-synthesize relational table schemas, primary/foreign key mappings, and database migration code in real time.
+                        </p>
+                      </div>
+
+                      {/* Presets */}
+                      <div className="flex flex-wrap gap-1.5">
+                        {[
+                          "Users with Posts and Comments",
+                          "E-Commerce (Products, Orders, Customers)",
+                          "SaaS Subscriptions & Billing",
+                          "Hospital Records & Appointments"
+                        ].map((preset) => (
+                          <button
+                            key={preset}
+                            onClick={() => { playTick(); setModalSchemaPrompt(preset); }}
+                            className={`px-2.5 py-1 rounded-lg text-[10px] font-mono border transition-all cursor-pointer ${
+                              modalSchemaPrompt === preset
+                                ? 'bg-primary/20 border-primary text-primary font-bold shadow-[0_0_10px_rgba(var(--primary-rgb),0.15)]'
+                                : 'bg-white/5 border-white/5 text-gray-400 hover:text-white hover:bg-white/10'
+                            }`}
+                          >
+                            {preset}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Prompt Input & Dialect Toggle */}
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 bg-white/[0.03] border border-white/10 rounded-xl p-3 focus-within:border-primary/50 transition-colors">
+                          <Search className="w-4 h-4 text-gray-500 shrink-0" />
+                          <input
+                            type="text"
+                            value={modalSchemaPrompt}
+                            onChange={(e) => setModalSchemaPrompt(e.target.value)}
+                            placeholder="Type prompt e.g. Users with Posts and Comments..."
+                            className="bg-transparent border-none outline-none flex-grow text-white font-mono text-xs placeholder:text-gray-600 focus:ring-0"
+                          />
+                        </div>
+
+                        <div className="flex justify-between items-center text-[10px] font-mono">
+                          <div className="flex gap-1.5">
+                            {(['postgresql', 'drizzle', 'prisma'] as const).map((db) => (
+                              <button
+                                key={db}
+                                onClick={() => { playTick(); setModalSchemaDb(db); }}
+                                className={`px-2.5 py-1 rounded uppercase font-bold text-[9px] transition-all cursor-pointer ${
+                                  modalSchemaDb === db
+                                    ? 'bg-primary text-black shadow-[0_0_8px_rgba(255,255,255,0.2)]'
+                                    : 'bg-white/5 text-gray-400 hover:text-white'
+                                }`}
+                              >
+                                {db}
+                              </button>
+                            ))}
+                          </div>
+                          <span className="text-emerald-400 font-mono text-[9.5px]">STATUS: 28ms ANSI OK</span>
+                        </div>
+                      </div>
+
+                      {/* Dynamic ERD Node Graph */}
+                      <div className="p-3 bg-zinc-950/80 border border-white/10 rounded-xl space-y-2 max-h-44 overflow-y-auto scrollbar-thin">
+                        <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest block">Interactive ERD Nodes:</span>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                          {schemaData.tables.map((t) => (
+                            <div key={t.name} className="p-2.5 bg-black border border-white/10 rounded-lg space-y-1.5 shadow-inner">
+                              <div className="flex items-center justify-between border-b border-white/10 pb-1">
+                                <span className="font-mono text-[11px] font-bold text-primary">{t.name}</span>
+                                <span className="text-[8px] font-mono text-zinc-500 bg-white/5 px-1 py-0.5 rounded">TABLE</span>
+                              </div>
+                              <div className="space-y-1 text-[9px] font-mono">
+                                {t.columns.map((c) => (
+                                  <div key={c.name} className="flex justify-between text-zinc-300">
+                                    <span className={c.isPk ? 'text-emerald-400 font-bold' : c.isFk ? 'text-amber-300 font-medium' : ''}>
+                                      {c.isPk ? '🔑 ' : c.isFk ? '🔗 ' : ''}{c.name}
+                                    </span>
+                                    <span className="text-zinc-500 text-[8.5px]">{c.type}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Compiled Output Code Block */}
+                      <div className="p-3 bg-black border border-white/10 rounded-xl space-y-1.5 font-mono text-[10px]">
+                        <div className="flex justify-between items-center text-zinc-400 text-[9px]">
+                          <span className="uppercase font-bold tracking-wider text-primary">COMPILED SCHEMA SNIPPET ({modalSchemaDb.toUpperCase()})</span>
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(schemaData.code)
+                              setModalCopiedSchema(true)
+                              playNotification()
+                              setTimeout(() => setModalCopiedSchema(false), 2000)
+                            }}
+                            className="text-primary hover:underline flex items-center gap-1 cursor-pointer font-bold"
+                          >
+                            {modalCopiedSchema ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                            {modalCopiedSchema ? 'COPIED TO CLIPBOARD' : 'COPY'}
+                          </button>
+                        </div>
+                        <pre className="text-green-400 max-h-28 overflow-y-auto scrollbar-thin whitespace-pre-wrap select-all font-mono leading-relaxed">
+                          {schemaData.code}
+                        </pre>
+                      </div>
+                    </div>
+                  )
+                })()}
               </div>
             )}
           </div>

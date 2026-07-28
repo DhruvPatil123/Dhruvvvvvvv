@@ -7,6 +7,7 @@ import * as THREE from 'three'
 import { useScrollStore } from '@/store/useScrollStore'
 import { useThemeStore } from '@/store/useThemeStore'
 import WireframeTerrain from './WireframeTerrain'
+import CosmicDust from './CosmicDust'
 
 // Custom camera controller for smooth cinematic drift and cursor parallax
 function CameraController() {
@@ -185,7 +186,9 @@ export default function Experience() {
       {/* 1. Cinematic Camera Control */}
       <CameraController />
 
-      {/* 2. Base Layer: Removed WireframeTerrain to prevent collision with static painting backgrounds */}
+      {/* 2. Ambient 3D Cosmic Stars & Subtle Wireframe Matrix */}
+      <CosmicDust />
+      <WireframeTerrain />
 
       {/* 4. Hero object wrapper and interactive float behaviors */}
       <Float speed={1.5} rotationIntensity={0.15} floatIntensity={0.4}>

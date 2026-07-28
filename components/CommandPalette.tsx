@@ -178,17 +178,17 @@ export default function CommandPalette() {
     {
       id: 'action-view-github',
       title: 'View GitHub Profile',
-      subtitle: 'github.com/Dhruv-Kotadiya',
+      subtitle: 'github.com/DhruvPatil123',
       category: 'actions',
       icon: <Github className="w-4 h-4 text-purple-400" />,
       action: () => {
         setIsOpen(false)
-        window.open('https://github.com/Dhruv-Kotadiya', '_blank', 'noopener,noreferrer')
+        window.open('https://github.com/DhruvPatil123', '_blank', 'noopener,noreferrer')
       },
     },
     {
       id: 'action-contact',
-      title: 'Contact Dhruv Kotadiya',
+      title: 'Contact Dhruv Patil',
       subtitle: 'Send direct encrypted message or schedule meeting',
       category: 'actions',
       icon: <Mail className="w-4 h-4 text-emerald-400" />,
@@ -404,37 +404,37 @@ export default function CommandPalette() {
       },
     },
     {
-      id: 'action-resume-charcoal',
-      title: 'Download Resume (Classic Charcoal)',
-      subtitle: 'Download PDF CV styled in elegant dark slate',
+      id: 'action-resume-ai',
+      title: 'Download Resume (AI & LLM Focus)',
+      subtitle: 'Tailored PDF highlighting Agentic AI, Gemini, PyTorch & RAG',
       category: 'actions',
-      icon: <Download className="w-4 h-4 text-zinc-300" />,
+      icon: <Download className="w-4 h-4 text-primary" />,
       action: () => {
-        downloadResume('charcoal')
+        downloadResume('charcoal', 'ai')
         playNotification()
         setIsOpen(false)
       },
     },
     {
-      id: 'action-resume-emerald',
-      title: 'Download Resume (Emerald Tech)',
-      subtitle: 'Download PDF CV styled in cyber green theme',
+      id: 'action-resume-fullstack',
+      title: 'Download Resume (Full-Stack & Cloud Focus)',
+      subtitle: 'Tailored PDF highlighting Next.js 15, PostgreSQL & Cloud Architecture',
       category: 'actions',
       icon: <Download className="w-4 h-4 text-emerald-400" />,
       action: () => {
-        downloadResume('emerald')
+        downloadResume('emerald', 'fullstack')
         playNotification()
         setIsOpen(false)
       },
     },
     {
-      id: 'action-resume-cobalt',
-      title: 'Download Resume (Royal Cobalt)',
-      subtitle: 'Download PDF CV styled in classic deep blue',
+      id: 'action-resume-standard',
+      title: 'Download Resume (Standard Full CV)',
+      subtitle: 'Comprehensive B.Tech Computer Tech academic & engineering resume',
       category: 'actions',
       icon: <Download className="w-4 h-4 text-blue-400" />,
       action: () => {
-        downloadResume('cobalt')
+        downloadResume('cobalt', 'standard')
         playNotification()
         setIsOpen(false)
       },

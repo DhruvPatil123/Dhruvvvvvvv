@@ -30,46 +30,57 @@ export default function BackgroundParallax() {
   const yVial = useTransform(scrollY, [0, 1000], [10 * parallaxIntensity, -160 * parallaxIntensity])
   const opacityHeroElements = useTransform(scrollY, [0, 500], [1, 0])
 
-  const contrastClass = {
-    subtle: 'brightness-[1.05] saturate-[1.08] contrast-[0.92]',
-    standard: 'brightness-[1.12] saturate-[1.22] contrast-[1.08]',
-    dramatic: 'brightness-[1.22] saturate-[1.45] contrast-[1.38]',
-  }[contrastLevel] || 'brightness-[1.12] saturate-[1.22] contrast-[1.08]'
+  const filterStyle = {
+    subtle: 'brightness(1.15) contrast(1.05) saturate(1.15)',
+    standard: 'brightness(1.28) contrast(1.15) saturate(1.3)',
+    dramatic: 'brightness(1.4) contrast(1.25) saturate(1.5)',
+  }[contrastLevel] || 'brightness(1.28) contrast(1.15) saturate(1.3)'
 
   return (
-    <div className="fixed inset-0 w-screen h-screen -z-30 pointer-events-none select-none overflow-hidden bg-[#030303]">
-      {/* Layer 1: Parallax active painting backdrop with user-controlled vibrancy & opacity */}
-      <motion.div style={{ y: yBg }} className="absolute inset-0 w-full h-[115%]">
+    <div className="fixed inset-0 w-screen h-screen -z-30 pointer-events-none select-none overflow-hidden bg-[#06070a]">
+      {/* Base Persistent Renaissance Background Layer to ensure continuous artwork visibility across all sections */}
+      <div className="absolute inset-0 w-full h-full opacity-50">
+        <Image
+          src="/renaissance_hero_bg.jpg"
+          alt="Base Renaissance Background"
+          fill
+          priority
+          style={{ filter: filterStyle }}
+          className="object-cover"
+          referrerPolicy="no-referrer"
+        />
+      </div>
+
+      {/* Parallax active painting backdrop with user-controlled vibrancy & opacity */}
+      <motion.div style={{ y: yBg }} className="absolute inset-0 w-full h-full">
         {Object.entries(SECTION_BACKGROUNDS).map(([secId, imgSrc]) => {
           const isActive = activeSection ? activeSection === secId : secId === 'hero'
           return (
             <div
               key={secId}
-              style={{ opacity: isActive ? bgOpacity : 0 }}
-              className={`absolute inset-0 transition-all duration-1000 ease-in-out ${
-                isActive ? 'scale-100 blur-none' : 'scale-[1.03] blur-sm'
+              style={{ opacity: isActive ? Math.max(bgOpacity, 0.85) : 0 }}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                isActive ? 'pointer-events-auto' : 'pointer-events-none'
               }`}
             >
               <Image
                 src={imgSrc}
                 alt={`${secId} background painting`}
                 fill
-                priority={secId === 'hero'}
-                className={`object-cover transition-all duration-500 ${contrastClass}`}
+                priority
+                style={{ filter: filterStyle }}
+                className="object-cover transition-all duration-500"
                 referrerPolicy="no-referrer"
               />
               {/* Subtle scrim layer preserving artwork clarity while maintaining text legibility */}
-              <div className="absolute inset-0 bg-gradient-to-b from-[#030303]/35 via-transparent to-[#030303]/50" />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/25" />
             </div>
           )
         })}
       </motion.div>
 
-      {/* Layer 2: Subtle textured overlay across all layers */}
-      <div className="absolute inset-0 bg-[radial-gradient(#ffffff04_1px,transparent_1px)] [background-size:16px_16px] opacity-30 mix-blend-overlay" />
-      
       {/* Dynamic dark radial vignette guaranteeing high-contrast text readability */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(3,3,3,0.6)_100%)] z-10" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_25%,rgba(5,5,5,0.25)_100%)] z-10" />
 
       {/* Layer 3: Curated Museum-Style Framed Artifacts */}
       <motion.div 

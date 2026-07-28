@@ -53,7 +53,7 @@ export default function Overlay() {
             </button>
 
             <button 
-              onClick={openChat}
+              onClick={() => openChat()}
               className="glass-effect px-4 sm:px-5.5 py-2 rounded-full font-mono text-[10px] uppercase tracking-widest text-white hover:text-primary hover:bg-white/[0.08] hover:border-primary/20 transition-all border border-white/5 active:scale-95 duration-300 cursor-pointer"
             >
               Let&apos;s Talk

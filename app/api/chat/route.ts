@@ -1,13 +1,10 @@
 import { GoogleGenAI } from "@google/genai";
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
-  httpOptions: {
-    headers: {
-      'User-Agent': 'aistudio-build',
-    }
-  }
 });
 
 const PORTFOLIO_DATA = {
@@ -162,7 +159,7 @@ export async function POST(req: NextRequest) {
     const lastMessage = messages[messages.length - 1];
     const userPrompt = lastMessage ? lastMessage.text : "";
 
-    const modelsToTry = ["gemini-3.5-flash", "gemini-3.1-flash-lite", "gemini-flash-latest"];
+    const modelsToTry = ["gemini-2.5-flash", "gemini-1.5-flash"];
     let response: any = null;
     let lastError: any = null;
 

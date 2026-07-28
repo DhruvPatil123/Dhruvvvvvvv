@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic'
+
 const CONTACT_EMAIL = 'sujalpatil8657231278@gmail.com'
 const RESEND_API_URL = 'https://api.resend.com/emails'
 

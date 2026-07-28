@@ -98,34 +98,34 @@ export default function About() {
           whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
           viewport={{ once: true }}
-          className="relative group rounded-3xl overflow-hidden border border-white/10 aspect-[4/5] max-w-md mx-auto w-full shadow-2xl bg-zinc-950"
+          className="relative group rounded-3xl overflow-hidden border border-white/10 min-h-[480px] sm:min-h-[520px] aspect-[4/5] max-w-md mx-auto w-full shadow-2xl bg-zinc-950 flex flex-col justify-end"
         >
-          {/* Renaissance Masterpiece */}
+          {/* AI Scholar Avatar */}
           <Image
-            src="/renaissance_ai_masterpiece.jpg"
-            alt="Renaissance AI Scholar Masterpiece"
+            src="/portfolio_about_avatar.jpg"
+            alt="AI Research Engineer Avatar"
             fill
-            className="object-cover opacity-90 group-hover:opacity-100 group-hover:scale-[1.02] transition-all duration-700 ease-out"
+            className="object-cover object-top opacity-90 group-hover:opacity-100 group-hover:scale-[1.02] transition-all duration-700 ease-out"
             referrerPolicy="no-referrer"
           />
           {/* Absolute tech overlays: corner brackets, glowing status indicator */}
-          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/30 to-transparent pointer-events-none" />
           
           {/* Sleek industrial crosshairs/cross marks */}
-          <div className="absolute top-4 left-4 font-mono text-[8px] text-primary tracking-widest opacity-60">
+          <div className="absolute top-4 left-4 font-mono text-[8px] sm:text-[9px] text-primary tracking-widest opacity-80 z-10 bg-black/40 px-2 py-0.5 rounded border border-white/5 backdrop-blur-xs">
             [SYS_GRID_02]
           </div>
-          <div className="absolute top-4 right-4 font-mono text-[8px] text-zinc-500">
+          <div className="absolute top-4 right-4 font-mono text-[8px] sm:text-[9px] text-zinc-400 z-10 bg-black/40 px-2 py-0.5 rounded border border-white/5 backdrop-blur-xs">
             W-1080px // H-1080px
           </div>
           
           {/* Guided Mission floating card at the bottom */}
-          <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 space-y-3 z-10 backdrop-blur-md bg-black/60 border-t border-white/5">
+          <div className="relative p-5 sm:p-6 space-y-2 z-10 backdrop-blur-xl bg-black/70 border-t border-white/10 rounded-b-3xl">
             <div className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
-              <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-secondary font-bold">Guided Mission</span>
+              <span className="font-mono text-[9.5px] uppercase tracking-[0.2em] text-secondary font-bold">Guided Mission</span>
             </div>
-            <p className="text-gray-300 text-xs sm:text-sm leading-relaxed font-sans">
+            <p className="text-gray-200 text-xs sm:text-sm leading-relaxed font-sans">
               From architecting multimodal live-websocket engines to building autonomous
               AI agents, I strive to push the boundaries of what Generative AI can achieve
               in terms of full autonomy and real-time interaction.

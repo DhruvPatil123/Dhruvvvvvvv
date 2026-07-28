@@ -1,12 +1,10 @@
 "use client"
 
 import React, { useEffect } from 'react'
-import dynamic from 'next/dynamic'
+import Scene from '@/components/Scene'
 import Overlay from '@/components/Overlay'
 import RomanSidebar from '@/components/RomanSidebar'
 import BackgroundParallax from '@/components/BackgroundParallax'
-
-const Scene = dynamic(() => import('@/components/Scene'), { ssr: false })
 import Footer from '@/components/Footer'
 import Hero from '@/components/sections/Hero'
 import About from '@/components/sections/About'
@@ -64,15 +62,14 @@ export default function Home() {
     const sectionIds = ['hero', 'about', 'skills', 'work', 'credentials', 'achievements', 'experience', 'testimonials', 'contact']
 
     const handleScroll = () => {
-      const scrollPosition = window.scrollY + window.innerHeight / 3
-
+      const vh = window.innerHeight
       let active = 'hero'
+
       for (const id of sectionIds) {
         const el = document.getElementById(id)
         if (el) {
-          const top = el.offsetTop
-          const bottom = top + el.offsetHeight
-          if (scrollPosition >= top && scrollPosition < bottom) {
+          const rect = el.getBoundingClientRect()
+          if (rect.top <= vh * 0.5 && rect.bottom >= vh * 0.2) {
             active = id
             break
           }

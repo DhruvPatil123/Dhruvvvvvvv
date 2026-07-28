@@ -2,24 +2,16 @@
 
 import React, { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowRight, Download, Github, Twitter, Linkedin, Instagram } from 'lucide-react'
-import { downloadResume } from '@/lib/downloadResume'
+import { ArrowRight, Download, Github, Twitter, Linkedin, Instagram, Sparkles, Cpu, Layers, FileText } from 'lucide-react'
+import { downloadResume, ResumeFocus, ResumeTheme } from '@/lib/downloadResume'
 import LeetCodeIcon from '../LeetCodeIcon'
 import { useThemeStore } from '@/store/useThemeStore'
 import { useRecruiterStore } from '@/store/useRecruiterStore'
-import { playPopover, playAmbientPad } from '@/lib/sounds'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import SplitType from 'split-type'
-import Typewriter from 'typewriter-effect'
-// @ts-ignore
-import baffle from 'baffle'
-
-// Register ScrollTrigger
-gsap.registerPlugin(ScrollTrigger)
+import { playPopover, playAmbientPad, playTick } from '@/lib/sounds'
 
 export default function Hero() {
   const [showThemes, setShowThemes] = useState(false)
+  const [selectedFocus, setSelectedFocus] = useState<ResumeFocus>('ai')
   const [mounted, setMounted] = useState(false)
   const themeSelectorRef = useRef<HTMLDivElement>(null)
   const currentTheme = useThemeStore((state) => state.theme)
@@ -44,63 +36,95 @@ export default function Hero() {
 
   useEffect(() => {
     setMounted(true)
+    let b: any = null
+    let split: any = null
+    let ctx: any = null
 
-    // 1. Scramble system status badge with baffle
-    let b: any
-    if (badgeRef.current) {
-      b = baffle(badgeRef.current, {
-        characters: '░▒░ █▓▒░/█▒ <░▒ ▓/░> █▓',
-        speed: 80
-      })
-      b.start()
-      b.reveal(1200)
+    async function initAnimations() {
+      if (typeof window === 'undefined') return
+
+      try {
+        const gsapModule = await import('gsap')
+        const gsap: any = gsapModule.default || gsapModule
+        const scrollTriggerModule = await import('gsap/ScrollTrigger')
+        const ScrollTrigger: any = scrollTriggerModule.ScrollTrigger || scrollTriggerModule.default
+
+        gsap.registerPlugin(ScrollTrigger)
+
+        // 1. Scramble system status badge with baffle
+        if (badgeRef.current) {
+          try {
+            const baffleModule = await import('baffle')
+            const baffleFn = baffleModule.default || baffleModule
+            if (typeof baffleFn === 'function' && badgeRef.current) {
+              b = baffleFn(badgeRef.current, {
+                characters: '░▒░ █▓▒░/█▒ <░▒ ▓/░> █▓',
+                speed: 80
+              })
+              b.start()
+              b.reveal(1200)
+            }
+          } catch (e) {
+            console.warn('Baffle animation skipped:', e)
+          }
+        }
+
+        // 2. SplitType text animations for Dhruv Dinesh Patil
+        if (titleRef.current) {
+          try {
+            const splitModule = await import('split-type')
+            const SplitTypeClass: any = splitModule.default || splitModule
+            if (SplitTypeClass && titleRef.current) {
+              split = new SplitTypeClass(titleRef.current, { types: 'chars,words' })
+              
+              gsap.set(split.chars, { opacity: 0, y: 50, rotateX: -45 })
+              
+              gsap.to(split.chars, {
+                opacity: 1,
+                y: 0,
+                rotateX: 0,
+                stagger: 0.02,
+                duration: 1.4,
+                ease: 'power4.out',
+                delay: 0.1,
+                onComplete: () => {
+                  if (split) split.revert()
+                }
+              })
+            }
+          } catch (e) {
+            console.warn('SplitType animation skipped:', e)
+          }
+        }
+
+        // 3. Apply smooth scroll-triggered parallax fading to Hero content
+        ctx = gsap.context(() => {
+          gsap.timeline({
+            scrollTrigger: {
+              trigger: heroRef.current,
+              start: 'top top',
+              end: 'bottom top',
+              scrub: true,
+            }
+          })
+          .to(contentRef.current, {
+            opacity: 0,
+            y: -120,
+            scale: 0.95,
+            ease: 'none'
+          })
+        }, heroRef)
+      } catch (err) {
+        console.warn('Hero GSAP animations skipped:', err)
+      }
     }
 
-    // 2. SplitType text animations for Dhruv Dinesh Patil
-    let split: any
-    if (titleRef.current) {
-      split = new SplitType(titleRef.current, { types: 'chars,words' })
-      
-      // Set initial states to prevent flashing
-      gsap.set(split.chars, { opacity: 0, y: 50, rotateX: -45 })
-      
-      gsap.to(split.chars, {
-        opacity: 1,
-        y: 0,
-        rotateX: 0,
-        stagger: 0.02,
-        duration: 1.4,
-        ease: 'power4.out',
-        delay: 0.1,
-        onComplete: () => {
-          // Revert to maintain accessibility and responsive text layout
-          split.revert()
-        }
-      })
-    }
-
-    // 3. Apply smooth scroll-triggered parallax fading to Hero content without pinning
-    const ctx = gsap.context(() => {
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: heroRef.current,
-          start: 'top top',
-          end: 'bottom top',
-          scrub: true,
-        }
-      })
-      .to(contentRef.current, {
-        opacity: 0,
-        y: -120,
-        scale: 0.95,
-        ease: 'none'
-      })
-    }, heroRef)
+    initAnimations()
 
     return () => {
-      if (b) b.stop()
-      if (split) split.revert()
-      ctx.revert()
+      if (b && typeof b.stop === 'function') b.stop()
+      if (split && typeof split.revert === 'function') split.revert()
+      if (ctx && typeof ctx.revert === 'function') ctx.revert()
     }
   }, [])
 
@@ -175,7 +199,7 @@ export default function Hero() {
             </button>
           </div>
           
-          {/* Secondary Action: Muted, humble text link for resume downloading that doesn't compete visually */}
+          {/* Tailored Resume Downloader & Theme Selector */}
           <div className="relative mt-4" ref={themeSelectorRef}>
             <button
               onClick={() => {
@@ -185,7 +209,7 @@ export default function Hero() {
               className="group text-[10px] font-mono uppercase tracking-[0.2em] text-zinc-400 hover:text-white transition-colors duration-300 cursor-pointer flex items-center gap-1.5"
             >
               <Download className="w-3.5 h-3.5 text-zinc-500 group-hover:text-primary transition-colors" />
-              Download Resume / Theme Selector
+              Tailored Resume Generator / Theme Selector
             </button>
 
             <AnimatePresence>
@@ -195,71 +219,108 @@ export default function Hero() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 15, scale: 0.95 }}
                   transition={{ duration: 0.2, ease: 'easeOut' }}
-                  className="absolute z-50 mt-3 left-1/2 -translate-x-1/2 w-64 glass-effect border border-white/10 rounded-2xl p-4 shadow-[0_10px_40px_rgba(0,0,0,0.5)] backdrop-blur-xl space-y-3"
+                  className="absolute z-50 mt-3 left-1/2 -translate-x-1/2 w-80 glass-effect border border-white/10 rounded-2xl p-4 shadow-[0_10px_40px_rgba(0,0,0,0.7)] backdrop-blur-xl space-y-3.5 text-left"
                 >
-                  <div className="text-left">
-                    <p className="text-white text-xs font-mono uppercase tracking-wider font-bold mb-1">Select Resume Theme</p>
-                    <p className="text-zinc-400 text-[10px] leading-relaxed">Choose an elegant, professional palette for your generated PDF CV.</p>
+                  <div>
+                    <p className="text-white text-xs font-mono uppercase tracking-wider font-bold mb-0.5 flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-primary" /> Tailored Resume Generator
+                    </p>
+                    <p className="text-zinc-400 text-[10px] leading-relaxed">Select role focus area & visual style before downloading PDF.</p>
                   </div>
-                  <div className="grid grid-cols-1 gap-1.5 pt-1">
-                    <button
-                      onClick={() => {
-                        playAmbientPad()
-                        setTheme('charcoal')
-                        downloadResume('charcoal')
-                        setShowThemes(false)
-                      }}
-                      className={`flex items-center gap-3 w-full p-2 rounded-xl transition-all text-left group cursor-pointer border ${
-                        currentTheme === 'charcoal'
-                          ? 'bg-white/10 border-white/20'
-                          : 'bg-transparent border-transparent hover:bg-white/5 hover:border-white/5'
-                      }`}
-                    >
-                      <span className={`w-3 h-3 rounded-full bg-zinc-600 border border-zinc-500 group-hover:scale-110 transition-transform ${currentTheme === 'charcoal' ? 'ring-2 ring-primary ring-offset-2 ring-offset-black' : ''}`} />
-                      <div>
-                        <p className={`text-xs font-semibold group-hover:text-white transition-colors ${currentTheme === 'charcoal' ? 'text-primary' : 'text-zinc-300'}`}>Classic Charcoal</p>
-                        <p className="text-[9px] text-zinc-500 leading-none">Elegant dark slate accents</p>
-                      </div>
-                    </button>
-                    <button
-                      onClick={() => {
-                        playAmbientPad()
-                        setTheme('emerald')
-                        downloadResume('emerald')
-                        setShowThemes(false)
-                      }}
-                      className={`flex items-center gap-3 w-full p-2 rounded-xl transition-all text-left group cursor-pointer border ${
-                        currentTheme === 'emerald'
-                          ? 'bg-emerald-500/10 border-emerald-500/20'
-                          : 'bg-transparent border-transparent hover:bg-white/5 hover:border-white/5'
-                      }`}
-                    >
-                      <span className={`w-3 h-3 rounded-full bg-emerald-500 border border-emerald-400 group-hover:scale-110 transition-transform ${currentTheme === 'emerald' ? 'ring-2 ring-emerald-500 ring-offset-2 ring-offset-black' : ''}`} />
-                      <div>
-                        <p className={`text-xs font-semibold group-hover:text-emerald-300 transition-colors ${currentTheme === 'emerald' ? 'text-emerald-400 font-bold' : 'text-zinc-300'}`}>Emerald Tech</p>
-                        <p className="text-[9px] text-zinc-500 leading-none">Sustainability & modern engineering</p>
-                      </div>
-                    </button>
-                    <button
-                      onClick={() => {
-                        playAmbientPad()
-                        setTheme('cobalt')
-                        downloadResume('cobalt')
-                        setShowThemes(false)
-                      }}
-                      className={`flex items-center gap-3 w-full p-2 rounded-xl transition-all text-left group cursor-pointer border ${
-                        currentTheme === 'cobalt'
-                          ? 'bg-blue-500/10 border-blue-500/20'
-                          : 'bg-transparent border-transparent hover:bg-white/5 hover:border-white/5'
-                      }`}
-                    >
-                      <span className={`w-3 h-3 rounded-full bg-blue-500 border border-blue-400 group-hover:scale-110 transition-transform ${currentTheme === 'cobalt' ? 'ring-2 ring-blue-500 ring-offset-2 ring-offset-black' : ''}`} />
-                      <div>
-                        <p className={`text-xs font-semibold group-hover:text-blue-300 transition-colors ${currentTheme === 'cobalt' ? 'text-blue-400 font-bold' : 'text-zinc-300'}`}>Royal Cobalt</p>
-                        <p className="text-[9px] text-zinc-500 leading-none">Classic corporate & executive blue</p>
-                      </div>
-                    </button>
+
+                  {/* Focus Area Picker */}
+                  <div className="space-y-1.5 pt-1">
+                    <span className="text-[9px] font-mono uppercase tracking-widest text-zinc-400 font-bold block">1. Focus Area:</span>
+                    <div className="grid grid-cols-1 gap-1">
+                      <button
+                        onClick={() => { playTick(); setSelectedFocus('ai'); }}
+                        className={`p-2 rounded-xl text-left border transition-all cursor-pointer flex items-center gap-2.5 ${
+                          selectedFocus === 'ai'
+                            ? 'bg-primary/15 border-primary text-white shadow-[0_0_12px_rgba(0,242,255,0.15)]'
+                            : 'bg-white/5 border-white/5 text-zinc-400 hover:text-white'
+                        }`}
+                      >
+                        <Cpu className={`w-4 h-4 shrink-0 ${selectedFocus === 'ai' ? 'text-primary' : 'text-zinc-500'}`} />
+                        <div>
+                          <p className="text-xs font-semibold font-sans">AI Engineering & LLMs</p>
+                          <p className="text-[9px] text-zinc-400 font-mono">Agentic AI, RAG, PyTorch, Gemini</p>
+                        </div>
+                      </button>
+
+                      <button
+                        onClick={() => { playTick(); setSelectedFocus('fullstack'); }}
+                        className={`p-2 rounded-xl text-left border transition-all cursor-pointer flex items-center gap-2.5 ${
+                          selectedFocus === 'fullstack'
+                            ? 'bg-emerald-500/15 border-emerald-500 text-white shadow-[0_0_12px_rgba(16,185,129,0.15)]'
+                            : 'bg-white/5 border-white/5 text-zinc-400 hover:text-white'
+                        }`}
+                      >
+                        <Layers className={`w-4 h-4 shrink-0 ${selectedFocus === 'fullstack' ? 'text-emerald-400' : 'text-zinc-500'}`} />
+                        <div>
+                          <p className="text-xs font-semibold font-sans">Full-Stack & Cloud Architecture</p>
+                          <p className="text-[9px] text-zinc-400 font-mono">Next.js 15, PostgreSQL, Docker, APIs</p>
+                        </div>
+                      </button>
+
+                      <button
+                        onClick={() => { playTick(); setSelectedFocus('standard'); }}
+                        className={`p-2 rounded-xl text-left border transition-all cursor-pointer flex items-center gap-2.5 ${
+                          selectedFocus === 'standard'
+                            ? 'bg-amber-500/15 border-amber-500 text-white shadow-[0_0_12px_rgba(245,158,11,0.15)]'
+                            : 'bg-white/5 border-white/5 text-zinc-400 hover:text-white'
+                        }`}
+                      >
+                        <FileText className={`w-4 h-4 shrink-0 ${selectedFocus === 'standard' ? 'text-amber-400' : 'text-zinc-500'}`} />
+                        <div>
+                          <p className="text-xs font-semibold font-sans">Standard Full Resume</p>
+                          <p className="text-[9px] text-zinc-400 font-mono">Comprehensive B.Tech general overview</p>
+                        </div>
+                      </button>
+                    </div>
                   </div>
+
+                  {/* Theme Selector */}
+                  <div className="space-y-1.5 pt-1">
+                    <span className="text-[9px] font-mono uppercase tracking-widest text-zinc-400 font-bold block">2. Palette Theme:</span>
+                    <div className="grid grid-cols-3 gap-1.5">
+                      <button
+                        onClick={() => { playAmbientPad(); setTheme('charcoal'); }}
+                        className={`p-1.5 rounded-lg border text-center transition-all cursor-pointer ${
+                          currentTheme === 'charcoal' ? 'bg-white/15 border-white text-white font-bold' : 'bg-white/5 border-white/5 text-zinc-400'
+                        }`}
+                      >
+                        <span className="text-[10px] font-mono block">Charcoal</span>
+                      </button>
+                      <button
+                        onClick={() => { playAmbientPad(); setTheme('emerald'); }}
+                        className={`p-1.5 rounded-lg border text-center transition-all cursor-pointer ${
+                          currentTheme === 'emerald' ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300 font-bold' : 'bg-white/5 border-white/5 text-zinc-400'
+                        }`}
+                      >
+                        <span className="text-[10px] font-mono block">Emerald</span>
+                      </button>
+                      <button
+                        onClick={() => { playAmbientPad(); setTheme('cobalt'); }}
+                        className={`p-1.5 rounded-lg border text-center transition-all cursor-pointer ${
+                          currentTheme === 'cobalt' ? 'bg-blue-500/20 border-blue-400 text-blue-300 font-bold' : 'bg-white/5 border-white/5 text-zinc-400'
+                        }`}
+                      >
+                        <span className="text-[10px] font-mono block">Cobalt</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Download Action */}
+                  <button
+                    onClick={() => {
+                      playAmbientPad()
+                      downloadResume(currentTheme, selectedFocus)
+                      setShowThemes(false)
+                    }}
+                    className="w-full py-2.5 px-4 rounded-xl bg-primary text-black font-mono font-bold text-xs uppercase tracking-wider hover:bg-white transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                  >
+                    <Download className="w-3.5 h-3.5" /> Download Tailored PDF
+                  </button>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -291,3 +352,4 @@ export default function Hero() {
     </section>
   )
 }
+

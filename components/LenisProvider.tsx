@@ -1,36 +1,65 @@
 "use client"
 
-import React, { useEffect, useRef } from 'react'
-import { ReactLenis } from '@studio-freight/react-lenis'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-
-// Register GSAP ScrollTrigger
-gsap.registerPlugin(ScrollTrigger)
+import React, { useEffect } from 'react'
 
 export default function LenisProvider({ children }: { children: React.ReactNode }) {
-  const lenisRef = useRef<any>(null)
-
   useEffect(() => {
-    const lenis = lenisRef.current?.lenis
+    let lenis: any = null
 
-    if (lenis) {
-      // Connect ScrollTrigger to Lenis' scroll events
-      lenis.on('scroll', ScrollTrigger.update)
+    async function initLenis() {
+      if (typeof window === 'undefined') return
+
+      try {
+        const gsapModule = await import('gsap')
+        const gsap: any = gsapModule.default || gsapModule
+        const scrollTriggerModule = await import('gsap/ScrollTrigger')
+        const ScrollTrigger: any = scrollTriggerModule.ScrollTrigger || scrollTriggerModule.default
+
+        gsap.registerPlugin(ScrollTrigger)
+        const LenisModule = await import('lenis')
+        const Lenis: any = LenisModule.default || LenisModule
+
+        lenis = new Lenis({
+          duration: 1.2,
+          easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+          smoothWheel: true,
+        })
+
+        const handleScroll = () => {
+          ScrollTrigger.update()
+        }
+
+        lenis.on('scroll', handleScroll)
+
+        const updateTicker = (time: number) => {
+          lenis?.raf(time * 1000)
+        }
+
+        gsap.ticker.add(updateTicker)
+        gsap.ticker.lagSmoothing(0)
+
+        return () => {
+          lenis?.off('scroll', handleScroll)
+          gsap.ticker.remove(updateTicker)
+        }
+      } catch (err) {
+        console.warn('Lenis smooth scroll failed to initialize:', err)
+      }
     }
 
+    const cleanupPromise = initLenis()
+
     return () => {
-      if (lenis) {
-        lenis.off('scroll', ScrollTrigger.update)
-      }
-      // Clean up ScrollTrigger instances on unmount/reload
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill())
+      cleanupPromise.then((cleanup) => {
+        if (typeof cleanup === 'function') cleanup()
+        if (lenis) {
+          lenis.destroy()
+        }
+      })
     }
   }, [])
 
-  return (
-    <ReactLenis ref={lenisRef} root>
-      {children}
-    </ReactLenis>
-  )
+  return <>{children}</>
 }
+
+

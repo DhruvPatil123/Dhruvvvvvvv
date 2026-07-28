@@ -2,8 +2,7 @@
 
 import React, { Suspense, Component, ReactNode, useEffect, useState, useRef } from 'react'
 import { Canvas } from '@react-three/fiber'
-import { PerspectiveCamera, Environment } from '@react-three/drei'
-import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing'
+import { PerspectiveCamera } from '@react-three/drei'
 import { useThemeStore } from '@/store/useThemeStore'
 import { useScrollStore } from '@/store/useScrollStore'
 import { usePerformanceStore } from '@/store/usePerformanceStore'
@@ -50,11 +49,6 @@ export default function Scene() {
 
   // Premium, atmospheric colors tailored for each active theme
   const fogColor = theme === 'charcoal' ? '#140e0a' : theme === 'emerald' ? '#03140f' : '#010612'
-  const fallbackBg = theme === 'charcoal' 
-    ? 'from-[#140e0a] to-[#060403]' 
-    : theme === 'emerald' 
-    ? 'from-[#03140f] to-[#010503]' 
-    : 'from-[#010612] to-[#000206]'
 
   const pointLightColor = theme === 'charcoal' ? '#ffaa44' : theme === 'emerald' ? '#10b981' : '#00f2ff'
   const directionalLightColor = theme === 'charcoal' ? '#d4a373' : theme === 'emerald' ? '#34d399' : '#7000ff'
@@ -74,34 +68,14 @@ export default function Scene() {
   }, [])
 
   useEffect(() => {
-    const container = containerRef.current
-    if (!container) return
-
-    let isIntersecting = true
-
-    const updateVisibility = () => {
-      // Pause if the container is scrolled completely out of view, or if the browser tab is hidden
-      setIsCanvasVisible(isIntersecting && !document.hidden)
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        isIntersecting = entry.isIntersecting
-        updateVisibility()
-      },
-      { threshold: 0.01 }
-    )
-
-    observer.observe(container)
-
     const handleVisibilityChange = () => {
-      updateVisibility()
+      setIsCanvasVisible(!document.hidden)
     }
 
+    setIsCanvasVisible(!document.hidden)
     document.addEventListener('visibilitychange', handleVisibilityChange)
 
     return () => {
-      observer.unobserve(container)
       document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
   }, [setIsCanvasVisible])
@@ -125,36 +99,29 @@ export default function Scene() {
         <Canvas
           dpr={[1, 2]}
           gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+          onCreated={({ gl }) => {
+            gl.setClearColor(0x000000, 0)
+          }}
           camera={{ position: [0, 0, 5], fov: 75 }}
         >
           <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={75} />
 
-          {/* Dynamic Volumetric Depth Fog (Point 10) */}
-          <fog attach="fog" args={[fogColor, 4.2, 11.5]} />
+          {/* Dynamic Volumetric Depth Fog */}
+          <fog attach="fog" args={[fogColor, 15, 45]} />
 
-          <ambientLight intensity={0.4} />
+          <ambientLight intensity={0.6} />
+          <hemisphereLight color="#ffffff" groundColor="#000000" intensity={0.5} />
           <spotLight position={[10, 20, 10]} angle={0.15} penumbra={1} intensity={2} castShadow />
           <pointLight position={[-10, -10, -10]} intensity={0.5} />
           <pointLight position={[0, 0, 3]} intensity={1.5} color={pointLightColor} />
           <directionalLight position={[0, 5, 5]} intensity={1.5} color={directionalLightColor} />
 
           <Suspense fallback={null}>
-            <Environment preset="city" />
             <Experience />
           </Suspense>
-
-          <EffectComposer>
-            <Bloom
-              intensity={1.2}
-              luminanceThreshold={0.15}
-              mipmapBlur
-              luminanceSmoothing={0.95}
-            />
-            {/* Deepened vignette to isolate and focus visual energy into the center (Point 13) */}
-            <Vignette eskil={false} offset={0.2} darkness={1.25} />
-          </EffectComposer>
         </Canvas>
       </div>
     </SceneErrorBoundary>
   )
 }
+

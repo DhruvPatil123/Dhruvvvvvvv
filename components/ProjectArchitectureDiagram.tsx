@@ -560,7 +560,7 @@ export default function ProjectArchitectureDiagram({ projectTitle }: { projectTi
           </h4>
         </div>
 
-        <div className="flex items-center gap-1.5 p-1 bg-white/[0.03] border border-white/5 rounded-xl text-[11px] font-mono">
+        <div className="flex items-center gap-1.5 p-1 bg-white/[0.03] border border-white/5 rounded-xl text-[11px] font-mono overflow-x-auto max-w-full scrollbar-none">
           <button
             onClick={() => { playTick(); setActiveSubTab('flowchart'); }}
             className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
@@ -688,7 +688,7 @@ export default function ProjectArchitectureDiagram({ projectTitle }: { projectTi
 
               <div className="space-y-1.5">
                 <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest block">Payload Contract Snippet</span>
-                <div className="p-3 rounded-xl bg-black border border-white/5 font-mono text-[10.5px] text-green-400 break-all select-all">
+                <div className="p-3 rounded-xl bg-black border border-white/5 font-mono text-[10.5px] text-green-400 break-all select-all overflow-x-auto max-w-full scrollbar-thin">
                   {selectedNode.payloadSnippet}
                 </div>
               </div>
@@ -791,12 +791,12 @@ export default function ProjectArchitectureDiagram({ projectTitle }: { projectTi
           <div className="p-4 rounded-2xl bg-black border border-white/10 font-mono text-[10.5px] text-zinc-300 overflow-y-auto max-h-[260px] scrollbar-thin select-all space-y-3">
             <div>
               <span className="text-zinc-500 text-[9px] uppercase tracking-wider block mb-1">Request Contract</span>
-              <pre className="text-cyan-300 whitespace-pre-wrap">{JSON.stringify(data.apiContract.requestPayload, null, 2)}</pre>
+              <pre className="text-cyan-300 whitespace-pre-wrap break-all sm:break-normal overflow-x-auto scrollbar-thin">{JSON.stringify(data.apiContract.requestPayload, null, 2)}</pre>
             </div>
             <hr className="border-white/5" />
             <div>
               <span className="text-zinc-500 text-[9px] uppercase tracking-wider block mb-1">Response Contract</span>
-              <pre className="text-emerald-400 whitespace-pre-wrap">{JSON.stringify(data.apiContract.responsePayload, null, 2)}</pre>
+              <pre className="text-emerald-400 whitespace-pre-wrap break-all sm:break-normal overflow-x-auto scrollbar-thin">{JSON.stringify(data.apiContract.responsePayload, null, 2)}</pre>
             </div>
           </div>
         </div>

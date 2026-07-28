@@ -40,7 +40,7 @@ export default function BackgroundSettingsDrawer() {
 
   const handleReset = () => {
     playQuillClick()
-    setBgOpacity(0.65)
+    setBgOpacity(0.95)
     setContrastLevel('standard')
     setParallaxIntensity(1.0)
   }

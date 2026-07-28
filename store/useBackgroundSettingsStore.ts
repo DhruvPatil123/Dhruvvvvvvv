@@ -14,7 +14,7 @@ interface BackgroundSettingsState {
 }
 
 export const useBackgroundSettingsStore = create<BackgroundSettingsState>((set) => ({
-  bgOpacity: 0.85,
+  bgOpacity: 0.95,
   contrastLevel: 'standard',
   parallaxIntensity: 1.0,
   isSettingsOpen: false,

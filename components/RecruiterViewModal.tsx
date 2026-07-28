@@ -146,39 +146,77 @@ export default function RecruiterViewModal() {
               ) : (
                 <>
                   {/* One-Click Executive Action Bar */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                    <button
-                      onClick={() => downloadResume('charcoal')}
-                      className="p-3.5 rounded-2xl bg-gradient-to-r from-primary to-cyan-400 text-black font-mono font-bold text-xs uppercase tracking-wider hover:opacity-95 transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(0,242,255,0.2)] active:scale-95 cursor-pointer"
-                    >
-                      <Download className="w-4 h-4" /> Download Resume (PDF)
-                    </button>
+                  <div className="space-y-2 bg-white/[0.02] border border-white/10 p-4 rounded-2xl">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-mono uppercase tracking-wider text-primary font-bold flex items-center gap-1.5">
+                        <Download className="w-4 h-4" /> Download Tailored Resume (PDF)
+                      </span>
+                      <span className="text-[10px] text-zinc-400 font-mono">Select Recruiter Focus Area:</span>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                      <button
+                        onClick={() => downloadResume('charcoal', 'ai')}
+                        className="p-3 rounded-xl bg-primary/20 hover:bg-primary/30 border border-primary/40 text-white font-mono text-xs text-left transition-all flex items-center gap-2 cursor-pointer group active:scale-95"
+                      >
+                        <Zap className="w-4 h-4 text-primary shrink-0 group-hover:scale-110 transition-transform" />
+                        <div>
+                          <p className="font-bold text-primary">AI & LLM Focus</p>
+                          <p className="text-[9px] text-zinc-400 leading-none mt-0.5">Agentic AI, RAG, PyTorch</p>
+                        </div>
+                      </button>
 
-                    <button
-                      onClick={() => setActiveTab('scheduler')}
-                      className="p-3.5 rounded-2xl bg-secondary text-black font-mono font-bold text-xs uppercase tracking-wider hover:bg-secondary/90 transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255,180,0,0.2)] active:scale-95 cursor-pointer"
-                    >
-                      <Calendar className="w-4 h-4" /> Book 15-Min Intro Call
-                    </button>
+                      <button
+                        onClick={() => downloadResume('emerald', 'fullstack')}
+                        className="p-3 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-white font-mono text-xs text-left transition-all flex items-center gap-2 cursor-pointer group active:scale-95"
+                      >
+                        <Layers className="w-4 h-4 text-emerald-400 shrink-0 group-hover:scale-110 transition-transform" />
+                        <div>
+                          <p className="font-bold text-emerald-300">Full-Stack & Cloud</p>
+                          <p className="text-[9px] text-zinc-400 leading-none mt-0.5">Next.js 15, SQL, Docker</p>
+                        </div>
+                      </button>
 
-                    <button
-                      onClick={copyEmailToClipboard}
-                      className="p-3.5 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/10 text-white font-mono text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
-                    >
-                      {copiedEmail ? <Check className="w-4 h-4 text-emerald-400" /> : <Mail className="w-4 h-4 text-primary" />}
-                      <span>{copiedEmail ? 'Email Copied!' : 'Copy Email'}</span>
-                    </button>
+                      <button
+                        onClick={() => downloadResume('cobalt', 'standard')}
+                        className="p-3 rounded-xl bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/40 text-white font-mono text-xs text-left transition-all flex items-center gap-2 cursor-pointer group active:scale-95"
+                      >
+                        <GraduationCap className="w-4 h-4 text-blue-400 shrink-0 group-hover:scale-110 transition-transform" />
+                        <div>
+                          <p className="font-bold text-blue-300">Standard Resume</p>
+                          <p className="text-[9px] text-zinc-400 leading-none mt-0.5">Comprehensive B.Tech CV</p>
+                        </div>
+                      </button>
+                    </div>
 
-                    <a
-                      href="https://github.com/DhruvPatil123"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-200 hover:text-white font-mono text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 active:scale-95"
-                    >
-                      <Github className="w-4 h-4" />
-                      <span>GitHub Profile</span>
-                      <ExternalLink className="w-3 h-3 text-gray-400" />
-                    </a>
+                    <div className="flex justify-between items-center pt-2 border-t border-white/5">
+                      <button
+                        onClick={() => setActiveTab('scheduler')}
+                        className="px-4 py-2 rounded-xl bg-secondary text-black font-mono font-bold text-xs uppercase tracking-wider hover:bg-secondary/90 transition-all flex items-center gap-2 shadow-md active:scale-95 cursor-pointer"
+                      >
+                        <Calendar className="w-3.5 h-3.5" /> Book 15-Min Intro Call
+                      </button>
+
+                      <div className="flex gap-2">
+                        <button
+                          onClick={copyEmailToClipboard}
+                          className="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-white font-mono text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer"
+                        >
+                          {copiedEmail ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Mail className="w-3.5 h-3.5 text-primary" />}
+                          <span>{copiedEmail ? 'Copied!' : 'Copy Email'}</span>
+                        </button>
+
+                        <a
+                          href="https://github.com/DhruvPatil123"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-200 hover:text-white font-mono text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 active:scale-95"
+                        >
+                          <Github className="w-3.5 h-3.5" />
+                          <span>GitHub</span>
+                          <ExternalLink className="w-3 h-3 text-gray-400" />
+                        </a>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Metrics Row */}
