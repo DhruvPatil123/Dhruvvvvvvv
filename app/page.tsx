@@ -1,7 +1,6 @@
 "use client"
 
 import React, { useEffect } from 'react'
-import Scene from '@/components/Scene'
 import Overlay from '@/components/Overlay'
 import RomanSidebar from '@/components/RomanSidebar'
 import BackgroundParallax from '@/components/BackgroundParallax'
@@ -125,9 +124,6 @@ export default function Home() {
 
         {/* Environment & Aesthetics Settings Drawer */}
         <BackgroundSettingsDrawer />
-
-        {/* 3D Background Scene */}
-        <Scene />
 
         {/* Persistent Navigation */}
         <BackgroundParallax />
