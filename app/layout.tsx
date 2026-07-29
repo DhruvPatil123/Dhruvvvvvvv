@@ -28,10 +28,10 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL('https://dhruvvvvvv.vercel.app'),
   title: {
-    default: 'Dhruv Dinesh Patil | AI Researcher & Generative Model Engineer',
-    template: '%s | Dhruv Dinesh Patil',
+    default: 'Dhruv Patil | AI Engineer & Full Stack Developer',
+    template: '%s | Dhruv Patil',
   },
-  description: 'High-end 3D portfolio for Dhruv Dinesh Patil, an AI researcher focused on LLMs, Agentic AI, RAG systems, and high-performance web engineering.',
+  description: 'Building intelligent software using AI, LLMs, RAG and scalable cloud technologies. Portfolio of Dhruv Patil, AI Engineer and Full Stack Developer.',
   keywords: [
     'Dhruv Dinesh Patil',
     'AI researcher',

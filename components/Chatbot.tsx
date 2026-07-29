@@ -70,6 +70,21 @@ const PORTFOLIO_DATA = {
 function generateResponse(input: string): string {
   const q = input.toLowerCase().trim()
 
+  // Gemini projects
+  if (/gemini|projects.*gemini|gemini.*projects/i.test(q)) {
+    return `Dhruv leverages Google Gemini across multiple high-profile projects:\n\n• **Raincrew.AI**: Next-Gen AI Recruitment platform using **Google Gemini Multimodal Live WebSocket API** for real-time conversational interviews and biometric proctoring.\n• **AutoForge.AI**: Uses **Gemini Pro** as the core intelligence engine for autonomous code planning and self-healing test loops.\n• **Dockmind**: Integrates **Gemini Pro** for document synthesis and question-answering over vector knowledge stores.`
+  }
+
+  // RAG background
+  if (/rag|retrieval|vector|background in rag/i.test(q)) {
+    return `Dhruv has extensive experience building **Retrieval-Augmented Generation (RAG)** pipelines:\n\n• **Dockmind**: An enterprise RAG engine handling multi-format documents (PDFs, DOCX, TXT) with HNSW vector indexing, semantic chunking, and sub-420ms query latency.\n• **AI Hallucination Detector**: Uses vector grounding and RAG similarity checks to evaluate LLM output accuracy in real-time.\n• **AI Study Planner**: RAG-augmented course material retrieval for custom flashcards and study calendars.`
+  }
+
+  // GitHub stats
+  if (/github|stats|commits|open source|repo/i.test(q)) {
+    return `Dhruv's GitHub Stats (**DhruvPatil123**):\n\n• **Commits**: 620+ commits in the past year\n• **Repositories**: 18 public projects\n• **Stars**: 140+ open-source stars\n• **Streak**: 32-day active contribution streak\n• **Primary Stack**: TypeScript (48%), Python (32%), C++ (10%), SQL (6%)`
+  }
+
   // Strongest backend stack
   if (/strongest backend|backend stack|backend tech/i.test(q)) {
     return `Dhruv's strongest backend stack combines **Node.js, Next.js App Router, FastAPI (Python), and Java/C++** for high-performance microservices, paired with **PostgreSQL, Supabase**, and **Docker** containerization. He designs low-latency WebSocket streaming APIs and robust RESTful architectures.`
@@ -477,6 +492,9 @@ export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
   }
 
   const quickQuestions = [
+    { label: "✨ Gemini Projects", query: "What projects use Gemini?" },
+    { label: "🧠 RAG Architecture", query: "What is Dhruv's background in RAG?" },
+    { label: "📊 GitHub Stats", query: "Show me Dhruv's GitHub stats" },
     { label: "⚡ Strongest Backend Stack", query: "What is Dhruv's strongest backend stack?" },
     { label: "☁️ Cloud & AI Experience", query: "Summarize Dhruv's experience with Cloud & AI" },
     { label: "🛠️ Projects with C++ & Docker", query: "Which projects showcase C++ and Docker?" },
@@ -556,7 +574,12 @@ export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
 
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 scrollbar-thin">
+            <div 
+              className="flex-1 overflow-y-auto px-4 py-4 space-y-4 scrollbar-thin"
+              data-lenis-prevent
+              data-lenis-prevent-wheel
+              data-lenis-prevent-touch
+            >
               {messages.map((msg) => (
                 <motion.div
                   key={msg.id}

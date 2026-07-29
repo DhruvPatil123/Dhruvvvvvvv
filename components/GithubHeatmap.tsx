@@ -186,6 +186,25 @@ export default function GithubHeatmap({ contributions }: GithubHeatmapProps) {
                 ry={1.5}
                 fill={fillColor}
                 className="transition-all duration-200 cursor-crosshair hover:stroke-white/30 hover:stroke-1"
+                onTouchStart={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect()
+                  const parentRect = e.currentTarget.parentElement?.getBoundingClientRect()
+                  const left = rect.left - (parentRect?.left || 0)
+                  const top = rect.top - (parentRect?.top || 0)
+
+                  const displayDate = cell.date.toLocaleDateString('default', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                  })
+
+                  setHoveredCell({
+                    dateStr: displayDate,
+                    count: cell.count,
+                    x: left,
+                    y: top - 28
+                  })
+                }}
                 onMouseEnter={(e) => {
                   const rect = e.currentTarget.getBoundingClientRect()
                   const parentRect = e.currentTarget.parentElement?.getBoundingClientRect()

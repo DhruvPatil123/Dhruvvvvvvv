@@ -549,6 +549,9 @@ export default function CommandPalette() {
               <div
                 ref={listRef}
                 className="flex-grow overflow-y-auto p-3 space-y-1 scrollbar-thin select-none"
+                data-lenis-prevent
+                data-lenis-prevent-wheel
+                data-lenis-prevent-touch
               >
                 {filteredCommands.length > 0 ? (
                   filteredCommands.map((cmd, index) => {

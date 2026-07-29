@@ -9,19 +9,22 @@ const EDUCATION = [
     degree: 'B.Tech — Artificial Intelligence',
     institution: 'J.D. College of Engineering and Management, Nagpur',
     year: '2025 - 2028',
-    details: 'Specializing in NLP, Large Language Models (LLMs), Generative AI, and Agentic workflows. CGPA: 8.76 ⭐'
+    details: 'Specializing in NLP, Large Language Models (LLMs), Generative AI, and Agentic workflows. CGPA: 8.76 ⭐',
+    coursework: ['Data Structures & Algorithms', 'Machine Learning', 'Deep Learning', 'Natural Language Processing', 'Operating Systems', 'Database Management Systems']
   },
   {
     degree: 'Diploma — Computer Science',
     institution: 'NIT Polytechnic, Nagpur-Mahurzari',
     year: '2022 - 2025',
-    details: 'Foundational studies in DSA, OOPs, and Relational Databases. Score: 78%.'
+    details: 'Foundational studies in DSA, OOPs, and Relational Databases. Score: 78%.',
+    coursework: ['C/C++ Programming', 'Java OOPs', 'Relational Databases (SQL)', 'Web Technology Fundamentals']
   },
   {
     degree: 'Secondary Education (10th Grade)',
     institution: 'Yugantar High School, Sadar, Nagpur',
     year: 'Completed 2022',
-    details: 'High-performance scores in Mathematics, Physics, Chemistry, and Computer Applications. Score: 81%.'
+    details: 'High-performance scores in Mathematics, Physics, Chemistry, and Computer Applications. Score: 81%.',
+    coursework: ['Mathematics', 'Physics', 'Computer Applications']
   }
 ]
 
@@ -103,7 +106,20 @@ export default function Credentials() {
                 <span className="text-gray-400 font-mono text-[10px] md:text-xs font-semibold bg-white/[0.04] px-2 py-0.5 rounded border border-white/5">{edu.year}</span>
               </div>
               <p className="text-primary font-mono text-[11px] uppercase tracking-wider font-bold mb-2">{"// "}{edu.institution}</p>
-              <p className="text-gray-300 text-sm md:text-base leading-relaxed font-sans">{edu.details}</p>
+              <p className="text-gray-300 text-sm md:text-base leading-relaxed font-sans mb-3">{edu.details}</p>
+              
+              {edu.coursework && (
+                <div className="space-y-1.5 pt-2 border-t border-white/5">
+                  <span className="text-[10px] font-mono text-cyan-400 font-bold uppercase tracking-widest">Key Coursework:</span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {edu.coursework.map(c => (
+                      <span key={c} className="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[10px] font-mono text-gray-300">
+                        {c}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           ))}
         </motion.div>

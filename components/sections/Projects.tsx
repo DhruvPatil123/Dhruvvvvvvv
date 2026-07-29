@@ -1372,28 +1372,37 @@ function ProjectDetailsModal({ project, onClose }: { project: Project; onClose: 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md overflow-y-auto"
       onClick={onClose}
+      data-lenis-prevent
+      data-lenis-prevent-wheel
+      data-lenis-prevent-touch
     >
       <motion.div 
         initial={{ scale: 0.95, y: 20 }}
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.95, y: 20 }}
         transition={{ type: "spring", damping: 25, stiffness: 300 }}
-        className="w-full max-w-5xl h-[85vh] bg-zinc-950 border border-white/10 rounded-3xl overflow-hidden flex flex-col md:flex-row relative"
+        className="w-full max-w-5xl h-[88vh] max-h-[88vh] bg-zinc-950 border border-white/10 rounded-3xl overflow-hidden flex flex-col md:flex-row relative shadow-2xl"
         onClick={(e) => e.stopPropagation()}
+        data-lenis-prevent
       >
         {/* Close Button */}
         <button 
           onClick={() => { playTick(); onClose(); }}
-          className="absolute top-6 right-6 z-20 p-2 rounded-full bg-white/5 hover:bg-white/15 text-gray-400 hover:text-white transition-colors"
+          className="absolute top-5 right-5 z-20 p-2.5 rounded-full bg-black/60 border border-white/10 hover:bg-white/20 text-gray-300 hover:text-white transition-all cursor-pointer"
           aria-label="Close modal"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Left Side: Technical Data & Specifications */}
-        <div className="w-full md:w-1/2 p-6 md:p-10 overflow-y-auto border-r border-white/5 space-y-8 scrollbar-thin">
+        <div 
+          className="w-full md:w-1/2 p-6 md:p-10 overflow-y-auto border-b md:border-b-0 md:border-r border-white/10 space-y-8 scrollbar-thin flex-1 min-h-0"
+          data-lenis-prevent
+          data-lenis-prevent-wheel
+          data-lenis-prevent-touch
+        >
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-primary" />
@@ -1492,7 +1501,10 @@ function ProjectDetailsModal({ project, onClose }: { project: Project; onClose: 
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          className="w-full md:w-1/2 p-6 md:p-10 bg-black flex flex-col justify-between h-full relative overflow-y-auto scrollbar-thin"
+          className="w-full md:w-1/2 p-6 md:p-10 bg-black flex flex-col justify-between h-full relative overflow-y-auto scrollbar-thin flex-1 min-h-0"
+          data-lenis-prevent
+          data-lenis-prevent-wheel
+          data-lenis-prevent-touch
         >
           {/* Header & Tab Selector for top tier projects */}
           <div className="space-y-4 pb-4 border-b border-white/5">

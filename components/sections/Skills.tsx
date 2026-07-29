@@ -7,27 +7,63 @@ import { useScrollStore } from '@/store/useScrollStore'
 import { useSkillsStore } from '@/store/useSkillsStore'
 import { playTick, playNotification, playPopover } from '@/lib/sounds'
 
+interface SkillDetail {
+  name: string
+  level: string
+  exp: string
+}
+
 const SKILL_CATEGORIES = [
   {
-    title: 'AI, Data Science & BI/DA',
-    icon: <Brain className="w-5 h-5 text-primary" />,
-    color: 'text-primary',
-    borderHover: 'hover:border-primary/30',
-    skills: ['Python', 'LLM', 'RAG', 'BI/DA/DS', 'PyTorch', 'TensorFlow', 'Hugging Face', 'LangChain', 'Agentic Workflows']
+    title: 'AI',
+    icon: <Brain className="w-5 h-5 text-cyan-400" />,
+    color: 'text-cyan-400',
+    borderHover: 'hover:border-cyan-400/30',
+    skills: [
+      { name: 'Python', level: 'Advanced', exp: '3 Years' },
+      { name: 'LLM', level: 'Expert', exp: '2 Years' },
+      { name: 'LangChain', level: 'Advanced', exp: '2 Years' },
+      { name: 'TensorFlow', level: 'Intermediate', exp: '2 Years' },
+      { name: 'PyTorch', level: 'Advanced', exp: '2 Years' },
+      { name: 'OpenAI', level: 'Expert', exp: '2 Years' }
+    ]
   },
   {
-    title: 'Web & Cloud Engineering',
+    title: 'Frontend',
     icon: <Code2 className="w-5 h-5 text-secondary" />,
     color: 'text-secondary',
     borderHover: 'hover:border-secondary/30',
-    skills: ['React', 'Node.js', 'TypeScript', 'Java', 'Supabase', 'Vercel', 'Next.js', 'FastAPI', 'PostgreSQL']
+    skills: [
+      { name: 'React', level: 'Advanced', exp: '3 Years' },
+      { name: 'Next.js', level: 'Advanced', exp: '2.5 Years' },
+      { name: 'Tailwind CSS', level: 'Expert', exp: '3 Years' },
+      { name: 'TypeScript', level: 'Advanced', exp: '2.5 Years' }
+    ]
   },
   {
-    title: 'DevOps, CI/CD & Systems',
-    icon: <ShieldAlert className="w-5 h-5 text-white" />,
-    color: 'text-white',
-    borderHover: 'hover:border-zinc-500/30',
-    skills: ['Docker', 'Kubernetes', 'GitHub Actions', 'CI/CD', 'C++', 'Git', '.NET Core', 'Linux', 'Software Testing']
+    title: 'Backend',
+    icon: <Terminal className="w-5 h-5 text-emerald-400" />,
+    color: 'text-emerald-400',
+    borderHover: 'hover:border-emerald-400/30',
+    skills: [
+      { name: 'Node.js', level: 'Advanced', exp: '3 Years' },
+      { name: 'FastAPI', level: 'Advanced', exp: '2 Years' },
+      { name: 'Express', level: 'Advanced', exp: '3 Years' },
+      { name: 'Supabase', level: 'Advanced', exp: '2 Years' },
+      { name: 'Firebase', level: 'Advanced', exp: '2.5 Years' }
+    ]
+  },
+  {
+    title: 'Cloud',
+    icon: <ShieldAlert className="w-5 h-5 text-amber-400" />,
+    color: 'text-amber-400',
+    borderHover: 'hover:border-amber-400/30',
+    skills: [
+      { name: 'Docker', level: 'Intermediate', exp: '2 Years' },
+      { name: 'Vercel', level: 'Expert', exp: '3 Years' },
+      { name: 'GitHub Actions', level: 'Intermediate', exp: '2 Years' },
+      { name: 'AWS', level: 'Intermediate', exp: '1.5 Years' }
+    ]
   }
 ]
 
@@ -262,194 +298,63 @@ export default function Skills() {
         </motion.p>
       </div>
 
-      {/* Bento Grid Container */}
-      <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-auto mb-20">
-        
-        {/* Card 1: AI & Machine Learning (Large, Col Span 2) */}
-        <motion.div
-          initial={{ opacity: 0, y: 25 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          viewport={{ once: true }}
-          onMouseEnter={() => setSkillsHovered(true)}
-          onMouseLeave={() => setSkillsHovered(false)}
-          className="glass-effect p-8 rounded-3xl border border-white/5 hover:border-primary/30 transition-all duration-300 group md:col-span-2 flex flex-col justify-between"
-        >
-          <div>
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-center">
-                {SKILL_CATEGORIES[0].icon}
+      {/* Bento Grid Container - 4 Categories */}
+      <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-6 mb-20">
+        {SKILL_CATEGORIES.map((cat, idx) => (
+          <motion.div
+            key={cat.title}
+            initial={{ opacity: 0, y: 25 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: idx * 0.1 }}
+            viewport={{ once: true }}
+            onMouseEnter={() => setSkillsHovered(true)}
+            onMouseLeave={() => setSkillsHovered(false)}
+            className={`glass-effect p-8 rounded-3xl border border-white/5 ${cat.borderHover} transition-all duration-300 group flex flex-col justify-between hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5`}
+          >
+            <div>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  {cat.icon}
+                </div>
+                <h3 className={`text-base font-mono font-bold ${cat.color} uppercase tracking-widest`}>
+                  {cat.title}
+                </h3>
               </div>
-              <h3 className="text-sm font-mono font-bold text-primary uppercase tracking-widest">
-                {SKILL_CATEGORIES[0].title}
-              </h3>
-            </div>
-            
-            <p className="text-gray-400 text-xs font-mono mb-8">
-              {"// Machine learning models, RAG pipelines & BI/DA/DS intelligence engines."}
-            </p>
 
-            <div className="flex flex-wrap gap-2.5">
-              {SKILL_CATEGORIES[0].skills.map((skill) => {
-                const highlighted = isSkillHighlighted(skill)
-                return (
-                  <div 
-                    key={skill} 
-                    className={`px-3.5 py-2 rounded-xl transition-all duration-300 font-sans text-xs md:text-sm font-medium cursor-default flex items-center gap-2 ${
-                      highlighted
-                        ? 'bg-primary/20 text-white border-2 border-primary shadow-[0_0_20px_rgba(var(--primary-rgb),0.4)] scale-105'
-                        : 'bg-white/[0.03] hover:bg-white/[0.08] text-gray-300 hover:text-white border border-white/5 hover:border-primary/20'
-                    }`}
-                  >
-                    <span className={`w-1.5 h-1.5 rounded-full ${highlighted ? 'bg-primary animate-ping' : 'bg-primary/40 group-hover:bg-primary'} transition-all duration-300`} />
-                    {skill}
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        </motion.div>
+              <div className="flex flex-wrap gap-2.5">
+                {cat.skills.map((skill) => {
+                  const skillName = typeof skill === 'string' ? skill : skill.name
+                  const skillLevel = typeof skill === 'string' ? 'Advanced' : skill.level
+                  const skillExp = typeof skill === 'string' ? '2 Years' : skill.exp
+                  const highlighted = isSkillHighlighted(skillName)
+                  return (
+                    <div 
+                      key={skillName} 
+                      className={`relative px-4 py-2.5 rounded-xl transition-all duration-300 font-sans text-xs md:text-sm font-medium cursor-default flex items-center gap-2 group/chip hover:scale-105 ${
+                        highlighted
+                          ? 'bg-cyan-500/20 text-white border-2 border-cyan-400 shadow-[0_0_20px_rgba(0,242,255,0.4)] scale-105'
+                          : 'bg-white/[0.03] hover:bg-cyan-950/40 text-gray-200 hover:text-white border border-white/10 hover:border-cyan-400/40'
+                      }`}
+                    >
+                      <span className={`w-1.5 h-1.5 rounded-full bg-cyan-400/40 group-hover/chip:bg-cyan-400 transition-colors duration-300`} />
+                      <span className="font-semibold">{skillName}</span>
 
-        {/* Card 2: Web Engineering (Vertical Stack, Col Span 1) */}
-        <motion.div
-          initial={{ opacity: 0, y: 25 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          viewport={{ once: true }}
-          onMouseEnter={() => setSkillsHovered(true)}
-          onMouseLeave={() => setSkillsHovered(false)}
-          className="glass-effect p-8 rounded-3xl border border-white/5 hover:border-secondary/30 transition-all duration-300 group md:col-span-1 flex flex-col justify-between"
-        >
-          <div>
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-center">
-                {SKILL_CATEGORIES[1].icon}
-              </div>
-              <h3 className="text-sm font-mono font-bold text-secondary uppercase tracking-widest">
-                {SKILL_CATEGORIES[1].title}
-              </h3>
-            </div>
-
-            <p className="text-gray-400 text-xs font-mono mb-8">
-              {"// Modern full-stack Web engineering & cloud application platform ecosystems."}
-            </p>
-
-            <div className="flex flex-wrap gap-2.5">
-              {SKILL_CATEGORIES[1].skills.map((skill) => {
-                const highlighted = isSkillHighlighted(skill)
-                return (
-                  <div 
-                    key={skill} 
-                    className={`px-3.5 py-2 rounded-xl transition-all duration-300 font-sans text-xs md:text-sm font-medium cursor-default flex items-center gap-2 ${
-                      highlighted
-                        ? 'bg-secondary/20 text-white border-2 border-secondary shadow-[0_0_20px_rgba(0,242,255,0.4)] scale-105'
-                        : 'bg-white/[0.03] hover:bg-white/[0.08] text-gray-300 hover:text-white border border-white/5 hover:border-secondary/20'
-                    }`}
-                  >
-                    <span className={`w-1.5 h-1.5 rounded-full ${highlighted ? 'bg-secondary animate-ping' : 'bg-secondary/40 group-hover:bg-secondary'} transition-all duration-300`} />
-                    {skill}
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Card 3: Systems & Security (Col Span 2) */}
-        <motion.div
-          initial={{ opacity: 0, y: 25 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          viewport={{ once: true }}
-          onMouseEnter={() => setSkillsHovered(true)}
-          onMouseLeave={() => setSkillsHovered(false)}
-          className="glass-effect p-8 rounded-3xl border border-white/5 hover:border-zinc-500/30 transition-all duration-300 group md:col-span-2 flex flex-col justify-between"
-        >
-          <div>
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-center">
-                {SKILL_CATEGORIES[2].icon}
-              </div>
-              <h3 className="text-sm font-mono font-bold text-white uppercase tracking-widest">
-                {SKILL_CATEGORIES[2].title}
-              </h3>
-            </div>
-
-            <p className="text-gray-400 text-xs font-mono mb-8">
-              {"// DevOps orchestration, containerization, automated CI/CD & infrastructure tools."}
-            </p>
-
-            <div className="flex flex-wrap gap-2.5">
-              {SKILL_CATEGORIES[2].skills.map((skill) => {
-                const highlighted = isSkillHighlighted(skill)
-                return (
-                  <div 
-                    key={skill} 
-                    className={`px-3.5 py-2 rounded-xl transition-all duration-300 font-sans text-xs md:text-sm font-medium cursor-default flex items-center gap-2 ${
-                      highlighted
-                        ? 'bg-white/20 text-white border-2 border-white shadow-[0_0_20px_rgba(255,255,255,0.4)] scale-105'
-                        : 'bg-white/[0.03] hover:bg-white/[0.08] text-gray-300 hover:text-white border border-white/5 hover:border-zinc-500/20'
-                    }`}
-                  >
-                    <span className={`w-1.5 h-1.5 rounded-full ${highlighted ? 'bg-white animate-ping' : 'bg-zinc-400 group-hover:bg-white'} transition-all duration-300`} />
-                    {skill}
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Card 4: Architecture Focus & System telemetry (Bento Metric, Col Span 1) */}
-        <motion.div
-          initial={{ opacity: 0, y: 25 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          viewport={{ once: true }}
-          onMouseEnter={() => setSkillsHovered(true)}
-          onMouseLeave={() => setSkillsHovered(false)}
-          className="glass-effect p-8 rounded-3xl border border-white/5 hover:border-primary/20 transition-all duration-300 group md:col-span-1 flex flex-col justify-between relative overflow-hidden"
-        >
-          <div className="absolute -right-12 -bottom-12 w-32 h-32 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-all duration-500" />
-          
-          <div>
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-center">
-                <Cpu className="w-5 h-5 text-primary" />
-              </div>
-              <h3 className="text-sm font-mono font-bold text-white uppercase tracking-widest">
-                CORE MATRIX FOCUS
-              </h3>
-            </div>
-
-            <div className="space-y-4 font-mono text-xs text-gray-400">
-              <div className="flex justify-between border-b border-white/5 pb-2">
-                <span>RAG COGNITION</span>
-                <span className="text-primary font-bold">100% SECURE</span>
-              </div>
-              <div className="flex justify-between border-b border-white/5 pb-2">
-                <span>PARALLEL PROCESSING</span>
-                <span className="text-secondary font-bold">OPTIMIZED</span>
-              </div>
-              <div className="flex justify-between border-b border-white/5 pb-2">
-                <span>AGENTIC AUTONOMY</span>
-                <span className="text-white font-bold">STATEFUL</span>
-              </div>
-              <div className="flex justify-between">
-                <span>UI FRAMEWORK</span>
-                <span className="text-zinc-300">NEXT.JS AppRouter</span>
+                      {/* Tooltip on Hover showing Level & Experience */}
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/chip:flex flex-col items-center pointer-events-none z-30">
+                        <div className="bg-black/90 text-cyan-300 border border-cyan-400/40 px-3 py-1 rounded-lg text-[10px] font-mono whitespace-nowrap shadow-xl backdrop-blur-md flex items-center gap-1.5">
+                          <span className="font-bold text-white">{skillLevel}</span>
+                          <span className="text-gray-500">•</span>
+                          <span className="text-cyan-400">{skillExp}</span>
+                        </div>
+                        <div className="w-2 h-2 bg-black/90 border-r border-b border-cyan-400/40 rotate-45 -mt-1" />
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
             </div>
-          </div>
-
-          <div className="mt-8 pt-4 border-t border-white/5 flex items-center justify-between">
-            <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">ENGINEERING STANDARDS</span>
-            <span className="text-[10px] font-mono text-zinc-400 font-semibold uppercase">
-              SECURE & HIGH-PERFORMANCE
-            </span>
-          </div>
-        </motion.div>
-
+          </motion.div>
+        ))}
       </div>
 
       {/* NEW: STUNNING INTERACTIVE COGNITIVE CORE PLAYGROUND */}

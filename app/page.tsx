@@ -8,12 +8,17 @@ import Footer from '@/components/Footer'
 import Hero from '@/components/sections/Hero'
 import About from '@/components/sections/About'
 import Skills from '@/components/sections/Skills'
+import FeaturedProject from '@/components/sections/FeaturedProject'
 import Projects from '@/components/sections/Projects'
 import Credentials from '@/components/sections/Credentials'
+import ResearchAndBlogs from '@/components/sections/ResearchAndBlogs'
+import Resume from '@/components/sections/Resume'
 import Achievements from '@/components/sections/Achievements'
+import Playground from '@/components/sections/Playground'
 import Timeline from '@/components/sections/Timeline'
 import Testimonials from '@/components/sections/Testimonials'
 import Contact from '@/components/sections/Contact'
+import SectionSeparator from '@/components/SectionSeparator'
 import Chatbot from '@/components/Chatbot'
 import LenisProvider from '@/components/LenisProvider'
 import { useScrollStore } from '@/store/useScrollStore'
@@ -134,16 +139,30 @@ export default function Home() {
         {/* Content Layers */}
         <div className="relative z-10 w-full flex flex-col">
           <Hero />
+          <SectionSeparator label="ORIGIN & INTENT" />
           <About />
+          <SectionSeparator label="TECHNICAL MATRIX" />
           <Skills />
+          <SectionSeparator label="FEATURED AI SHOWCASE" />
+          <FeaturedProject />
+          <SectionSeparator label="SELECTED WORK" />
           <Projects />
+          <SectionSeparator label="ACADEMIC CREDENTIALS" />
           <Credentials />
-          <Achievements />
+          <SectionSeparator label="RESEARCH & PUBLICATIONS" />
+          <ResearchAndBlogs />
+          <SectionSeparator label="DEVELOPMENT TRAJECTORY" />
           <Timeline />
+          <SectionSeparator label="RECOGNITION & ACHIEVEMENTS" />
+          <Achievements />
+          <SectionSeparator label="PEER TESTIMONIALS" />
           <Testimonials />
+          <SectionSeparator label="INTERACTIVE AI ENGINE" />
+          <Playground />
+          <SectionSeparator label="GET IN TOUCH" />
           <Contact />
           <Footer />
-        </div >
+        </div>
 
         {/* Chatbot Assistant */}
         <Chatbot isOpen={isChatOpen} onClose={closeChat} />

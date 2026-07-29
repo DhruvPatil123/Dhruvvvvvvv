@@ -1,7 +1,7 @@
 "use client"
 
 import React from 'react'
-import { Github, Twitter, Linkedin, Instagram, ExternalLink } from 'lucide-react'
+import { Github, Twitter, Linkedin, Instagram } from 'lucide-react'
 import LeetCodeIcon from './LeetCodeIcon'
 
 export default function Footer() {
@@ -14,36 +14,56 @@ export default function Footer() {
   ]
 
   return (
-    <footer className="relative w-full py-12 px-6 border-t border-white/10 bg-dark/50 backdrop-blur-md">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-        <div className="text-center md:text-left">
-          <div className="text-xl font-bold tracking-tighter text-white mb-2">
-            DHRUV <span className="text-primary">PATIL</span>
-          </div >
-          <p className="text-gray-500 text-sm">© 2026 | AI Researcher & Model Engineer</p>
-        </div >
+    <footer className="relative w-full py-16 px-6 border-t border-white/10 bg-black/80 backdrop-blur-xl text-gray-400 font-sans">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center md:items-start gap-10">
+        
+        {/* Brand & Stack Info */}
+        <div className="text-center md:text-left space-y-3 max-w-sm">
+          <div className="text-2xl font-display font-extrabold tracking-tight text-white">
+            DHRUV <span className="text-cyan-400">PATIL</span>
+          </div>
+          <p className="text-xs text-gray-400 leading-relaxed font-sans">
+            AI Research Engineer & Full-Stack Developer specializing in Agentic AI systems, Gemini Live WebSockets, and high-performance Web Platforms.
+          </p>
+          <div className="pt-2 text-xs font-mono text-cyan-300">
+            Built using React • Next.js • Three.js • Framer Motion • Tailwind CSS
+          </div>
+        </div>
 
-        <div className="flex flex-wrap justify-center gap-6">
-          {socialLinks.map((link) => (
-            <a
-              key={link.name}
-              href={link.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="glass-effect p-3 rounded-full text-white hover:text-primary transition-all hover:scale-110 group"
-              title={link.name}
-            >
-              {link.icon}
-            </a>
-          ))}
-        </div >
+        {/* Quick Links */}
+        <div className="flex flex-col items-center md:items-start space-y-2">
+          <span className="text-xs font-mono font-bold uppercase tracking-widest text-cyan-400">Navigation</span>
+          <div className="flex flex-col sm:flex-row md:flex-col gap-2.5 text-xs font-mono text-gray-300 text-center md:text-left">
+            <a href="#hero" className="hover:text-cyan-300 transition-colors">01. Hero Section</a>
+            <a href="#about" className="hover:text-cyan-300 transition-colors">02. About Me</a>
+            <a href="#skills" className="hover:text-cyan-300 transition-colors">03. Technical Matrix</a>
+            <a href="#featured-project" className="hover:text-cyan-300 transition-colors">04. Featured AI Showcase</a>
+            <a href="#work" className="hover:text-cyan-300 transition-colors">05. Projects</a>
+            <a href="#contact" className="hover:text-cyan-300 transition-colors">06. Contact</a>
+          </div>
+        </div>
 
-        <div className="flex gap-8 text-xs uppercase tracking-widest text-gray-500">
-          <a href="#hero" className="hover:text-white transition-colors">Home</a>
-          <a href="#about" className="hover:text-white transition-colors">About</a>
-          <a href="#contact" className="hover:text-white transition-colors">Contact</a>
-        </div >
-      </div >
+        {/* Social Accounts */}
+        <div className="flex flex-col items-center md:items-end space-y-4">
+          <span className="text-xs font-mono font-bold uppercase tracking-widest text-cyan-400">Connect Online</span>
+          <div className="flex flex-wrap gap-3">
+            {socialLinks.map((link) => (
+              <a
+                key={link.name}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-3 rounded-2xl bg-white/5 hover:bg-cyan-500 hover:text-black border border-white/10 text-white transition-all hover:scale-105"
+                title={link.name}
+              >
+                {link.icon}
+              </a>
+            ))}
+          </div>
+          <p className="text-[11px] font-mono text-gray-500">© 2026 Dhruv Patil. All rights reserved.</p>
+        </div>
+
+      </div>
     </footer>
   )
 }

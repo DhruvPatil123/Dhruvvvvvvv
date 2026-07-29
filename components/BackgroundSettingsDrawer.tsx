@@ -65,6 +65,9 @@ export default function BackgroundSettingsDrawer() {
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 220 }}
             className="relative w-full max-w-md h-full bg-zinc-950 border-l border-white/10 shadow-2xl p-6 sm:p-8 flex flex-col justify-between overflow-y-auto scrollbar-thin z-10"
+            data-lenis-prevent
+            data-lenis-prevent-wheel
+            data-lenis-prevent-touch
           >
             <div className="space-y-6">
               {/* Header */}

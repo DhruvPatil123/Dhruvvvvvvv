@@ -68,13 +68,14 @@ export default function RecruiterViewModal() {
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 overflow-y-auto bg-black/80 backdrop-blur-2xl">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 overflow-y-auto bg-black/80 backdrop-blur-2xl" data-lenis-prevent data-lenis-prevent-wheel data-lenis-prevent-touch>
           <motion.div
             initial={{ opacity: 0, scale: 0.96, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 20 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             className="w-full max-w-5xl bg-[#090a0f] border border-white/15 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] text-white my-auto relative"
+            data-lenis-prevent
           >
             {/* Top Announcement Bar */}
             <div className="bg-gradient-to-r from-cyan-950 via-blue-950 to-indigo-950 px-6 py-2.5 border-b border-cyan-500/30 flex items-center justify-between font-mono text-[11px] text-cyan-300">
@@ -140,7 +141,7 @@ export default function RecruiterViewModal() {
             </div>
 
             {/* Content Body */}
-            <div className="p-6 sm:p-8 overflow-y-auto space-y-8 flex-1">
+            <div className="p-6 sm:p-8 overflow-y-auto space-y-8 flex-1 scrollbar-thin" data-lenis-prevent data-lenis-prevent-wheel data-lenis-prevent-touch>
               {activeTab === 'scheduler' ? (
                 <MeetingScheduler onClose={closeRecruiterView} isModal />
               ) : (
