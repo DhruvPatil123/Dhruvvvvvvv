@@ -68,18 +68,22 @@ export default function Navbar() {
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item.id)}
-                className={`relative px-3.5 py-1.5 rounded-full transition-all duration-200 cursor-pointer ${
-                  isActive ? 'text-cyan-300 font-bold' : 'text-gray-300 hover:text-white'
+                aria-current={isActive ? 'page' : undefined}
+                className={`relative px-3.5 py-1.5 rounded-full transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black ${
+                  isActive ? 'text-cyan-200 font-extrabold shadow-[0_0_15px_rgba(0,242,255,0.3)]' : 'text-gray-300 hover:text-white'
                 }`}
               >
                 {isActive && (
                   <motion.span
                     layoutId="activeNavTab"
-                    className="absolute inset-0 rounded-full bg-cyan-500/15 border border-cyan-400/40"
+                    className="absolute inset-0 rounded-full bg-cyan-500/25 border border-cyan-400/80 shadow-[inset_0_0_12px_rgba(0,242,255,0.4)]"
                     transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                   />
                 )}
-                <span className="relative z-10">{item.label}</span>
+                <span className="relative z-10 flex items-center gap-1.5">
+                  {isActive && <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(0,242,255,1)] animate-pulse" />}
+                  {item.label}
+                </span>
               </button>
             )
           })}

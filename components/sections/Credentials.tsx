@@ -53,8 +53,8 @@ const CERTIFICATIONS = [
 
 export default function Credentials() {
   return (
-    <section id="credentials" className="relative w-full min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-24 md:py-32 lg:py-40">
-      <div className="max-w-6xl w-full text-center mb-16 md:mb-20 space-y-4">
+    <section id="credentials" className="relative w-full min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-28 md:py-36 lg:py-48">
+      <div className="max-w-6xl w-full text-center mb-16 md:mb-24 space-y-6">
         {/* Section Indicator */}
         <span className="font-mono text-xs uppercase tracking-[0.2em] text-primary font-medium">
           [ 06 // INTELLECTUAL BASIS ]

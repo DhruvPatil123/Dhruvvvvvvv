@@ -12,6 +12,7 @@ import FeaturedProject from '@/components/sections/FeaturedProject'
 import Projects from '@/components/sections/Projects'
 import Credentials from '@/components/sections/Credentials'
 import ResearchAndBlogs from '@/components/sections/ResearchAndBlogs'
+import GithubActivity from '@/components/sections/GithubActivity'
 import Resume from '@/components/sections/Resume'
 import Achievements from '@/components/sections/Achievements'
 import Playground from '@/components/sections/Playground'
@@ -29,6 +30,8 @@ import { useThemeStore } from '@/store/useThemeStore'
 import CursorTrail from '@/components/CursorTrail'
 import AudioDock from '@/components/AudioDock'
 import BootPreloader from '@/components/BootPreloader'
+import CursorGlow from '@/components/CursorGlow'
+import DarkGridAndParticles from '@/components/DarkGridAndParticles'
 import FpsMonitor from '@/components/FpsMonitor'
 import CommandPalette from '@/components/CommandPalette'
 import RecruiterViewModal from '@/components/RecruiterViewModal'
@@ -63,7 +66,7 @@ export default function Home() {
   }, [setScrollProgress])
 
   useEffect(() => {
-    const sectionIds = ['hero', 'about', 'skills', 'work', 'credentials', 'achievements', 'experience', 'testimonials', 'contact']
+    const sectionIds = ['hero', 'about', 'skills', 'work', 'github', 'credentials', 'achievements', 'experience', 'testimonials', 'contact']
 
     const handleScroll = () => {
       const vh = window.innerHeight
@@ -112,8 +115,9 @@ export default function Home() {
         {/* Cinematic Preloader */}
         <BootPreloader />
 
-        {/* Dynamic Cursor Stardust Trail */}
+        {/* Dynamic Cursor Stardust Trail & Ambient Glow */}
         <CursorTrail />
+        <CursorGlow />
 
         {/* Ambient Drone controller */}
         <AudioDock />
@@ -130,7 +134,8 @@ export default function Home() {
         {/* Environment & Aesthetics Settings Drawer */}
         <BackgroundSettingsDrawer />
 
-        {/* Persistent Navigation */}
+        {/* Persistent Navigation & Backgrounds */}
+        <DarkGridAndParticles />
         <BackgroundParallax />
         <Overlay />
         <RomanSidebar />
@@ -147,6 +152,8 @@ export default function Home() {
           <FeaturedProject />
           <SectionSeparator label="SELECTED WORK" />
           <Projects />
+          <SectionSeparator label="LIVE OPEN SOURCE ENGINE" />
+          <GithubActivity />
           <SectionSeparator label="ACADEMIC CREDENTIALS" />
           <Credentials />
           <SectionSeparator label="RESEARCH & PUBLICATIONS" />

@@ -121,15 +121,37 @@ export default function BootPreloader() {
           <div>SYSTEM_CHECK: OK</div>
         </div>
 
-        {/* Middle terminal outputs */}
-        <div className="max-w-3xl w-full mx-auto flex flex-col gap-2.5 text-[11px] md:text-xs text-zinc-400">
-          <div className="text-zinc-500 mb-2">{"// COMMENCING BOOT SEQUENCE INTERCEPT //"}</div>
-          {logs.map((log, index) => (
-            <div key={index} className="flex gap-2 items-center">
-              <span className="text-primary/50">&gt;&gt;</span>
-              <ScrambledText text={log} delay={0} />
+        {/* Middle terminal outputs with DP Logo Emblem */}
+        <div className="max-w-3xl w-full mx-auto flex flex-col items-center gap-6 text-[11px] md:text-xs text-zinc-400">
+          {/* Logo Emblem */}
+          <div className="relative flex items-center justify-center my-2">
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
+              className="w-20 h-20 rounded-full border border-dashed border-cyan-400/50"
+            />
+            <motion.div
+              animate={{ rotate: -360 }}
+              transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+              className="absolute w-16 h-16 rounded-full border border-cyan-500/30 border-t-cyan-300"
+            />
+            <div className="absolute w-12 h-12 rounded-2xl bg-zinc-950 border border-cyan-400/80 shadow-[0_0_25px_rgba(0,242,255,0.5)] flex items-center justify-center text-cyan-300 font-mono font-extrabold text-base tracking-wider">
+              DP
             </div>
-          ))}
+          </div>
+
+          <div className="w-full text-left space-y-2">
+            <div className="text-cyan-400/80 font-bold mb-2 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+              {"// DHRUV PATIL AI COGNITIVE BOOT INTERCEPT //"}
+            </div>
+            {logs.map((log, index) => (
+              <div key={index} className="flex gap-2 items-center">
+                <span className="text-primary/50">&gt;&gt;</span>
+                <ScrambledText text={log} delay={0} />
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Bottom progress metrics */}

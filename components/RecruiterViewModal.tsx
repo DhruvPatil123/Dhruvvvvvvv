@@ -221,41 +221,50 @@ export default function RecruiterViewModal() {
                   </div>
 
                   {/* Metrics Row */}
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1">
-                      <div className="flex items-center justify-between text-gray-400 text-xs font-mono">
-                        <span>GitHub Commits</span>
-                        <Github className="w-4 h-4 text-primary" />
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                    <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-cyan-500/30 space-y-1">
+                      <div className="flex items-center justify-between text-gray-400 text-[10px] font-mono">
+                        <span>AI Projects</span>
+                        <Zap className="w-3.5 h-3.5 text-cyan-400" />
                       </div>
-                      <p className="text-2xl font-mono font-bold text-white">{liveStats.github}</p>
-                      <p className="text-[10px] text-emerald-400 font-mono">100% Verified Activity</p>
+                      <p className="text-xl font-mono font-black text-cyan-300">10+</p>
+                      <p className="text-[9px] text-cyan-300/80 font-mono">LLMs & Agents</p>
                     </div>
 
-                    <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1">
-                      <div className="flex items-center justify-between text-gray-400 text-xs font-mono">
-                        <span>LeetCode Solved</span>
-                        <Code className="w-4 h-4 text-secondary" />
+                    <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1">
+                      <div className="flex items-center justify-between text-gray-400 text-[10px] font-mono">
+                        <span>LeetCode</span>
+                        <Code className="w-3.5 h-3.5 text-secondary" />
                       </div>
-                      <p className="text-2xl font-mono font-bold text-white">{liveStats.leetcode}</p>
-                      <p className="text-[10px] text-gray-400 font-mono">Global Rank: {liveStats.rank}</p>
+                      <p className="text-xl font-mono font-black text-white">150+</p>
+                      <p className="text-[9px] text-gray-400 font-mono">Data Structures</p>
                     </div>
 
-                    <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1">
-                      <div className="flex items-center justify-between text-gray-400 text-xs font-mono">
-                        <span>AI & Agent Repos</span>
-                        <Zap className="w-4 h-4 text-cyan-400" />
+                    <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1">
+                      <div className="flex items-center justify-between text-gray-400 text-[10px] font-mono">
+                        <span>Internships</span>
+                        <Briefcase className="w-3.5 h-3.5 text-emerald-400" />
                       </div>
-                      <p className="text-2xl font-mono font-bold text-white">10+ Repos</p>
-                      <p className="text-[10px] text-cyan-300 font-mono">LangChain / Gemini / C++</p>
+                      <p className="text-xl font-mono font-black text-emerald-300">11</p>
+                      <p className="text-[9px] text-emerald-400/80 font-mono">Software Roles</p>
                     </div>
 
-                    <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1">
-                      <div className="flex items-center justify-between text-gray-400 text-xs font-mono">
-                        <span>Core Degree</span>
-                        <GraduationCap className="w-4 h-4 text-indigo-400" />
+                    <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1">
+                      <div className="flex items-center justify-between text-gray-400 text-[10px] font-mono">
+                        <span>Certifications</span>
+                        <Trophy className="w-3.5 h-3.5 text-amber-400" />
                       </div>
-                      <p className="text-base font-display font-bold text-white leading-tight mt-1">B.Tech Computer Tech</p>
-                      <p className="text-[10px] text-gray-400 font-mono">Graduation: 2026</p>
+                      <p className="text-xl font-mono font-black text-amber-300">15+</p>
+                      <p className="text-[9px] text-amber-400/80 font-mono">AI & Web Stack</p>
+                    </div>
+
+                    <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1 col-span-2 sm:col-span-1">
+                      <div className="flex items-center justify-between text-gray-400 text-[10px] font-mono">
+                        <span>Hackathons</span>
+                        <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+                      </div>
+                      <p className="text-xl font-mono font-black text-purple-300">2</p>
+                      <p className="text-[9px] text-purple-400/80 font-mono">Competitive AI</p>
                     </div>
                   </div>
 

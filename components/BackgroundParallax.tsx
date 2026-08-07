@@ -31,22 +31,22 @@ export default function BackgroundParallax() {
   const opacityHeroElements = useTransform(scrollY, [0, 500], [1, 0])
 
   const filterStyle = {
-    subtle: 'brightness(1.15) contrast(1.05) saturate(1.15)',
-    standard: 'brightness(1.28) contrast(1.15) saturate(1.3)',
-    dramatic: 'brightness(1.4) contrast(1.25) saturate(1.5)',
-  }[contrastLevel] || 'brightness(1.28) contrast(1.15) saturate(1.3)'
+    subtle: 'brightness(0.55) contrast(0.95) saturate(0.65) blur(8px)',
+    standard: 'brightness(0.42) contrast(0.90) saturate(0.55) blur(12px)',
+    dramatic: 'brightness(0.32) contrast(0.85) saturate(0.45) blur(16px)',
+  }[contrastLevel] || 'brightness(0.42) contrast(0.90) saturate(0.55) blur(12px)'
 
   return (
-    <div className="fixed inset-0 w-screen h-screen -z-30 pointer-events-none select-none overflow-hidden bg-[#06070a]">
-      {/* Base Persistent Renaissance Background Layer to ensure continuous artwork visibility across all sections */}
-      <div className="absolute inset-0 w-full h-full opacity-50">
+    <div className="fixed inset-0 w-screen h-screen -z-30 pointer-events-none select-none overflow-hidden bg-[#050816]">
+      {/* Base Persistent Background Layer with navy tint */}
+      <div className="absolute inset-0 w-full h-full opacity-35">
         <Image
           src="/renaissance_hero_bg.jpg"
           alt="Base Renaissance Background"
           fill
           priority
           style={{ filter: filterStyle }}
-          className="object-cover"
+          className="object-cover scale-110"
           referrerPolicy="no-referrer"
         />
       </div>
@@ -69,18 +69,19 @@ export default function BackgroundParallax() {
                 fill
                 priority
                 style={{ filter: filterStyle }}
-                className="object-cover transition-all duration-500"
+                className="object-cover scale-110 transition-all duration-500"
                 referrerPolicy="no-referrer"
               />
-              {/* Subtle scrim layer preserving artwork clarity while maintaining text legibility */}
-              <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/25" />
+              {/* Darkening scrim layer preserving ambient artwork tone while guaranteeing text legibility */}
+              <div className="absolute inset-0 bg-black/30 backdrop-blur-[2px]" />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/30 to-black/50" />
             </div>
           )
         })}
       </motion.div>
 
       {/* Dynamic dark radial vignette guaranteeing high-contrast text readability */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_25%,rgba(5,5,5,0.25)_100%)] z-10" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(5,5,5,0.2)_20%,rgba(5,5,5,0.7)_100%)] z-10 pointer-events-none" />
 
       {/* Layer 3: Curated Museum-Style Framed Artifacts */}
       <motion.div 

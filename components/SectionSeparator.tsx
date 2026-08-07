@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 
 export default function SectionSeparator() {
   return (
-    <div className="relative w-full py-12 flex items-center justify-center overflow-hidden pointer-events-none select-none">
+    <div className="relative w-full py-16 sm:py-20 md:py-24 flex items-center justify-center overflow-hidden pointer-events-none select-none">
       <div className="w-full max-w-7xl px-6 flex items-center justify-center gap-4">
         <motion.div 
           initial={{ scaleX: 0, opacity: 0 }}

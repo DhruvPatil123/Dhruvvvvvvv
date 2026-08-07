@@ -10,11 +10,12 @@ const SECTIONS = [
   { id: 'about', label: 'Origin & Intent', plain: 'Profile', roman: 'II' },
   { id: 'skills', label: 'Synaptic Stack', plain: 'Skills', roman: 'III' },
   { id: 'work', label: 'Cognitive Works', plain: 'Projects', roman: 'IV' },
-  { id: 'credentials', label: 'Intellectual Basis', plain: 'Education', roman: 'V' },
-  { id: 'achievements', label: 'Benchmarks & Stats', plain: 'Metrics', roman: 'VI' },
-  { id: 'experience', label: 'Trajectory', plain: 'Career', roman: 'VII' },
-  { id: 'testimonials', label: 'Collaborations', plain: 'Reviews', roman: 'VIII' },
-  { id: 'contact', label: 'Channels', plain: 'Contact', roman: 'IX' },
+  { id: 'github', label: 'Open Source Engine', plain: 'GitHub', roman: 'V' },
+  { id: 'credentials', label: 'Intellectual Basis', plain: 'Education', roman: 'VI' },
+  { id: 'achievements', label: 'Benchmarks & Stats', plain: 'Metrics', roman: 'VII' },
+  { id: 'experience', label: 'Trajectory', plain: 'Career', roman: 'VIII' },
+  { id: 'testimonials', label: 'Collaborations', plain: 'Reviews', roman: 'IX' },
+  { id: 'contact', label: 'Channels', plain: 'Contact', roman: 'X' },
 ]
 
 export default function RomanSidebar() {

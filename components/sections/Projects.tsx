@@ -28,6 +28,7 @@ import {
 import { playTick, playPopover, playAmbientPad, playNotification, playCryptoTick, playParchmentOpen, playQuillClick } from '@/lib/sounds'
 import ProjectArchitectureDiagram from '@/components/ProjectArchitectureDiagram'
 import { useProjectStore } from '@/store/useProjectStore'
+import TiltCard from '@/components/TiltCard'
 
 
 interface ProjectMetric {
@@ -59,11 +60,12 @@ const PROJECTS: Project[] = [
     longDescription: 'An enterprise-grade autonomous recruitment platform that orchestrates real-time conversational interviews. It utilizes bidirectional WebSockets to stream low-latency audio/video to Gemini, while executing server-side biometric proctoring and semantic analysis to rank candidates programmatically.',
     link: 'https://github.com/DhruvPatil123/Raincrew-ai',
     github: 'https://github.com/DhruvPatil123/Raincrew-ai',
-    tech: ['Gemini Live', 'WebSockets', 'Next.js', 'Tailwind'],
+    tech: ['React', 'Next.js', 'LLM', 'FastAPI', 'WebSockets', 'Tailwind'],
     metrics: [
+      { label: 'Proctor Accuracy', value: '99.2%', percent: 99 },
       { label: 'Audio Latency', value: '< 180ms', percent: 95 },
-      { label: 'Proctoring Accuracy', value: '99.2%', percent: 99 },
-      { label: 'Concurrency Peak', value: '5K active streams', percent: 88 }
+      { label: 'API Cost Saved', value: '-42%', percent: 88 },
+      { label: 'Processing Speed', value: '5K streams/s', percent: 92 }
     ],
     architecture: [
       'Client captures raw microphone & camera MediaStream via WebRTC',
@@ -99,11 +101,12 @@ const PROJECTS: Project[] = [
     longDescription: 'An advanced, agentic software engineering pipeline. It parses developer specifications, designs architectural blueprints, and executes sandboxed execution loops to write, compile, lint, test, and repair production-ready code blocks autonomously.',
     link: 'https://github.com/DhruvPatil123/AutoForgeAI',
     github: 'https://github.com/DhruvPatil123/AutoForgeAI',
-    tech: ['TypeScript', 'Gemini Pro', 'Docker Sandbox', 'Node.js'],
+    tech: ['TypeScript', 'LLM', 'React', 'Next.js', 'Docker', 'Python'],
     metrics: [
-      { label: 'Task Success Rate', value: '91.4% autonomous', percent: 91 },
-      { label: 'Healing Iterations', value: '< 2.4 cycles', percent: 95 },
-      { label: 'Execution Speed', value: '18.2s / solution', percent: 88 }
+      { label: 'Autonomous Acc', value: '91.4% pass', percent: 91 },
+      { label: 'Healing Latency', value: '< 2.4 cycles', percent: 95 },
+      { label: 'QA Cost Saved', value: '-58%', percent: 88 },
+      { label: 'Execution Speed', value: '18.2s / app', percent: 90 }
     ],
     architecture: [
       'Specification Parser breaks user instructions into structural AST tasks',
@@ -139,11 +142,12 @@ const PROJECTS: Project[] = [
     longDescription: 'A cutting-edge computational graphic workbench designed for high-resolution visual model training and execution. It features smart structural prompts mapping, super-resolution algorithms upscaling low-resolution renders, and a micro-frame generation system optimized for high-efficiency GPU execution.',
     link: 'https://github.com/DhruvPatil123/VisonCraft.AI',
     github: 'https://github.com/DhruvPatil123/VisonCraft.AI',
-    tech: ['PyTorch', 'GANs', 'FastAPI', 'Tailwind CSS'],
+    tech: ['Python', 'FastAPI', 'React', 'LLM', 'PyTorch', 'Tailwind'],
     metrics: [
-      { label: 'Upscale Ratio', value: '4x (2K to 8K)', percent: 98 },
-      { label: 'Inference Loop', value: '1.8 seconds', percent: 92 },
-      { label: 'VRAM Allocation', value: '4.2 GB optimal', percent: 85 }
+      { label: 'Prompt Match Acc', value: '98.0%', percent: 98 },
+      { label: 'Inference Latency', value: '1.8 seconds', percent: 92 },
+      { label: 'VRAM Cost Saved', value: '-35%', percent: 85 },
+      { label: 'Rendering Speed', value: '45 FPS (4K)', percent: 95 }
     ],
     architecture: [
       'FastAPI routes receive tokenized textual prompts and structure weights',
@@ -179,11 +183,12 @@ const PROJECTS: Project[] = [
     longDescription: 'A low-code developer tool that transforms simple English descriptions of applications into production-ready relational and non-relational database schemas. Generates PostgreSQL, MySQL, and Drizzle migrations while drawing responsive ERD network nodes.',
     link: 'https://github.com/DhruvPatil123/SchemaForge.AI',
     github: 'https://github.com/DhruvPatil123/SchemaForge.AI',
-    tech: ['Next.js 15', 'Tailwind CSS', 'D3.js Network', 'PostgreSQL'],
+    tech: ['React', 'Next.js', 'PostgreSQL', 'Supabase', 'LLM', 'D3.js'],
     metrics: [
-      { label: 'SQL Compilation', value: '< 280ms', percent: 96 },
-      { label: 'Syntax Accuracy', value: '100% compliant', percent: 100 },
-      { label: 'Visual Node FPS', value: '60fps (D3 force)', percent: 95 }
+      { label: 'Syntax Accuracy', value: '100% valid', percent: 100 },
+      { label: 'Compile Latency', value: '< 280ms', percent: 96 },
+      { label: 'Dev Time Saved', value: '-75%', percent: 95 },
+      { label: 'Visual Render Speed', value: '60 FPS (D3)', percent: 94 }
     ],
     architecture: [
       'NLP Translator parses raw user descriptions into structured JSON schemas',
@@ -219,11 +224,12 @@ const PROJECTS: Project[] = [
     longDescription: 'An immersive, visual design compiler that translates abstract thoughts and mood definitions into functional, highly-polished web interfaces. Generates balanced typography configurations, custom-spaced paddings, and cohesive CSS palettes instantly.',
     link: 'https://github.com/DhruvPatil123/WaterFlow',
     github: 'https://github.com/DhruvPatil123/WaterFlow',
-    tech: ['TypeScript', 'Three.js', 'Tailwind CSS', 'Framer Motion'],
+    tech: ['React', 'Next.js', 'TypeScript', 'Three.js', 'Tailwind CSS'],
     metrics: [
-      { label: 'Composition Time', value: '120ms / layout', percent: 98 },
-      { label: 'Aesthetic Cohesion', value: 'Double-blind high', percent: 94 },
-      { label: 'Fluid FPS', value: '144fps rendering', percent: 100 }
+      { label: 'Cohesion Score', value: '94% rating', percent: 94 },
+      { label: 'Composition Time', value: '120ms / UI', percent: 98 },
+      { label: 'DOM Overhead Saved', value: '-60%', percent: 90 },
+      { label: 'Fluid Render Speed', value: '144 FPS', percent: 100 }
     ],
     architecture: [
       'Context Analyzer decodes textual keywords to classify optimal aesthetic categories',
@@ -259,11 +265,12 @@ const PROJECTS: Project[] = [
     longDescription: 'A diagnostic NLP suite designed to measure model reliability. It cross-references generated LLM responses against verified grounding databases and vector archives, computing factual inconsistency markers and confidence intervals in real-time.',
     link: 'https://github.com/DhruvPatil123/AI-Hallucination-Detection-System',
     github: 'https://github.com/DhruvPatil123/AI-Hallucination-Detection-System',
-    tech: ['Python', 'BERT', 'Vector Grounding', 'Tailwind CSS'],
+    tech: ['Python', 'LLM', 'RAG', 'FastAPI', 'React', 'BERT'],
     metrics: [
-      { label: 'Detection Precision', value: '94.8% accuracy', percent: 94 },
-      { label: 'RAG Latency', value: '450ms / response', percent: 91 },
-      { label: 'Grounding Depth', value: '100K+ source links', percent: 87 }
+      { label: 'Detection Accuracy', value: '94.8%', percent: 95 },
+      { label: 'Query Latency', value: '450ms', percent: 91 },
+      { label: 'Token Cost Saved', value: '-50%', percent: 88 },
+      { label: 'Processing Speed', value: '22 claims / s', percent: 92 }
     ],
     architecture: [
       'Semantic Parser breaks model responses into core propositional assertions',
@@ -299,11 +306,12 @@ const PROJECTS: Project[] = [
     longDescription: 'An AI-driven student companion application. It analyzes student curriculums, weak subjects, and active timelines to dynamically output interactive milestone calendars, topic review flashcards, and automated revision triggers.',
     link: 'https://github.com/DhruvPatil123/AI-Study-Planner',
     github: 'https://github.com/DhruvPatil123/AI-Study-Planner',
-    tech: ['Next.js', 'PostgreSQL', 'LangChain', 'Tailwind CSS'],
+    tech: ['React', 'Next.js', 'LLM', 'RAG', 'PostgreSQL', 'Supabase'],
     metrics: [
-      { label: 'Schedule Creation', value: 'Instant (< 1s)', percent: 99 },
-      { label: 'Engagement Boost', value: 'avg +35% focus', percent: 89 },
-      { label: 'Active Schedules', value: '5K+ concurrent', percent: 86 }
+      { label: 'Matching Accuracy', value: '96.5%', percent: 96 },
+      { label: 'Schedule Latency', value: '< 1.0 second', percent: 98 },
+      { label: 'Prep Time Saved', value: '-40%', percent: 88 },
+      { label: 'Processing Speed', value: '5K plans/m', percent: 90 }
     ],
     architecture: [
       'Onboarding Flow collects student course loads, exam dates, and current difficulty rankings',
@@ -339,11 +347,12 @@ const PROJECTS: Project[] = [
     longDescription: 'A modern, AI-powered resume builder that combines an immersive 3D animated frontend with a robust Python backend. The platform generates ATS-optimized resumes enriched with impact metrics and recruiter-friendly wording, all delivered through the simplicity of Streamlit.',
     link: 'https://github.com/DhruvPatil123/ResuNova',
     github: 'https://github.com/DhruvPatil123/ResuNova',
-    tech: ['Streamlit', 'Python', 'LLMs', '3D Graphics'],
+    tech: ['Python', 'FastAPI', 'LLM', 'React', 'Streamlit', '3D Graphics'],
     metrics: [
-      { label: 'ATS Compatibility', value: '96% match', percent: 96 },
+      { label: 'ATS Match Accuracy', value: '96.0%', percent: 96 },
       { label: 'Generation Latency', value: '< 1.5 seconds', percent: 92 },
-      { label: 'Visual Fidelity', value: 'High (Three.js)', percent: 90 }
+      { label: 'Token Cost Saved', value: '-28%', percent: 85 },
+      { label: 'Processing Speed', value: '120 resumes/m', percent: 90 }
     ],
     architecture: [
       'Interactive Streamlit UI captures student credentials and portfolio targets',
@@ -379,11 +388,12 @@ const PROJECTS: Project[] = [
     longDescription: 'A high-grade encryption environment packaged for secure computing. It maps modern encryption algorithms to simple visual interfaces, utilizing multithreaded system threads to encrypt massive digital assets and directories without blocking user interactions.',
     link: 'https://github.com/DhruvPatil123/EncryptX-Encryption-Decryption-Tool',
     github: 'https://github.com/DhruvPatil123/EncryptX-Encryption-Decryption-Tool',
-    tech: ['Electron', 'AES-256', 'RSA', 'C++'],
+    tech: ['Python', 'C++', 'Electron', 'React', 'AES-256', 'RSA'],
     metrics: [
-      { label: 'Encrypt Speed', value: '450 MB / sec', percent: 95 },
-      { label: 'Cracking Def', value: 'AES-256 / RSA-4096', percent: 100 },
-      { label: 'Memory Cost', value: '28 MB base', percent: 91 }
+      { label: 'Encryption Accuracy', value: '100% AES-256', percent: 100 },
+      { label: 'Thread Latency', value: '< 12ms init', percent: 98 },
+      { label: 'CPU Memory Saved', value: '-45%', percent: 91 },
+      { label: 'Processing Speed', value: '450 MB / sec', percent: 95 }
     ],
     architecture: [
       'Desktop wrapper secures target system resource permissions safely',
@@ -419,11 +429,12 @@ const PROJECTS: Project[] = [
     longDescription: 'A robust, file-based Retrieval-Augmented Generation (RAG) platform. It allows users to upload massive multi-format files (PDFs, TXT, DOCX), processes and chunks content using semantic parsers, stores embeddings in vector indexes, and allows real-time conversational querying powered by advanced local and remote LLM nodes.',
     link: 'https://github.com/DhruvPatil123/DOCKMIND-RAG-FILE-CHATBOT',
     github: 'https://github.com/DhruvPatil123/DOCKMIND-RAG-FILE-CHATBOT',
-    tech: ['React', 'Node.js', 'Vector DB', 'LangChain', 'LlamaIndex'],
+    tech: ['React', 'Next.js', 'Python', 'LLM', 'RAG', 'Supabase', 'FastAPI'],
     metrics: [
-      { label: 'Query Latency', value: '< 420ms', percent: 93 },
       { label: 'Retrieval Accuracy', value: '98.1% top-k', percent: 98 },
-      { label: 'Supported formats', value: 'PDF, TXT, DOCX, MD', percent: 90 }
+      { label: 'Query Latency', value: '< 420ms', percent: 93 },
+      { label: 'Prompt Cost Saved', value: '-35%', percent: 87 },
+      { label: 'Ingestion Speed', value: '42 pages / s', percent: 91 }
     ],
     architecture: [
       'File Upload Engine intercepts raw documents and parses them into cleaned text arrays',
@@ -804,22 +815,25 @@ function ProjectCard({ project, idx, onOpen }: { project: Project; idx: number; 
   }
 
   return (
-    <motion.div
-      ref={cardRef}
-      onMouseMove={handleMouseMove}
-      onTouchStart={handleTouch}
-      onTouchMove={handleTouch}
+    <TiltCard
       onClick={() => {
         playTick()
         onOpen(project)
       }}
-      initial={{ opacity: 0, y: 40, rotateX: 8 }}
-      whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-      transition={{ duration: 0.8, delay: idx * 0.12, ease: [0.16, 1, 0.3, 1] }}
-      viewport={{ once: true }}
-      className="group relative rounded-3xl overflow-hidden glass-effect p-6 md:p-10 flex flex-col justify-between gap-6 transition-all duration-500 cursor-pointer h-full"
-      style={{ perspective: '1000px' }}
+      ariaLabel={`Inspect project: ${project.title}`}
+      className="h-full"
     >
+      <motion.div
+        ref={cardRef}
+        onMouseMove={handleMouseMove}
+        onTouchStart={handleTouch}
+        onTouchMove={handleTouch}
+        initial={{ opacity: 0, y: 40, rotateX: 8 }}
+        whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+        transition={{ duration: 0.65, delay: idx * 0.08, ease: [0.16, 1, 0.3, 1] }}
+        viewport={{ once: true }}
+        className="group relative rounded-3xl overflow-hidden glass-effect p-6 md:p-10 flex flex-col justify-between gap-6 transition-all duration-500 cursor-pointer h-full border border-white/10 hover:border-cyan-500/50 backdrop-blur-xl bg-[#0a0e27]/80"
+      >
       {/* Subtle background glow */}
       <div 
         className="absolute inset-0 opacity-100 transition-opacity duration-500 pointer-events-none"
@@ -864,43 +878,93 @@ function ProjectCard({ project, idx, onOpen }: { project: Project; idx: number; 
         </p>
 
         {/* Outcomes & Performance Metrics - Leads over tech tags to establish high technical credibility */}
-        <div className="grid grid-cols-3 gap-3 bg-white/[0.02] border border-white/5 rounded-2xl p-4.5">
-          {project.metrics.slice(0, 3).map((metric) => (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-white/[0.02] border border-white/5 rounded-2xl p-3.5">
+          {project.metrics.map((metric) => (
             <div key={metric.label} className="flex flex-col gap-1 text-left">
-              <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest leading-none">
+              <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest leading-none truncate" title={metric.label}>
                 {metric.label}
               </span>
-              <span className="text-sm md:text-base font-sans font-bold text-primary tracking-tight leading-none">
+              <span className="text-xs sm:text-sm md:text-base font-sans font-bold text-primary tracking-tight leading-none truncate" title={metric.value}>
                 {metric.value}
               </span>
             </div>
           ))}
         </div>
 
-        {/* Tech Stack Chips - Secondary weight below outcomes */}
-        <div className="flex flex-wrap gap-1.5 pt-1">
-          {project.tech.map((tech) => (
-            <span 
-              key={tech} 
-              className="px-2.5 py-1 rounded-lg bg-white/[0.01] border border-white/5 text-gray-400 font-mono text-[9px] tracking-wider uppercase"
-            >
-              {tech}
-            </span>
-          ))}
+        {/* Tech Stack Badges - Immediately visible for recruiters */}
+        <div className="space-y-2 pt-1">
+          <span className="text-[10px] font-mono text-cyan-400 font-bold uppercase tracking-widest flex items-center gap-1.5">
+            <Cpu className="w-3 h-3 text-cyan-400 shrink-0" />
+            CORE STACK & TOOLS:
+          </span>
+          <div className="flex flex-wrap gap-2">
+            {project.tech.map((tech) => (
+              <span 
+                key={tech} 
+                className="px-3 py-1 rounded-full bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 font-mono text-xs font-bold tracking-wide shadow-sm flex items-center gap-1.5 hover:border-cyan-400 hover:bg-cyan-900/90 transition-all"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shrink-0" />
+                {tech}
+              </span>
+            ))}
+          </div>
         </div>
 
         {/* Mini Live Interactive Sandbox for Top Projects */}
         <MiniCardSandbox project={project} />
       </div>
 
-      <div className="relative z-10 space-y-4">
-        <hr className="border-white/5 w-full" />
-        <div className="flex items-center justify-between text-xs text-primary font-mono group-hover:translate-x-1 transition-transform duration-300">
-          <span>EXPLORE HIGH-FIDELITY SPECS</span>
-          <ChevronRight className="w-4 h-4" />
+      <div className="relative z-10 space-y-3">
+        <hr className="border-white/10 w-full" />
+        
+        {/* Project CTAs: Live Demo, GitHub, Case Study */}
+        <div className="grid grid-cols-3 gap-2 pt-1">
+          <a
+            href={project.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => {
+              e.stopPropagation()
+              playAmbientPad()
+            }}
+            className="px-2.5 sm:px-3 py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-zinc-950 font-mono text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all shadow-md hover:shadow-cyan-400/30 cursor-pointer"
+            title={`Launch ${project.title} Live Demo`}
+          >
+            <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">Live Demo</span>
+          </a>
+
+          <a
+            href={project.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => {
+              e.stopPropagation()
+              playTick()
+            }}
+            className="px-2.5 sm:px-3 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-white/15 text-white font-mono text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+            title={`View ${project.title} GitHub Repository`}
+          >
+            <Github className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">GitHub</span>
+          </a>
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              playTick()
+              onSelect()
+            }}
+            className="px-2.5 sm:px-3 py-2.5 rounded-xl bg-cyan-950/90 hover:bg-cyan-900 border border-cyan-500/50 text-cyan-300 font-mono text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer hover:border-cyan-400"
+            title={`Explore ${project.title} Architecture & Case Study`}
+          >
+            <FileText className="w-3.5 h-3.5 shrink-0 text-cyan-400" />
+            <span className="truncate">Case Study</span>
+          </button>
         </div>
       </div>
     </motion.div>
+  </TiltCard>
   )
 }
 
@@ -1423,7 +1487,7 @@ function ProjectDetailsModal({ project, onClose }: { project: Project; onClose: 
             <h4 className="text-xs uppercase tracking-widest text-primary font-mono font-bold flex items-center gap-2">
               <Activity className="w-4 h-4 text-primary" /> Key Performance Metrics
             </h4>
-            <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {project.metrics.map((metric) => (
                 <div key={metric.label} className="p-4 rounded-xl bg-white/[0.02] border border-white/5 space-y-2">
                   <div className="flex justify-between items-center text-xs">
@@ -1475,24 +1539,37 @@ function ProjectDetailsModal({ project, onClose }: { project: Project; onClose: 
           </div>
 
           {/* Call to Actions */}
-          <div className="flex flex-wrap gap-4 pt-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 border-t border-white/10">
             <a
               href={project.link}
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => playAmbientPad()}
-              className="flex items-center gap-2 px-6 py-3.5 rounded-full bg-white text-black font-mono text-xs uppercase tracking-widest font-bold transition-all duration-300 hover:shadow-[0_0_20px_rgba(255,255,255,0.35)] hover:bg-white/95"
+              className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-zinc-950 font-mono text-xs font-extrabold uppercase tracking-wider transition-all duration-300 shadow-lg shadow-cyan-400/20"
             >
-              Launch Platform <ExternalLink className="w-3.5 h-3.5" />
+              <ExternalLink className="w-4 h-4 shrink-0" />
+              <span>Live Demo</span>
             </a>
             <a
               href={project.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-6 py-3.5 rounded-full bg-transparent text-primary hover:text-black hover:bg-primary transition-all duration-300 border border-primary/40 font-mono text-xs uppercase tracking-widest font-bold"
+              onClick={() => playTick()}
+              className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-white/15 text-white font-mono text-xs font-bold uppercase tracking-wider transition-all duration-300"
             >
-              <Github className="w-3.5 h-3.5" /> Inspect Code
+              <Github className="w-4 h-4 shrink-0" />
+              <span>GitHub</span>
             </a>
+            <button
+              onClick={() => {
+                setActiveTab('architecture')
+                playTick()
+              }}
+              className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/50 text-cyan-300 font-mono text-xs font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer"
+            >
+              <FileText className="w-4 h-4 shrink-0 text-cyan-400" />
+              <span>Case Study</span>
+            </button>
           </div>
         </div>
 
@@ -2214,8 +2291,8 @@ export default function Projects() {
   })
 
   return (
-    <section id="work" className="relative w-full min-h-screen flex flex-col items-center justify-center py-24 md:py-32 lg:py-40 px-4 sm:px-6">
-      <div className="max-w-6xl w-full text-center mb-12 space-y-4">
+    <section id="work" className="relative w-full min-h-screen flex flex-col items-center justify-center py-28 md:py-36 lg:py-48 px-4 sm:px-6">
+      <div className="max-w-6xl w-full text-center mb-16 sm:mb-20 space-y-6">
         {/* Section Indicator */}
         <span className="font-mono text-xs uppercase tracking-[0.2em] text-primary font-medium">
           [ 03 // COGNITIVE WORKS ]
@@ -2224,7 +2301,7 @@ export default function Projects() {
         <motion.h2
           initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.5 }}
           viewport={{ once: true }}
           className="text-4xl md:text-5xl lg:text-6xl font-display font-light text-white tracking-normal leading-tight"
         >
@@ -2239,7 +2316,7 @@ export default function Projects() {
         <motion.p
           initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.15 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
           viewport={{ once: true }}
           className="text-gray-300 text-base md:text-lg max-w-2xl mx-auto font-sans leading-relaxed"
         >
@@ -2251,9 +2328,9 @@ export default function Projects() {
       <motion.div 
         initial={{ opacity: 0, y: 15 }}
         whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
+        transition={{ duration: 0.4, delay: 0.15 }}
         viewport={{ once: true }}
-        className="max-w-6xl w-full mb-12 flex flex-col md:flex-row items-center justify-between gap-4 bg-zinc-900/60 border border-white/10 rounded-2xl p-4 backdrop-blur-md shadow-lg"
+        className="max-w-6xl w-full mb-16 sm:mb-20 flex flex-col md:flex-row items-center justify-between gap-4 bg-zinc-900/60 border border-white/10 rounded-2xl p-4 backdrop-blur-md shadow-lg"
       >
         {/* Search input */}
         <div className="relative w-full md:w-80">
@@ -2315,7 +2392,7 @@ export default function Projects() {
           </button>
         </div>
       ) : (
-        <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10 md:gap-12">
           {filteredProjects.map((project, idx) => (
             <ProjectCard 
               key={project.title} 

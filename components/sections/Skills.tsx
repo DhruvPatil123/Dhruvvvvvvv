@@ -20,24 +20,24 @@ const SKILL_CATEGORIES = [
     color: 'text-cyan-400',
     borderHover: 'hover:border-cyan-400/30',
     skills: [
+      { name: 'LangChain', level: 'Expert', exp: '2 Years' },
+      { name: 'RAG', level: 'Expert', exp: '2 Years' },
+      { name: 'LLM', level: 'Expert', exp: '2.5 Years' },
+      { name: 'Vector DB', level: 'Advanced', exp: '2 Years' },
       { name: 'Python', level: 'Advanced', exp: '3 Years' },
-      { name: 'LLM', level: 'Expert', exp: '2 Years' },
-      { name: 'LangChain', level: 'Advanced', exp: '2 Years' },
-      { name: 'TensorFlow', level: 'Intermediate', exp: '2 Years' },
-      { name: 'PyTorch', level: 'Advanced', exp: '2 Years' },
-      { name: 'OpenAI', level: 'Expert', exp: '2 Years' }
+      { name: 'PyTorch', level: 'Advanced', exp: '2 Years' }
     ]
   },
   {
     title: 'Frontend',
-    icon: <Code2 className="w-5 h-5 text-secondary" />,
-    color: 'text-secondary',
-    borderHover: 'hover:border-secondary/30',
+    icon: <Code2 className="w-5 h-5 text-cyan-300" />,
+    color: 'text-cyan-300',
+    borderHover: 'hover:border-cyan-400/30',
     skills: [
-      { name: 'React', level: 'Advanced', exp: '3 Years' },
-      { name: 'Next.js', level: 'Advanced', exp: '2.5 Years' },
-      { name: 'Tailwind CSS', level: 'Expert', exp: '3 Years' },
-      { name: 'TypeScript', level: 'Advanced', exp: '2.5 Years' }
+      { name: 'React', level: 'Expert', exp: '3 Years' },
+      { name: 'Next.js', level: 'Expert', exp: '2.5 Years' },
+      { name: 'TypeScript', level: 'Advanced', exp: '2.5 Years' },
+      { name: 'Tailwind CSS', level: 'Expert', exp: '3 Years' }
     ]
   },
   {
@@ -48,9 +48,7 @@ const SKILL_CATEGORIES = [
     skills: [
       { name: 'Node.js', level: 'Advanced', exp: '3 Years' },
       { name: 'FastAPI', level: 'Advanced', exp: '2 Years' },
-      { name: 'Express', level: 'Advanced', exp: '3 Years' },
-      { name: 'Supabase', level: 'Advanced', exp: '2 Years' },
-      { name: 'Firebase', level: 'Advanced', exp: '2.5 Years' }
+      { name: 'Express', level: 'Advanced', exp: '3 Years' }
     ]
   },
   {
@@ -59,10 +57,10 @@ const SKILL_CATEGORIES = [
     color: 'text-amber-400',
     borderHover: 'hover:border-amber-400/30',
     skills: [
-      { name: 'Docker', level: 'Intermediate', exp: '2 Years' },
+      { name: 'Docker', level: 'Advanced', exp: '2 Years' },
       { name: 'Vercel', level: 'Expert', exp: '3 Years' },
-      { name: 'GitHub Actions', level: 'Intermediate', exp: '2 Years' },
-      { name: 'AWS', level: 'Intermediate', exp: '1.5 Years' }
+      { name: 'Firebase', level: 'Advanced', exp: '2.5 Years' },
+      { name: 'Supabase', level: 'Advanced', exp: '2 Years' }
     ]
   }
 ]
@@ -264,8 +262,8 @@ export default function Skills() {
   }
 
   return (
-    <section id="skills" className="relative w-full min-h-screen flex flex-col items-center justify-center px-6 py-24 md:py-32 lg:py-40">
-      <div className="max-w-6xl w-full text-center mb-20 space-y-4">
+    <section id="skills" className="relative w-full min-h-screen flex flex-col items-center justify-center px-6 py-28 md:py-38 lg:py-48">
+      <div className="max-w-6xl w-full text-center mb-20 sm:mb-24 space-y-6">
         {/* Section Indicator */}
         <span className="font-mono text-xs uppercase tracking-[0.2em] text-primary font-medium">
           [ 02 // TECHNICAL MATRIX ]
@@ -274,7 +272,7 @@ export default function Skills() {
         <motion.h2
           initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.5 }}
           viewport={{ once: true }}
           className="text-4xl md:text-5xl lg:text-6xl font-display font-light text-white tracking-normal leading-tight"
         >
@@ -289,7 +287,7 @@ export default function Skills() {
         <motion.p
           initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.15 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
           viewport={{ once: true }}
           className="text-gray-300 text-base md:text-lg max-w-2xl mx-auto font-sans leading-relaxed"
         >
@@ -299,13 +297,13 @@ export default function Skills() {
       </div>
 
       {/* Bento Grid Container - 4 Categories */}
-      <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-6 mb-20">
+      <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10 mb-20 sm:mb-24">
         {SKILL_CATEGORIES.map((cat, idx) => (
           <motion.div
             key={cat.title}
             initial={{ opacity: 0, y: 25 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: idx * 0.1 }}
+            transition={{ duration: 0.5, delay: idx * 0.08 }}
             viewport={{ once: true }}
             onMouseEnter={() => setSkillsHovered(true)}
             onMouseLeave={() => setSkillsHovered(false)}

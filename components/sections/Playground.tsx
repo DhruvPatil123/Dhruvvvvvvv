@@ -29,10 +29,10 @@ export default function Playground() {
   }
 
   return (
-    <section id="playground" className="relative w-full py-24 md:py-32 px-4 sm:px-6 flex flex-col items-center justify-center">
+    <section id="playground" className="relative w-full py-28 md:py-36 lg:py-48 px-4 sm:px-6 flex flex-col items-center justify-center">
       <div className="max-w-5xl w-full">
         {/* Section Header */}
-        <div className="text-center mb-12 space-y-4">
+        <div className="text-center mb-16 sm:mb-20 space-y-6">
           <span className="font-mono text-xs uppercase tracking-[0.2em] text-primary font-medium">
             [ 07 // INTERACTIVE AI ENGINE ]
           </span>

@@ -63,31 +63,31 @@ export default function About() {
   ]
 
   return (
-    <section id="about" className="relative w-full min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-20 md:py-32">
-      <div className="max-w-6xl w-full space-y-12">
+    <section id="about" className="relative w-full min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-24 md:py-36 lg:py-44">
+      <div className="max-w-6xl w-full space-y-16 sm:space-y-20">
         {/* Section Header */}
-        <div className="text-center space-y-3">
+        <div className="text-center space-y-5">
           <span className="font-mono text-xs uppercase tracking-[0.2em] text-cyan-400 font-bold px-3.5 py-1.5 rounded-full bg-cyan-950/80 border border-cyan-500/40">
             [ ORIGIN & INTENT ]
           </span>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-light text-white tracking-tight">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-light text-white tracking-tight leading-tight">
             Who <span className="italic font-serif text-zinc-300">I Am</span> & <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-primary to-blue-400">Core Pillars</span>
           </h2>
-          <p className="text-gray-400 text-sm sm:text-base max-w-xl mx-auto font-sans">
+          <p className="text-gray-300 text-base sm:text-lg max-w-xl mx-auto font-sans leading-relaxed">
             AI Research Engineer & Full Stack Developer combining mathematical precision with production web engineering.
           </p>
         </div>
 
         {/* 4 Cards Grid as requested */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10">
           {pillarCards.map((card, idx) => (
             <motion.div
               key={card.title}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: idx * 0.1 }}
+              transition={{ duration: 0.4, delay: idx * 0.08 }}
               viewport={{ once: true }}
-              className={`p-6 rounded-3xl bg-black/70 border border-white/10 ${card.border} transition-all duration-300 shadow-xl space-y-4 group hover:-translate-y-1.5 flex flex-col justify-between backdrop-blur-xl`}
+              className={`p-7 sm:p-8 rounded-3xl bg-black/70 border border-white/10 ${card.border} transition-all duration-300 shadow-xl space-y-6 group hover:-translate-y-1.5 flex flex-col justify-between backdrop-blur-xl`}
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -122,15 +122,16 @@ export default function About() {
         <motion.div
           initial={{ opacity: 0, scale: 0.98 }}
           whileInView={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.5 }}
           viewport={{ once: true }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-cyan-950/40 via-zinc-950 to-blue-950/40 border border-cyan-500/30 shadow-2xl"
+          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-cyan-950/40 via-zinc-950 to-blue-950/40 border border-cyan-500/30 shadow-2xl"
         >
           {[
-            { value: "15+", label: "Projects Completed", sub: "AI & Full-Stack Apps" },
-            { value: "600+", label: "GitHub Commits", sub: "Active Open Source" },
-            { value: "25+", label: "Technologies Mastered", sub: "Python, Next.js, PyTorch" },
-            { value: "8.76", label: "Academic CGPA", sub: "B.Tech Artificial Intelligence" }
+            { value: "10+", label: "AI Projects", sub: "LLMs, RAG & Agents" },
+            { value: "150+", label: "LeetCode Problems", sub: "Data Structures & DSA" },
+            { value: "11", label: "Internships", sub: "Practical Software Roles" },
+            { value: "15+", label: "Certifications", sub: "AI & Full Stack Skills" },
+            { value: "2", label: "Hackathons", sub: "Competitive AI Events" }
           ].map((stat, i) => (
             <div key={i} className="text-center p-3 space-y-1 border-r last:border-0 border-white/10">
               <p className="text-3xl sm:text-4xl md:text-5xl font-display font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-primary to-blue-300">

@@ -48,6 +48,7 @@ const PORTFOLIO_DATA = {
   projects: [
     { name: 'Raincrew.AI', desc: 'AI Talent Acquisition & Biometric Proctoring Engine using Google Gemini Multimodal Live WebSocket API', category: 'GenAI / Multimodal' },
     { name: 'AutoForge.AI', desc: 'Autonomous software engineering agent orchestrating planning, sandboxed code execution, and self-healing test cycles', category: 'Agentic AI' },
+    { name: 'Software Evolution Predictor', desc: 'AI research tool parsing ASTs into Neo4j knowledge graphs to forecast technical debt trajectories & refactoring risks', category: 'AI Software Intelligence' },
     { name: 'VisionCraft.AI', desc: 'Text-to-image and generative video app using GANs for 2K/4K output', category: 'Generative Art' },
     { name: 'SchemaForge.AI', desc: 'Natural language to universal database schema compiler featuring real-time interactive ERD visualizers', category: 'LLM Compiler' },
     { name: 'WaterFlow', desc: 'Intelligent theme and UX composition engine translating abstract prompt thoughts into fully interactive, fluid digital experiences', category: 'Generative UX' },
@@ -105,9 +106,24 @@ function generateResponse(input: string): string {
     return `Hey there! 👋 I'm Dhruv's portfolio assistant. I can help with **skills**, **projects**, **education**, **certifications**, **resume**, or **contact info**. What would you like to know?`
   }
 
-  // Name / Who
-  if (/who (is|are)|your name|about (you|dhruv|him)|tell me about|introduce/i.test(q)) {
-    return `**${PORTFOLIO_DATA.name}** is an AI Researcher & Generative Model Engineer based in ${PORTFOLIO_DATA.location}. He's pursuing a B.Tech in Artificial Intelligence with a CGPA of ${PORTFOLIO_DATA.cgpa}, specializing in LLMs, Agentic AI, and RAG systems. 🚀`
+  // Specific project queries & requested triggers
+  if (/evolution|predictor|software evolution|technical debt/i.test(q)) {
+    return `🔮 **Software Evolution Predictor** is Dhruv's AI software intelligence research engine:\n\n• **AST Analysis**: Converts source code into Abstract Syntax Trees.\n• **Neo4j Knowledge Graph**: Maps code structure & dependencies into graph nodes.\n• **Commit Telemetry**: Tracks git churn, developer velocity, and structural entropy.\n• **AI Risk Forecasting**: Uses LLM agents to predict technical debt trajectories and flag high-risk code smells before production deployment.`
+  }
+
+  // Tell me about Dhruv
+  if (/tell me about dhruv|who is dhruv|about dhruv|tell me about/i.test(q)) {
+    return `**${PORTFOLIO_DATA.name}** is an AI Researcher & Generative Model Engineer based in ${PORTFOLIO_DATA.location}.\n\n🎓 **Education**: B.Tech in Artificial Intelligence (CGPA ${PORTFOLIO_DATA.cgpa})\n🚀 **Core Focus**: LLMs, Agentic AI, RAG Systems & Full-Stack Next.js/FastAPI\n\n📊 **Key Track Record**:\n• **10+ AI Projects**: Raincrew.AI, AutoForge.AI, Software Evolution Predictor, Dockmind\n• **150+ LeetCode**: Solved data structures & algorithms challenges\n• **11 Internships**: Practical software engineering & research roles\n• **15+ Certifications**: AI, Deep Learning, Full-Stack & UI/UX\n• **2 Hackathons**: Competitive AI builder\n\nContact: **${PORTFOLIO_DATA.email}** | +91 8857841863`
+  }
+
+  // Show AI projects
+  if (/show ai projects|ai projects|show projects|top ai projects/i.test(q)) {
+    return `Here are Dhruv's flagship AI projects:\n\n1. 🎯 **Raincrew.AI** _(GenAI / Multimodal)_ — Talent acquisition platform using Gemini Multimodal Live WebSocket API.\n2. 🛠️ **AutoForge.AI** _(Agentic AI)_ — Autonomous code agent with sandboxed execution & self-healing test loops.\n3. 🔮 **Software Evolution Predictor** _(AI Software)_ — AST to Neo4j knowledge graph pipeline predicting technical debt.\n4. 🐳 **Dockmind** _(RAG Engine)_ — Enterprise file Q&A RAG engine with vector search & citation highlights.\n5. 🗄️ **SchemaForge.AI** _(LLM Compiler)_ — Natural language to SQL compiler with real-time ERD graphs.\n6. 🎨 **VisionCraft.AI** _(Generative Art)_ — PyTorch GAN text-to-image and 4K upscaling pipeline.`
+  }
+
+  // Download resume
+  if (/download resume|resume|get resume|cv/i.test(q)) {
+    return `You can download Dhruv's official Resume PDF directly:\n\n📄 **[Download Dhruv's Resume PDF](/dhruv-patil-resume.pdf)**\n\nIt details his AI research focus, full-stack competencies, B.Tech academic transcript (8.76 CGPA), and certifications.`
   }
 
   // Skills
@@ -447,13 +463,42 @@ export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
           const cleanLine = isBullet ? line.replace(/^[\s•\-*]+/, '') : line
 
           // Parse bold text **text**
-          const parts = cleanLine.split(/(\*\*[^*]+\*\*)/g)
+          const parts = cleanLine.split(/(\*\*[^*]+\*\*|\[[^\]]+\]\([^)]+\))/g)
           const parsedParts = parts.map((part, i) => {
             if (part.startsWith('**') && part.endsWith('**')) {
               return (
                 <strong key={i} className="text-white font-bold font-sans">
                   {part.slice(2, -2)}
                 </strong>
+              )
+            }
+            // Parse Markdown links [Title](url)
+            const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/)
+            if (linkMatch) {
+              const [, label, url] = linkMatch
+              if (url.startsWith('#')) {
+                return (
+                  <a
+                    key={i}
+                    href={url}
+                    onClick={() => onClose()}
+                    className="inline-flex items-center gap-1 my-1 px-2.5 py-1 rounded-lg bg-cyan-950 border border-cyan-500/40 text-cyan-300 hover:text-white hover:bg-cyan-900 transition-colors font-mono text-xs font-semibold"
+                  >
+                    {label} ↗
+                  </a>
+                )
+              }
+              return (
+                <a
+                  key={i}
+                  href={url}
+                  target="_blank"
+                  rel="noreferrer"
+                  download={url.endsWith('.pdf') ? true : undefined}
+                  className="inline-flex items-center gap-1 my-1 px-2.5 py-1 rounded-lg bg-cyan-950 border border-cyan-500/40 text-cyan-300 hover:text-white hover:bg-cyan-900 transition-colors font-mono text-xs font-semibold"
+                >
+                  {label} 📄
+                </a>
               )
             }
             // Parse inline code `code`
@@ -492,17 +537,16 @@ export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
   }
 
   const quickQuestions = [
-    { label: "✨ Gemini Projects", query: "What projects use Gemini?" },
+    { label: "✨ Tell me about Dhruv", query: "Tell me about Dhruv" },
+    { label: "🚀 Show AI projects", query: "Show AI projects" },
+    { label: "📄 Download Resume", query: "Download Resume" },
+    { label: "🔮 Software Evolution Predictor", query: "Explain Software Evolution Predictor" },
     { label: "🧠 RAG Architecture", query: "What is Dhruv's background in RAG?" },
-    { label: "📊 GitHub Stats", query: "Show me Dhruv's GitHub stats" },
+    { label: "📊 GitHub & LeetCode", query: "Show me Dhruv's GitHub & LeetCode stats" },
     { label: "⚡ Strongest Backend Stack", query: "What is Dhruv's strongest backend stack?" },
     { label: "☁️ Cloud & AI Experience", query: "Summarize Dhruv's experience with Cloud & AI" },
-    { label: "🛠️ Projects with C++ & Docker", query: "Which projects showcase C++ and Docker?" },
-    { label: '🏆 LeetCode Rank & Stats', query: 'What is Dhruv\'s LeetCode rank and stats?' },
-    { label: '🚀 Top AI Projects', query: 'What are Dhruv\'s top AI projects?' },
-    { label: '💼 Experience & Internships', query: 'Summarize Dhruv\'s experience and internships' },
-    { label: '🎓 Education & CGPA', query: 'What is Dhruv\'s education and CGPA?' },
-    { label: '📬 Let\'s Connect', query: 'How to contact Dhruv?' },
+    { label: "💼 Experience & Internships", query: "Summarize Dhruv's experience and internships" },
+    { label: "📬 Let's Connect", query: "How to contact Dhruv?" },
   ]
 
   return (

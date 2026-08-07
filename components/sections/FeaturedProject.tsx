@@ -16,7 +16,8 @@ import {
   Code2,
   RefreshCw,
   ExternalLink,
-  Github
+  Github,
+  FileText
 } from 'lucide-react'
 import { playTick, playNotification, playPopover } from '@/lib/sounds'
 
@@ -54,10 +55,10 @@ export default function FeaturedProject() {
   }
 
   return (
-    <section id="featured-project" className="relative w-full min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-20 md:py-32">
-      <div className="max-w-6xl w-full space-y-12">
+    <section id="featured-project" className="relative w-full min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-24 md:py-36 lg:py-48">
+      <div className="max-w-6xl w-full space-y-16 sm:space-y-20">
         {/* Section Header */}
-        <div className="text-center space-y-3">
+        <div className="text-center space-y-5">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 font-mono text-xs uppercase tracking-[0.2em] font-bold">
             <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
             <span>FEATURED AI SHOWCASE</span>
@@ -112,28 +113,39 @@ export default function FeaturedProject() {
           {/* Grid Layout: Top Row Specs & Badges */}
           <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-6">
             <div className="flex flex-wrap gap-2">
-              {['Python', 'FastAPI', 'Neo4j', 'PyTorch', 'React', 'WebSockets'].map((tech) => (
-                <span key={tech} className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-cyan-300 font-mono text-xs font-bold">
+              {['React', 'Next.js', 'FastAPI', 'Python', 'LLM', 'RAG', 'Supabase', 'PyTorch'].map((tech) => (
+                <span key={tech} className="px-3 py-1 rounded-full bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 font-mono text-xs font-bold tracking-wide shadow-sm flex items-center gap-1.5 hover:border-cyan-400 transition-all">
+                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
                   {tech}
                 </span>
               ))}
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2.5">
               <a
-                href="https://github.com/DhruvPatil123"
+                href="https://github.com/DhruvPatil123/Raincrew-ai"
                 target="_blank"
                 rel="noreferrer"
-                className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-mono text-xs font-semibold flex items-center gap-2 transition-all"
+                className="px-4 py-2 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-zinc-950 font-mono text-xs font-extrabold flex items-center gap-2 transition-all shadow-md shadow-cyan-400/20"
               >
-                <Github className="w-4 h-4" /> View Repo
+                <ExternalLink className="w-4 h-4 shrink-0" />
+                <span>Live Demo</span>
+              </a>
+              <a
+                href="https://github.com/DhruvPatil123/Raincrew-ai"
+                target="_blank"
+                rel="noreferrer"
+                className="px-4 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-white/15 text-white font-mono text-xs font-bold flex items-center gap-2 transition-all"
+              >
+                <Github className="w-4 h-4 shrink-0" />
+                <span>GitHub</span>
               </a>
               <button
                 onClick={handleRunAnalysis}
                 disabled={analyzing}
-                className="px-5 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-mono text-xs font-extrabold flex items-center gap-2 transition-all cursor-pointer shadow-lg shadow-cyan-500/20"
+                className="px-4 py-2 rounded-xl bg-cyan-950/90 hover:bg-cyan-900 border border-cyan-500/50 text-cyan-300 font-mono text-xs font-bold flex items-center gap-2 transition-all cursor-pointer shadow-lg hover:border-cyan-400"
               >
-                {analyzing ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4 fill-black" />}
-                {analyzing ? 'Simulating Analysis...' : 'Run Analysis on Sample Repo'}
+                {analyzing ? <RefreshCw className="w-4 h-4 animate-spin text-cyan-400" /> : <FileText className="w-4 h-4 text-cyan-400" />}
+                {analyzing ? 'Running Case Study...' : 'Case Study Simulation'}
               </button>
             </div>
           </div>
@@ -196,10 +208,10 @@ export default function FeaturedProject() {
               <div className="p-6 rounded-2xl bg-zinc-950 border border-white/10 space-y-6">
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
                   {[
-                    { label: "HEALTH SCORE", val: "94 / 100", col: "text-emerald-400" },
-                    { label: "PREDICTED CHURN", val: "-34%", col: "text-cyan-400" },
-                    { label: "SECURITY RISK", val: "LOW (0 CVE)", col: "text-blue-400" },
-                    { label: "REFACTOR STEPS", val: "3 PRs", col: "text-primary" }
+                    { label: "ACCURACY", val: "99.4% AST", col: "text-emerald-400" },
+                    { label: "RESPONSE TIME", val: "340ms Loop", col: "text-cyan-400" },
+                    { label: "COST REDUCTION", val: "-45% Debt", col: "text-blue-400" },
+                    { label: "PROCESSING SPEED", val: "1.2M Lines/s", col: "text-primary" }
                   ].map((m, idx) => (
                     <div key={idx} className="p-3 rounded-xl bg-white/5 border border-white/5">
                       <p className="text-[9px] font-mono text-gray-400 uppercase tracking-wider">{m.label}</p>
