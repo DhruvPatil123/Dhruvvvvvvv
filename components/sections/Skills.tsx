@@ -265,7 +265,7 @@ export default function Skills() {
     <section id="skills" className="relative w-full min-h-screen flex flex-col items-center justify-center px-6 py-28 md:py-38 lg:py-48">
       <div className="max-w-6xl w-full text-center mb-20 sm:mb-24 space-y-6">
         {/* Section Indicator */}
-        <span className="font-mono text-xs uppercase tracking-[0.2em] text-primary font-medium">
+        <span className="font-mono text-xs uppercase tracking-[0.2em] text-zinc-400 font-semibold">
           [ 02 // TECHNICAL MATRIX ]
         </span>
         
@@ -276,10 +276,10 @@ export default function Skills() {
           viewport={{ once: true }}
           className="text-4xl md:text-5xl lg:text-6xl font-display font-light text-white tracking-normal leading-tight"
         >
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-300 via-zinc-100 to-white italic font-light">
+          <span className="text-zinc-400 italic font-serif">
             Technical
           </span>{" "}
-          <span className="font-normal text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-200 to-secondary animate-gradient">
+          <span className="font-semibold text-white">
             Matrix
           </span>
         </motion.h2>

@@ -3,30 +3,39 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 
-export default function SectionSeparator() {
+interface SectionSeparatorProps {
+  label?: string
+}
+
+export default function SectionSeparator({ label }: SectionSeparatorProps) {
   return (
-    <div className="relative w-full py-16 sm:py-20 md:py-24 flex items-center justify-center overflow-hidden pointer-events-none select-none">
-      <div className="w-full max-w-7xl px-6 flex items-center justify-center gap-4">
+    <div className="relative w-full py-8 sm:py-10 md:py-12 flex items-center justify-center overflow-hidden pointer-events-none select-none">
+      <div className="w-full max-w-5xl px-6 flex items-center justify-center gap-4">
+        {/* Left Subtle Hairline */}
         <motion.div 
           initial={{ scaleX: 0, opacity: 0 }}
           whileInView={{ scaleX: 1, opacity: 1 }}
-          transition={{ duration: 1, ease: 'easeOut' }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
           viewport={{ once: true }}
-          className="flex-1 h-[1px] bg-gradient-to-r from-transparent via-cyan-500/30 to-primary/60 origin-right"
+          className="flex-1 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-white/10 origin-right"
         />
-        <motion.div 
-          initial={{ scale: 0, rotate: -45 }}
-          whileInView={{ scale: 1, rotate: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          viewport={{ once: true }}
-          className="w-2.5 h-2.5 rotate-45 border border-primary bg-cyan-950/80 shadow-[0_0_12px_rgba(0,242,255,0.8)]"
-        />
+
+        {/* Center Editorial Label */}
+        {label ? (
+          <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-500 whitespace-nowrap px-3 select-none">
+            {label}
+          </div>
+        ) : (
+          <div className="w-1 h-1 rounded-full bg-white/20" />
+        )}
+
+        {/* Right Subtle Hairline */}
         <motion.div 
           initial={{ scaleX: 0, opacity: 0 }}
           whileInView={{ scaleX: 1, opacity: 1 }}
-          transition={{ duration: 1, ease: 'easeOut' }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
           viewport={{ once: true }}
-          className="flex-1 h-[1px] bg-gradient-to-l from-transparent via-cyan-500/30 to-primary/60 origin-left"
+          className="flex-1 h-[1px] bg-gradient-to-l from-transparent via-white/10 to-white/10 origin-left"
         />
       </div>
     </div>

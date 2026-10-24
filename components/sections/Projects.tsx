@@ -14,16 +14,17 @@ import {
   Play, 
   CheckCircle2, 
   ChevronRight, 
-  Database,
-  Lock,
-  Upload,
-  RefreshCw,
-  FileText,
-  Check,
-  Shield,
-  Download,
-  Search,
-  Copy
+  Database, 
+  Lock, 
+  Upload, 
+  RefreshCw, 
+  FileText, 
+  Check, 
+  Shield, 
+  Download, 
+  Search, 
+  Copy,
+  Sparkles
 } from 'lucide-react'
 import { playTick, playPopover, playAmbientPad, playNotification, playCryptoTick, playParchmentOpen, playQuillClick } from '@/lib/sounds'
 import ProjectArchitectureDiagram from '@/components/ProjectArchitectureDiagram'
@@ -828,17 +829,20 @@ function ProjectCard({ project, idx, onOpen }: { project: Project; idx: number; 
         onMouseMove={handleMouseMove}
         onTouchStart={handleTouch}
         onTouchMove={handleTouch}
-        initial={{ opacity: 0, y: 40, rotateX: 8 }}
+        initial={{ opacity: 0, y: 40, rotateX: 6 }}
         whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
         transition={{ duration: 0.65, delay: idx * 0.08, ease: [0.16, 1, 0.3, 1] }}
         viewport={{ once: true }}
-        className="group relative rounded-3xl overflow-hidden glass-effect p-6 md:p-10 flex flex-col justify-between gap-6 transition-all duration-500 cursor-pointer h-full border border-white/10 hover:border-cyan-500/50 backdrop-blur-xl bg-[#0a0e27]/80"
+        className="group relative rounded-2xl overflow-hidden p-6 md:p-8 flex flex-col justify-between gap-6 transition-all duration-500 cursor-pointer h-full border border-white/10 hover:border-cyan-500/40 backdrop-blur-2xl bg-zinc-950/90 shadow-[0_12px_40px_rgba(0,0,0,0.85)]"
       >
+      {/* Top Hairline Glow Line */}
+      <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
       {/* Subtle background glow */}
       <div 
         className="absolute inset-0 opacity-100 transition-opacity duration-500 pointer-events-none"
         style={{
-          background: `radial-gradient(circle 280px at center, rgba(var(--primary-rgb), 0.05), transparent 70%)`
+          background: `radial-gradient(circle 320px at center, rgba(0, 242, 255, 0.03), transparent 70%)`
         }}
       />
 
@@ -846,64 +850,69 @@ function ProjectCard({ project, idx, onOpen }: { project: Project; idx: number; 
       <div 
         className="absolute inset-0 opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity duration-300 pointer-events-none"
         style={{
-          background: `radial-gradient(circle 260px at var(--x, 0px) var(--y, 0px), rgba(var(--primary-rgb), 0.08), transparent 45%)`
+          background: `radial-gradient(circle 260px at var(--x, 0px) var(--y, 0px), rgba(0, 242, 255, 0.07), transparent 45%)`
         }}
       />
 
-      {/* Tiny light sweep on hover */}
-      <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out pointer-events-none bg-gradient-to-r from-transparent via-white/[0.02] to-transparent" />
-
       <div className="relative z-10 space-y-4">
-        {/* Category Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            <span className="text-secondary font-mono text-[10.5px] uppercase tracking-[0.25em] font-extrabold">
-              {project.category}
+        {/* Category Header & Index */}
+        <div className="flex items-center justify-between border-b border-white/5 pb-3">
+          <div className="flex items-center gap-2 font-mono text-[11px]">
+            <span className="text-zinc-500 font-bold">[0{idx + 1}]</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+            <span className="text-cyan-300 font-bold uppercase tracking-[0.18em]">
+              {'//'} {project.category}
             </span>
           </div>
-          <span className="text-[10px] text-gray-500 font-mono tracking-widest uppercase bg-white/[0.03] px-2..5 py-1 rounded">
-            CLICK TO INSPECT
-          </span>
+          {idx === 0 ? (
+            <span className="text-[10px] text-cyan-300 font-mono tracking-wider uppercase bg-cyan-950/80 border border-cyan-500/40 px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shadow-[0_0_12px_rgba(6,182,212,0.15)] font-semibold">
+              <Sparkles className="w-3 h-3 text-cyan-400 animate-pulse" />
+              FLAGSHIP SHOWCASE
+            </span>
+          ) : (
+            <span className="text-[10px] text-zinc-500 font-mono tracking-widest uppercase bg-white/[0.02] border border-white/5 px-2 py-0.5 rounded">
+              SPECIFICATION READY
+            </span>
+          )}
         </div>
 
         {/* Title */}
-        <h3 className="text-2xl md:text-[34px] font-display font-medium text-white tracking-tight leading-tight group-hover:text-primary transition-colors duration-300">
+        <h3 className="text-2xl md:text-3xl font-display font-medium text-white tracking-tight leading-tight group-hover:text-cyan-300 transition-colors duration-300">
           {project.title}
         </h3>
 
         {/* Description */}
-        <p className="text-gray-300 text-sm md:text-[16px] leading-[1.65] font-sans">
+        <p className="text-zinc-300 text-sm md:text-[15px] leading-relaxed font-sans">
           {project.description}
         </p>
 
-        {/* Outcomes & Performance Metrics - Leads over tech tags to establish high technical credibility */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-white/[0.02] border border-white/5 rounded-2xl p-3.5">
+        {/* Outcomes & Performance Metrics - Tabular numerals and precision grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-black/60 border border-white/10 rounded-xl p-3">
           {project.metrics.map((metric) => (
             <div key={metric.label} className="flex flex-col gap-1 text-left">
-              <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest leading-none truncate" title={metric.label}>
+              <span className="text-[9px] font-mono text-zinc-400 uppercase tracking-wider leading-none truncate" title={metric.label}>
                 {metric.label}
               </span>
-              <span className="text-xs sm:text-sm md:text-base font-sans font-bold text-primary tracking-tight leading-none truncate" title={metric.value}>
+              <span className="text-xs sm:text-sm font-mono font-bold text-cyan-300 tracking-tight leading-none truncate tabular-nums" title={metric.value}>
                 {metric.value}
               </span>
             </div>
           ))}
         </div>
 
-        {/* Tech Stack Badges - Immediately visible for recruiters */}
+        {/* Tech Stack Tags - Monospaced dark neo-minimalist badges */}
         <div className="space-y-2 pt-1">
-          <span className="text-[10px] font-mono text-cyan-400 font-bold uppercase tracking-widest flex items-center gap-1.5">
+          <span className="text-[10px] font-mono text-zinc-400 font-bold uppercase tracking-widest flex items-center gap-1.5">
             <Cpu className="w-3 h-3 text-cyan-400 shrink-0" />
-            CORE STACK & TOOLS:
+            {'//'} VERIFIED STACK:
           </span>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5">
             {project.tech.map((tech) => (
               <span 
                 key={tech} 
-                className="px-3 py-1 rounded-full bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 font-mono text-xs font-bold tracking-wide shadow-sm flex items-center gap-1.5 hover:border-cyan-400 hover:bg-cyan-900/90 transition-all"
+                className="px-2.5 py-1 rounded-md bg-zinc-900/90 border border-white/10 text-cyan-300 font-mono text-[11px] font-medium tracking-wide shadow-sm flex items-center gap-1.5 hover:border-cyan-500/40 hover:bg-zinc-850 transition-all"
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shrink-0" />
+                <span className="text-zinc-500 text-[9px]">{'//'}</span>
                 {tech}
               </span>
             ))}
@@ -914,11 +923,11 @@ function ProjectCard({ project, idx, onOpen }: { project: Project; idx: number; 
         <MiniCardSandbox project={project} />
       </div>
 
-      <div className="relative z-10 space-y-3">
+      <div className="relative z-10 space-y-3 pt-2">
         <hr className="border-white/10 w-full" />
         
         {/* Project CTAs: Live Demo, GitHub, Case Study */}
-        <div className="grid grid-cols-3 gap-2 pt-1">
+        <div className="grid grid-cols-3 gap-2">
           <a
             href={project.link}
             target="_blank"
@@ -927,7 +936,7 @@ function ProjectCard({ project, idx, onOpen }: { project: Project; idx: number; 
               e.stopPropagation()
               playAmbientPad()
             }}
-            className="px-2.5 sm:px-3 py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-zinc-950 font-mono text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all shadow-md hover:shadow-cyan-400/30 cursor-pointer"
+            className="px-2.5 sm:px-3 py-2 rounded-lg bg-cyan-400 hover:bg-cyan-300 text-zinc-950 font-mono text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-md hover:shadow-cyan-400/25 cursor-pointer"
             title={`Launch ${project.title} Live Demo`}
           >
             <ExternalLink className="w-3.5 h-3.5 shrink-0" />
@@ -942,7 +951,7 @@ function ProjectCard({ project, idx, onOpen }: { project: Project; idx: number; 
               e.stopPropagation()
               playTick()
             }}
-            className="px-2.5 sm:px-3 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-white/15 text-white font-mono text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+            className="px-2.5 sm:px-3 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-white/10 text-zinc-200 hover:text-white font-mono text-xs font-medium flex items-center justify-center gap-1.5 transition-all cursor-pointer"
             title={`View ${project.title} GitHub Repository`}
           >
             <Github className="w-3.5 h-3.5 shrink-0" />
@@ -955,7 +964,7 @@ function ProjectCard({ project, idx, onOpen }: { project: Project; idx: number; 
               playTick()
               onSelect()
             }}
-            className="px-2.5 sm:px-3 py-2.5 rounded-xl bg-cyan-950/90 hover:bg-cyan-900 border border-cyan-500/50 text-cyan-300 font-mono text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer hover:border-cyan-400"
+            className="px-2.5 sm:px-3 py-2 rounded-lg bg-zinc-900/90 hover:bg-cyan-950/60 border border-cyan-500/40 hover:border-cyan-400 text-cyan-300 font-mono text-xs font-medium flex items-center justify-center gap-1.5 transition-all cursor-pointer"
             title={`Explore ${project.title} Architecture & Case Study`}
           >
             <FileText className="w-3.5 h-3.5 shrink-0 text-cyan-400" />
@@ -2294,8 +2303,8 @@ export default function Projects() {
     <section id="work" className="relative w-full min-h-screen flex flex-col items-center justify-center py-28 md:py-36 lg:py-48 px-4 sm:px-6">
       <div className="max-w-6xl w-full text-center mb-16 sm:mb-20 space-y-6">
         {/* Section Indicator */}
-        <span className="font-mono text-xs uppercase tracking-[0.2em] text-primary font-medium">
-          [ 03 // COGNITIVE WORKS ]
+        <span className="font-mono text-xs uppercase tracking-[0.2em] text-zinc-400 font-semibold">
+          [ 03 // SELECTED WORKS ]
         </span>
 
         <motion.h2
@@ -2305,10 +2314,10 @@ export default function Projects() {
           viewport={{ once: true }}
           className="text-4xl md:text-5xl lg:text-6xl font-display font-light text-white tracking-normal leading-tight"
         >
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-300 via-zinc-100 to-white italic font-light">
+          <span className="text-zinc-400 italic font-serif">
             Engineering
           </span>{" "}
-          <span className="font-normal text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-200 to-secondary animate-gradient">
+          <span className="font-semibold text-white">
             Portfolio
           </span>
         </motion.h2>

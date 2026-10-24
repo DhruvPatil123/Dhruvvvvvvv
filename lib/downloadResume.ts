@@ -1,3 +1,5 @@
+import { PORTFOLIO_DATA } from './portfolioData'
+
 export type ResumeTheme = 'charcoal' | 'emerald' | 'cobalt';
 export type ResumeFocus = 'ai' | 'fullstack' | 'standard';
 
@@ -63,7 +65,7 @@ export async function downloadResume(
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(8.5)
   doc.setTextColor(bodyColor[0], bodyColor[1], bodyColor[2])
-  doc.text('Nagpur, India  |  sujalpatil8657231278@gmail.com  |  +91 88578 41863', leftMargin, y + 5)
+  doc.text(`Nagpur, India  |  ${PORTFOLIO_DATA.email}  |  ${PORTFOLIO_DATA.phone}`, leftMargin, y + 5)
   doc.text('Portfolio: dhruvvvvvvv.vercel.app  |  GitHub: github.com/DhruvPatil123  |  LinkedIn: linkedin.com/in/dhruv-patil-3816043b7', leftMargin, y + 9.5)
   
   y += 17

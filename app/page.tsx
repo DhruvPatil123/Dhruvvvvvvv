@@ -2,20 +2,16 @@
 
 import React, { useEffect } from 'react'
 import Overlay from '@/components/Overlay'
-import RomanSidebar from '@/components/RomanSidebar'
 import BackgroundParallax from '@/components/BackgroundParallax'
 import Footer from '@/components/Footer'
 import Hero from '@/components/sections/Hero'
 import About from '@/components/sections/About'
 import Skills from '@/components/sections/Skills'
-import FeaturedProject from '@/components/sections/FeaturedProject'
 import Projects from '@/components/sections/Projects'
 import Credentials from '@/components/sections/Credentials'
 import ResearchAndBlogs from '@/components/sections/ResearchAndBlogs'
 import GithubActivity from '@/components/sections/GithubActivity'
-import Resume from '@/components/sections/Resume'
 import Achievements from '@/components/sections/Achievements'
-import Playground from '@/components/sections/Playground'
 import Timeline from '@/components/sections/Timeline'
 import Testimonials from '@/components/sections/Testimonials'
 import Contact from '@/components/sections/Contact'
@@ -26,16 +22,11 @@ import { useScrollStore } from '@/store/useScrollStore'
 import { useChatStore } from '@/store/useChatStore'
 import { useThemeStore } from '@/store/useThemeStore'
 
-// Interactive overlays and preludes
-import CursorTrail from '@/components/CursorTrail'
-import AudioDock from '@/components/AudioDock'
-import BootPreloader from '@/components/BootPreloader'
+// Interactive overlays and utility modals
 import CursorGlow from '@/components/CursorGlow'
 import DarkGridAndParticles from '@/components/DarkGridAndParticles'
-import FpsMonitor from '@/components/FpsMonitor'
 import CommandPalette from '@/components/CommandPalette'
 import RecruiterViewModal from '@/components/RecruiterViewModal'
-import BackgroundSettingsDrawer from '@/components/BackgroundSettingsDrawer'
 
 
 export default function Home() {
@@ -112,34 +103,19 @@ export default function Home() {
   return (
     <LenisProvider>
       <main className="relative w-full min-h-screen">
-        {/* Cinematic Preloader */}
-        <BootPreloader />
-
-        {/* Dynamic Cursor Stardust Trail & Ambient Glow */}
-        <CursorTrail />
+        {/* Ambient Cursor Glow */}
         <CursorGlow />
 
-        {/* Ambient Drone controller */}
-        <AudioDock />
-
-        {/* Lightweight Telemetry FPS Monitor */}
-        <FpsMonitor />
-
-        {/* Dynamic Interactive Command Console */}
+        {/* Dynamic Interactive Command Console (Cmd+K) */}
         <CommandPalette />
 
         {/* 30-Second Recruiter Fast View Overlay */}
         <RecruiterViewModal />
 
-        {/* Environment & Aesthetics Settings Drawer */}
-        <BackgroundSettingsDrawer />
-
         {/* Persistent Navigation & Backgrounds */}
         <DarkGridAndParticles />
         <BackgroundParallax />
         <Overlay />
-        <RomanSidebar />
-
 
         {/* Content Layers */}
         <div className="relative z-10 w-full flex flex-col">
@@ -148,9 +124,7 @@ export default function Home() {
           <About />
           <SectionSeparator label="TECHNICAL MATRIX" />
           <Skills />
-          <SectionSeparator label="FEATURED AI SHOWCASE" />
-          <FeaturedProject />
-          <SectionSeparator label="SELECTED WORK" />
+          <SectionSeparator label="ENGINEERING PORTFOLIO" />
           <Projects />
           <SectionSeparator label="LIVE OPEN SOURCE ENGINE" />
           <GithubActivity />
@@ -164,8 +138,6 @@ export default function Home() {
           <Achievements />
           <SectionSeparator label="PEER TESTIMONIALS" />
           <Testimonials />
-          <SectionSeparator label="INTERACTIVE AI ENGINE" />
-          <Playground />
           <SectionSeparator label="GET IN TOUCH" />
           <Contact />
           <Footer />

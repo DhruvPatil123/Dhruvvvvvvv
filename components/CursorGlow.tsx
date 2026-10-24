@@ -16,7 +16,6 @@ export default function CursorGlow() {
     const handleMouseMove = (e: MouseEvent) => {
       setPosition({ x: e.clientX, y: e.clientY })
 
-      // Detect if hovering over clickable or card element
       const target = e.target as HTMLElement | null
       if (
         target &&
@@ -56,31 +55,18 @@ export default function CursorGlow() {
 
   return (
     <>
-      {/* Primary Ambient Gradient Halo */}
+      {/* Subtle, whisper-soft neutral ambient vignette (Monochrome, no color gradient) */}
       <div
         className="pointer-events-none fixed z-30 transition-transform duration-75 ease-out rounded-full -translate-x-1/2 -translate-y-1/2"
         style={{
           left: `${position.x}px`,
           top: `${position.y}px`,
-          width: isHovered ? '320px' : '220px',
-          height: isHovered ? '320px' : '220px',
+          width: isHovered ? '260px' : '180px',
+          height: isHovered ? '260px' : '180px',
           background: isHovered
-            ? 'radial-gradient(circle, rgba(0, 242, 255, 0.18) 0%, rgba(37, 99, 235, 0.08) 50%, rgba(0, 0, 0, 0) 70%)'
-            : 'radial-gradient(circle, rgba(0, 242, 255, 0.1) 0%, rgba(37, 99, 235, 0.04) 50%, rgba(0, 0, 0, 0) 70%)',
-          filter: 'blur(30px)',
-        }}
-      />
-
-      {/* Tiny Precision Glowing Dot */}
-      <div
-        className={`pointer-events-none fixed z-40 rounded-full -translate-x-1/2 -translate-y-1/2 transition-all duration-150 ${
-          isHovered
-            ? 'w-4 h-4 bg-cyan-300 shadow-[0_0_15px_rgba(0,242,255,0.9)] opacity-90 scale-125'
-            : 'w-2 h-2 bg-cyan-400 shadow-[0_0_8px_rgba(0,242,255,0.7)] opacity-60'
-        }`}
-        style={{
-          left: `${position.x}px`,
-          top: `${position.y}px`,
+            ? 'radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 50%, rgba(0, 0, 0, 0) 70%)'
+            : 'radial-gradient(circle, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.005) 50%, rgba(0, 0, 0, 0) 70%)',
+          filter: 'blur(25px)',
         }}
       />
     </>

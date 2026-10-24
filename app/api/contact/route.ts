@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server'
+import { PORTFOLIO_DATA } from '@/lib/portfolioData'
 
 export const dynamic = 'force-dynamic'
 
-const CONTACT_EMAIL = 'sujalpatil8657231278@gmail.com'
+const CONTACT_EMAIL = PORTFOLIO_DATA.email
 const RESEND_API_URL = 'https://api.resend.com/emails'
 
 type ContactPayload = {

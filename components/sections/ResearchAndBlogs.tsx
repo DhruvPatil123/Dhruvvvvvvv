@@ -70,11 +70,11 @@ export default function ResearchAndBlogs() {
         {/* Research Papers Header & Grid */}
         <div className="space-y-10">
           <div className="text-center space-y-5">
-            <span className="font-mono text-xs uppercase tracking-[0.2em] text-cyan-400 font-bold px-3 py-1 rounded-full bg-cyan-950/80 border border-cyan-500/40">
-              [ ACADEMIC PUBLICATIONS & RESEARCH ]
+            <span className="font-mono text-xs uppercase tracking-[0.2em] text-zinc-400 font-semibold">
+              [ 05 // ACADEMIC PUBLICATIONS & RESEARCH ]
             </span>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-light text-white tracking-tight leading-tight">
-              Research <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">Papers & Preprints</span>
+              Research <span className="font-semibold text-white">Papers & Preprints</span>
             </h2>
           </div>
 

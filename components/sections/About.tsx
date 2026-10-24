@@ -30,33 +30,33 @@ export default function About() {
   const pillarCards = [
     {
       title: "AI Engineer",
-      icon: <Sparkles className="w-6 h-6 text-cyan-400" />,
-      border: "hover:border-cyan-400/50",
-      accent: "text-cyan-400",
+      icon: <Sparkles className="w-5 h-5 text-white" />,
+      border: "hover:border-white/30",
+      accent: "text-white",
       desc: "Specializes in Generative AI, LLMs, RAG architectures, prompt engineering, and agentic workflows.",
       bullets: ["Agentic Multi-Agent Workflows", "Vector Databases & Pinecone", "Gemini & OpenAI API Stacks"]
     },
     {
       title: "Research Enthusiast",
-      icon: <BookOpen className="w-6 h-6 text-primary" />,
-      border: "hover:border-primary/50",
-      accent: "text-primary",
+      icon: <BookOpen className="w-5 h-5 text-zinc-300" />,
+      border: "hover:border-white/30",
+      accent: "text-zinc-300",
       desc: "Investigates low-latency multimodal streaming, code churn prediction model architectures, and LLM evaluations.",
       bullets: ["Real-Time Biometric Streaming", "AST Code Analysis Knowledge Graphs", "Autonomous Self-Healing Pipelines"]
     },
     {
       title: "Full Stack Developer",
-      icon: <Layers className="w-6 h-6 text-blue-400" />,
-      border: "hover:border-blue-400/50",
-      accent: "text-blue-400",
+      icon: <Layers className="w-5 h-5 text-zinc-200" />,
+      border: "hover:border-white/30",
+      accent: "text-zinc-200",
       desc: "Engineers production-grade full-stack web applications with high frame rate 3D interfaces and real-time backends.",
       bullets: ["Next.js 15 & React 19", "FastAPI & Node.js Microservices", "Tailwind CSS & Framer Motion"]
     },
     {
       title: "Open Source Builder",
-      icon: <GitBranch className="w-6 h-6 text-emerald-400" />,
-      border: "hover:border-emerald-400/50",
-      accent: "text-emerald-400",
+      icon: <GitBranch className="w-5 h-5 text-zinc-300" />,
+      border: "hover:border-white/30",
+      accent: "text-zinc-300",
       desc: "Actively ships public repositories, developer utilities, and reusable AI software templates.",
       bullets: ["500+ Public GitHub Commits", "Reusable Next.js + AI Boilerplates", "Community Developer Tooling"]
     }
@@ -66,14 +66,14 @@ export default function About() {
     <section id="about" className="relative w-full min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-24 md:py-36 lg:py-44">
       <div className="max-w-6xl w-full space-y-16 sm:space-y-20">
         {/* Section Header */}
-        <div className="text-center space-y-5">
-          <span className="font-mono text-xs uppercase tracking-[0.2em] text-cyan-400 font-bold px-3.5 py-1.5 rounded-full bg-cyan-950/80 border border-cyan-500/40">
-            [ ORIGIN & INTENT ]
+        <div className="text-center space-y-4">
+          <span className="font-mono text-xs uppercase tracking-[0.2em] text-zinc-400 font-semibold">
+            [ 01 // ORIGIN & INTENT ]
           </span>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-light text-white tracking-tight leading-tight">
-            Who <span className="italic font-serif text-zinc-300">I Am</span> & <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-primary to-blue-400">Core Pillars</span>
+            Who <span className="italic font-serif text-zinc-400">I Am</span> & <span className="font-semibold text-white">Core Pillars</span>
           </h2>
-          <p className="text-gray-300 text-base sm:text-lg max-w-xl mx-auto font-sans leading-relaxed">
+          <p className="text-zinc-400 text-base sm:text-lg max-w-xl mx-auto font-sans leading-relaxed">
             AI Research Engineer & Full Stack Developer combining mathematical precision with production web engineering.
           </p>
         </div>

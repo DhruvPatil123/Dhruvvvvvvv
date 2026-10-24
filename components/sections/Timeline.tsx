@@ -168,10 +168,7 @@ export default function Timeline() {
   ]
 
   return (
-    <section id="experience" className="relative w-full min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-24 md:py-36 bg-zinc-950/90 text-white overflow-hidden">
-      {/* Background Decorative Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-cyan-500/10 blur-[150px] pointer-events-none rounded-full" />
-
+    <section id="experience" className="relative w-full min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-24 md:py-36 bg-transparent text-white overflow-hidden">
       <div className="max-w-5xl w-full relative z-10 space-y-12">
         {/* Header */}
         <div className="text-center space-y-4 max-w-3xl mx-auto">
@@ -180,10 +177,9 @@ export default function Timeline() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 font-mono text-xs uppercase font-bold tracking-wider"
+            className="font-mono text-xs uppercase tracking-[0.2em] text-zinc-400 font-semibold"
           >
-            <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-            <span>Integrated Growth Story</span>
+            [ 06 // INTEGRATED GROWTH STORY ]
           </motion.span>
 
           <motion.h2
@@ -193,10 +189,10 @@ export default function Timeline() {
             viewport={{ once: true }}
             className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-light tracking-normal leading-tight"
           >
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-200 via-white to-gray-300">
+            <span className="text-zinc-400 italic font-serif">
               Academic & Professional
             </span>{" "}
-            <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-primary to-blue-400">
+            <span className="font-semibold text-white">
               Timeline
             </span>
           </motion.h2>

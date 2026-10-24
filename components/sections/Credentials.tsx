@@ -56,8 +56,8 @@ export default function Credentials() {
     <section id="credentials" className="relative w-full min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-28 md:py-36 lg:py-48">
       <div className="max-w-6xl w-full text-center mb-16 md:mb-24 space-y-6">
         {/* Section Indicator */}
-        <span className="font-mono text-xs uppercase tracking-[0.2em] text-primary font-medium">
-          [ 06 // INTELLECTUAL BASIS ]
+        <span className="font-mono text-xs uppercase tracking-[0.2em] text-zinc-400 font-semibold">
+          [ 04 // INTELLECTUAL BASIS ]
         </span>
 
         <motion.h2
@@ -67,10 +67,10 @@ export default function Credentials() {
           viewport={{ once: true }}
           className="text-4xl md:text-5xl lg:text-6xl font-display font-light text-white tracking-normal leading-tight"
         >
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-300 via-zinc-100 to-white italic font-light">
+          <span className="text-zinc-400 italic font-serif">
             Academic
           </span>{" "}
-          <span className="font-normal text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-200 to-secondary animate-gradient">
+          <span className="font-semibold text-white">
             Credentials
           </span>
         </motion.h2>
