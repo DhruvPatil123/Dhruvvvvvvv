@@ -5,7 +5,11 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Brain, Code2, ShieldAlert, Cpu, Play, RefreshCw, Terminal, Sliders, Layers, Activity, Sparkles, CheckCircle2 } from 'lucide-react'
 import { useScrollStore } from '@/store/useScrollStore'
 import { useSkillsStore } from '@/store/useSkillsStore'
-import { playTick, playNotification, playPopover } from '@/lib/sounds'
+import { playTick, playNotification, playPopover, playGlassChime } from '@/lib/sounds'
+import TiltCard from '@/components/TiltCard'
+import BaffleText from '@/components/BaffleText'
+import EditorialBadge from '@/components/typography/EditorialBadge'
+import FluidText from '@/components/typography/FluidText'
 
 interface SkillDetail {
   name: string
@@ -265,9 +269,15 @@ export default function Skills() {
     <section id="skills" className="relative w-full min-h-screen flex flex-col items-center justify-center px-6 py-28 md:py-38 lg:py-48">
       <div className="max-w-6xl w-full text-center mb-20 sm:mb-24 space-y-6">
         {/* Section Indicator */}
-        <span className="font-mono text-xs uppercase tracking-[0.2em] text-zinc-400 font-semibold">
-          [ 02 // TECHNICAL MATRIX ]
-        </span>
+        <div className="flex justify-center">
+          <EditorialBadge
+            index="02"
+            label="TECHNICAL_MATRIX"
+            coordinates="STACK_SPECS"
+            frequency="FULL_STACK"
+            variant="amethyst"
+          />
+        </div>
         
         <motion.h2
           initial={{ opacity: 0, y: 15 }}
@@ -279,9 +289,9 @@ export default function Skills() {
           <span className="text-zinc-400 italic font-serif">
             Technical
           </span>{" "}
-          <span className="font-semibold text-white">
+          <FluidText variant="amethyst" className="font-semibold text-white">
             Matrix
-          </span>
+          </FluidText>
         </motion.h2>
         
         <motion.p
@@ -299,28 +309,28 @@ export default function Skills() {
       {/* Bento Grid Container - 4 Categories */}
       <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10 mb-20 sm:mb-24">
         {SKILL_CATEGORIES.map((cat, idx) => (
-          <motion.div
-            key={cat.title}
-            initial={{ opacity: 0, y: 25 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: idx * 0.08 }}
-            viewport={{ once: true }}
-            onMouseEnter={() => setSkillsHovered(true)}
-            onMouseLeave={() => setSkillsHovered(false)}
-            className={`glass-effect p-8 rounded-3xl border border-white/5 ${cat.borderHover} transition-all duration-300 group flex flex-col justify-between hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5`}
-          >
-            <div>
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  {cat.icon}
+          <TiltCard key={cat.title} className="h-full">
+            <motion.div
+              initial={{ opacity: 0, y: 25 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: idx * 0.08 }}
+              viewport={{ once: true }}
+              onMouseEnter={() => setSkillsHovered(true)}
+              onMouseLeave={() => setSkillsHovered(false)}
+              className={`glass-effect p-8 rounded-3xl border border-white/5 ${cat.borderHover} transition-all duration-300 group flex flex-col justify-between h-full hover:shadow-xl hover:shadow-primary/5`}
+            >
+              <div>
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    {cat.icon}
+                  </div>
+                  <h3 className={`text-base font-mono font-bold ${cat.color} uppercase tracking-widest`}>
+                    <BaffleText text={cat.title} />
+                  </h3>
                 </div>
-                <h3 className={`text-base font-mono font-bold ${cat.color} uppercase tracking-widest`}>
-                  {cat.title}
-                </h3>
-              </div>
 
               <div className="flex flex-wrap gap-2.5">
-                {cat.skills.map((skill) => {
+                {cat.skills.map((skill, sIdx) => {
                   const skillName = typeof skill === 'string' ? skill : skill.name
                   const skillLevel = typeof skill === 'string' ? 'Advanced' : skill.level
                   const skillExp = typeof skill === 'string' ? '2 Years' : skill.exp
@@ -328,7 +338,8 @@ export default function Skills() {
                   return (
                     <div 
                       key={skillName} 
-                      className={`relative px-4 py-2.5 rounded-xl transition-all duration-300 font-sans text-xs md:text-sm font-medium cursor-default flex items-center gap-2 group/chip hover:scale-105 ${
+                      onClick={(e) => playGlassChime({ event: e, freqIndex: sIdx })}
+                      className={`relative px-4 py-2.5 rounded-xl transition-all duration-300 font-sans text-xs md:text-sm font-medium cursor-pointer flex items-center gap-2 group/chip hover:scale-105 active:scale-95 ${
                         highlighted
                           ? 'bg-cyan-500/20 text-white border-2 border-cyan-400 shadow-[0_0_20px_rgba(0,242,255,0.4)] scale-105'
                           : 'bg-white/[0.03] hover:bg-cyan-950/40 text-gray-200 hover:text-white border border-white/10 hover:border-cyan-400/40'
@@ -352,6 +363,7 @@ export default function Skills() {
               </div>
             </div>
           </motion.div>
+        </TiltCard>
         ))}
       </div>
 

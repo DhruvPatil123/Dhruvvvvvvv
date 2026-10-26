@@ -22,8 +22,10 @@ export default function SectionSeparator({ label }: SectionSeparatorProps) {
 
         {/* Center Editorial Label */}
         {label ? (
-          <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-500 whitespace-nowrap px-3 select-none">
-            {label}
+          <div className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.25em] text-zinc-500 whitespace-nowrap px-3 select-none flex items-center gap-2">
+            <span className="text-zinc-700 font-bold">+</span>
+            <span>{label}</span>
+            <span className="text-zinc-700 font-bold">+</span>
           </div>
         ) : (
           <div className="w-1 h-1 rounded-full bg-white/20" />

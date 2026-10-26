@@ -18,26 +18,25 @@ export default function HeroPortraitAsset({ className = '', interactive = true }
       onMouseLeave={() => interactive && setIsHovered(false)}
     >
       {/* 
-        1. Subtle Monochromatic Studio Vignette (Pure Grayscale, Zero Color Glow)
-        Provides gentle photographic depth behind the head and shoulders.
+        1. Royal Amethyst & Electric Cyan Studio Vignette
+        Provides photographic depth behind the silhouette matching the palette.
       */}
       <div 
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340px] sm:w-[460px] md:w-[560px] h-[380px] sm:h-[520px] md:h-[620px] rounded-full pointer-events-none transition-all duration-700"
         style={{
           background: isHovered
-            ? 'radial-gradient(circle at 50% 45%, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 45%, rgba(0,0,0,0) 75%)'
-            : 'radial-gradient(circle at 50% 45%, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 45%, rgba(0,0,0,0) 75%)',
-          filter: 'blur(40px)',
+            ? 'radial-gradient(circle at 50% 45%, rgba(168,85,247,0.22) 0%, rgba(0,240,255,0.1) 45%, rgba(0,0,0,0) 75%)'
+            : 'radial-gradient(circle at 50% 45%, rgba(126,34,206,0.14) 0%, rgba(0,240,255,0.05) 45%, rgba(0,0,0,0) 75%)',
+          filter: 'blur(50px)',
         }}
       />
 
       {/* 
-        2. High-Contrast Monochrome Editorial Portrait Silhouette
-        Faithful to the Alex Graham reference:
+        2. High-Contrast Monochrome Editorial Portrait Silhouette with Amethyst & Cyan Rim Light
         - Side profile of engineer looking right
-        - Natural braided hair texture with subtle studio highlights
-        - Textured high-collar corduroy/pleated jacket in rich charcoal & black
-        - Pure grayscale photographic lighting and shadows (zero neon/cyan)
+        - Natural braided hair texture
+        - Textured high-collar corduroy/pleated jacket in rich jet black obsidian
+        - Royal Amethyst and Electric Cyan subtle rim lighting
       */}
       <motion.div 
         animate={{ scale: isHovered ? 1.02 : 1 }}
@@ -51,11 +50,11 @@ export default function HeroPortraitAsset({ className = '', interactive = true }
           xmlns="http://www.w3.org/2000/svg"
         >
           <defs>
-            {/* Pure monochrome rim highlight */}
+            {/* Royal Amethyst & Electric Cyan rim highlight */}
             <linearGradient id="editorialRim" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.85" />
-              <stop offset="45%" stopColor="#d4d4d8" stopOpacity="0.5" />
-              <stop offset="100%" stopColor="#71717a" stopOpacity="0.1" />
+              <stop offset="0%" stopColor="#00f0ff" stopOpacity="0.9" />
+              <stop offset="50%" stopColor="#c084fc" stopOpacity="0.75" />
+              <stop offset="100%" stopColor="#7e22ce" stopOpacity="0.25" />
             </linearGradient>
 
             {/* Core body gradient: Ultra-deep matte obsidian with studio directional key light */}

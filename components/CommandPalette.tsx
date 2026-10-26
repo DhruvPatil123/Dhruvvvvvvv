@@ -102,6 +102,14 @@ export default function CommandPalette() {
       action: () => scrollToSection('work'),
     },
     {
+      id: 'nav-art-lab',
+      title: 'Open Generative Art Lab',
+      subtitle: 'Flow Fields, Lorenz Attractor, ASCII Shaders, 4K Wallpapers',
+      category: 'navigation',
+      icon: <Sparkles className="w-4 h-4 text-cyan-400" />,
+      action: () => scrollToSection('art-lab'),
+    },
+    {
       id: 'nav-credentials',
       title: 'Go to Credentials & Education',
       subtitle: 'Degrees, Qualifications & Tech Focus',

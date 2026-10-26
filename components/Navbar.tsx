@@ -77,19 +77,19 @@ export default function Navbar() {
                 key={item.id}
                 onClick={() => handleNavClick(item.id)}
                 aria-current={isActive ? 'page' : undefined}
-                className={`relative px-3 py-1.5 rounded-lg transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/40 ${
+                className={`relative px-3 py-1.5 rounded-lg transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-purple-400/40 ${
                   isActive ? 'text-white font-bold' : 'text-zinc-400 hover:text-white hover:bg-white/[0.03]'
                 }`}
               >
                 {isActive && (
                   <motion.span
                     layoutId="activeNavTab"
-                    className="absolute inset-0 rounded-lg bg-white/10 border border-white/20"
+                    className="absolute inset-0 rounded-lg bg-purple-950/40 border border-purple-500/30 shadow-[0_0_12px_rgba(168,85,247,0.2)]"
                     transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                   />
                 )}
                 <span className="relative z-10 flex items-center gap-1.5">
-                  <span className={`text-[10px] ${isActive ? 'text-white' : 'text-zinc-600'}`}>
+                  <span className={`text-[10px] ${isActive ? 'text-cyan-400 font-mono' : 'text-zinc-600'}`}>
                     0{index + 1}
                   </span>
                   <span>{item.label}</span>
@@ -104,7 +104,7 @@ export default function Navbar() {
           <a
             href="#contact"
             onClick={() => handleNavClick('contact')}
-            className="px-4 py-1.5 rounded-lg bg-white/10 hover:bg-white text-zinc-200 hover:text-black border border-white/15 hover:border-white font-mono text-xs font-semibold transition-all shadow-sm"
+            className="px-4 py-1.5 rounded-lg bg-gradient-to-r from-purple-900/40 to-cyan-950/40 hover:from-purple-800/60 hover:to-cyan-900/60 text-purple-200 hover:text-white border border-purple-500/30 hover:border-cyan-400/50 font-mono text-xs font-semibold transition-all shadow-sm"
           >
             Contact
           </a>

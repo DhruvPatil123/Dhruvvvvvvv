@@ -377,31 +377,57 @@ export function playAmbientPad() {
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// GENERATIVE AMBIENT DRONE ENGINE (Brian Eno-inspired warm analog pad)
+// Harmonic Chords: F Major 9 (F1, F2, C3, A3, E4, G4, C5)
+// Real-time Lowpass Filter Cutoff dynamically modulated by scroll depth
+// ─────────────────────────────────────────────────────────────────────────────
+
 let ambientDroneOscillators: OscillatorNode[] = []
 let ambientDroneGainNode: GainNode | null = null
 let ambientDronePanNode: StereoPannerNode | null = null
+let ambientDroneFilterNode: BiquadFilterNode | null = null
+let ambientDroneLfoNode: OscillatorNode | null = null
+let ambientDroneLfoGain: GainNode | null = null
+let isDroneActive = false
 
-export function startAmbientDrone() {
+export function startAmbientDrone(targetVolume: number = 0.22) {
+  if (isDroneActive && ambientDroneGainNode) return
   const ctx = getAudioContext()
   if (!ctx) return
-
-  if (ambientDroneGainNode) return
 
   try {
     const now = ctx.currentTime
 
+    // Master Gain with smooth fade-in
     ambientDroneGainNode = ctx.createGain()
-    ambientDroneGainNode.gain.setValueAtTime(0, now)
+    ambientDroneGainNode.gain.setValueAtTime(0.0001, now)
+    ambientDroneGainNode.gain.linearRampToValueAtTime(targetVolume, now + 2.5)
 
+    // Stereo Panner
     ambientDronePanNode = ctx.createStereoPanner ? ctx.createStereoPanner() : null
-    
-    const filter = ctx.createBiquadFilter()
-    filter.type = 'lowpass'
-    filter.frequency.setValueAtTime(550, now)
-    filter.Q.setValueAtTime(1.0, now)
 
-    filter.connect(ambientDroneGainNode)
+    // Dual-pole Resonant Lowpass Filter (Brian Eno pad signature)
+    ambientDroneFilterNode = ctx.createBiquadFilter()
+    ambientDroneFilterNode.type = 'lowpass'
+    // Start warm and muted (~360 Hz)
+    ambientDroneFilterNode.frequency.setValueAtTime(360, now)
+    ambientDroneFilterNode.Q.setValueAtTime(2.2, now) // Gentle analog resonance
 
+    // Gentle Sub-bass LFO to modulate filter cutoff very slightly (breathing effect)
+    const lfo = ctx.createOscillator()
+    const lfoGain = ctx.createGain()
+    lfo.type = 'sine'
+    lfo.frequency.setValueAtTime(0.12, now) // 0.12 Hz slow cycle
+    lfoGain.gain.setValueAtTime(35, now) // +/- 35 Hz gentle swell
+    lfo.connect(lfoGain)
+    lfoGain.connect(ambientDroneFilterNode.frequency)
+    lfo.start(now)
+    ambientDroneLfoNode = lfo
+    ambientDroneLfoGain = lfoGain
+
+    // Wire up filter -> gain -> panner -> destination
+    ambientDroneFilterNode.connect(ambientDroneGainNode)
     if (ambientDronePanNode) {
       ambientDroneGainNode.connect(ambientDronePanNode)
       ambientDronePanNode.connect(ctx.destination)
@@ -409,23 +435,40 @@ export function startAmbientDrone() {
       ambientDroneGainNode.connect(ctx.destination)
     }
 
-    const chordFreqs = [87.31, 130.81, 220.00, 329.63, 392.00]
+    // F Major 9 Chord Frequencies:
+    // F1 (Sub anchor): 43.65 Hz
+    // F2 (Root): 87.31 Hz
+    // C3 (Fifth): 130.81 Hz
+    // A3 (Major Third): 220.00 Hz
+    // E4 (Major Seventh): 329.63 Hz
+    // G4 (Ninth): 392.00 Hz
+    // C5 (Sparkle): 523.25 Hz
+    const chordVoices = [
+      { freq: 43.65, type: 'sine' as OscillatorType, vol: 0.35, detune: 0 },
+      { freq: 87.31, type: 'triangle' as OscillatorType, vol: 0.28, detune: -3 },
+      { freq: 130.81, type: 'sine' as OscillatorType, vol: 0.22, detune: 4 },
+      { freq: 220.00, type: 'triangle' as OscillatorType, vol: 0.20, detune: -2 },
+      { freq: 329.63, type: 'sine' as OscillatorType, vol: 0.18, detune: 3 },
+      { freq: 392.00, type: 'triangle' as OscillatorType, vol: 0.15, detune: -4 },
+      { freq: 523.25, type: 'sine' as OscillatorType, vol: 0.10, detune: 2 },
+    ]
 
-    chordFreqs.forEach((freq, idx) => {
+    ambientDroneOscillators = []
+
+    chordVoices.forEach((voice) => {
       const osc = ctx.createOscillator()
       const oscGain = ctx.createGain()
 
-      osc.type = idx % 2 === 0 ? 'sine' : 'triangle'
-      osc.frequency.setValueAtTime(freq, now)
+      osc.type = voice.type
+      osc.frequency.setValueAtTime(voice.freq, now)
+      if (osc.detune) {
+        osc.detune.setValueAtTime(voice.detune, now)
+      }
 
-      let relativeVolume = 0.12
-      if (idx === 0) relativeVolume = 0.22
-      if (osc.type === 'triangle') relativeVolume *= 0.25
-
-      oscGain.gain.setValueAtTime(relativeVolume, now)
+      oscGain.gain.setValueAtTime(voice.vol, now)
 
       osc.connect(oscGain)
-      oscGain.connect(filter)
+      oscGain.connect(ambientDroneFilterNode!)
 
       osc.start(now)
       ambientDroneOscillators.push(osc)
@@ -437,14 +480,85 @@ export function startAmbientDrone() {
           const x = e.clientX / window.innerWidth
           const panVal = (x * 2) - 1
           try {
-            ambientDronePanNode.pan.setTargetAtTime(panVal, ctx.currentTime, 0.1)
+            ambientDronePanNode.pan.setTargetAtTime(panVal * 0.4, ctx.currentTime, 0.2)
           } catch (_) {}
         }
       })
     }
+
+    isDroneActive = true
+    useAudioStore.getState().setIsPlayingAmbient(true)
   } catch (error) {
     console.warn('Ambient drone initialization failed', error)
   }
+}
+
+/**
+ * Dynamically modulate ambient drone lowpass filter cutoff based on scroll progress (0.0 to 1.0)
+ * 0.0 (top): 360 Hz warm, deep, atmospheric
+ * 1.0 (bottom): 1950 Hz open, crystalline, resonant harmonics
+ */
+export function updateAmbientDroneScroll(scrollProgress: number) {
+  if (!ambientDroneFilterNode || !isDroneActive) return
+  const ctx = getAudioContext()
+  if (!ctx) return
+
+  try {
+    const clamped = Math.max(0, Math.min(1, scrollProgress))
+    // Exponential scale from 360Hz to 1950Hz
+    const targetFreq = 360 + Math.pow(clamped, 1.25) * (1950 - 360)
+    
+    // Smooth transition
+    ambientDroneFilterNode.frequency.setTargetAtTime(targetFreq, ctx.currentTime, 0.2)
+    useAudioStore.getState().setFilterCutoff(Math.round(targetFreq))
+  } catch (_) {}
+}
+
+export function stopAmbientDrone() {
+  if (!isDroneActive && !ambientDroneGainNode) return
+  const ctx = getAudioContext()
+
+  if (ctx && ambientDroneGainNode) {
+    const now = ctx.currentTime
+    try {
+      ambientDroneGainNode.gain.cancelScheduledValues(now)
+      ambientDroneGainNode.gain.setValueAtTime(ambientDroneGainNode.gain.value, now)
+      ambientDroneGainNode.gain.exponentialRampToValueAtTime(0.0001, now + 1.2)
+    } catch (_) {}
+  }
+
+  setTimeout(() => {
+    try {
+      ambientDroneOscillators.forEach((osc) => {
+        try {
+          osc.stop()
+          osc.disconnect()
+        } catch (_) {}
+      })
+      ambientDroneOscillators = []
+
+      if (ambientDroneLfoNode) {
+        try {
+          ambientDroneLfoNode.stop()
+          ambientDroneLfoNode.disconnect()
+        } catch (_) {}
+        ambientDroneLfoNode = null
+      }
+
+      if (ambientDroneFilterNode) {
+        ambientDroneFilterNode.disconnect()
+        ambientDroneFilterNode = null
+      }
+
+      if (ambientDroneGainNode) {
+        ambientDroneGainNode.disconnect()
+        ambientDroneGainNode = null
+      }
+
+      isDroneActive = false
+      useAudioStore.getState().setIsPlayingAmbient(false)
+    } catch (_) {}
+  }, 1250)
 }
 
 export function setAmbientDroneVolume(volume: number) {
@@ -454,8 +568,121 @@ export function setAmbientDroneVolume(volume: number) {
   try {
     ambientDroneGainNode.gain.cancelScheduledValues(now)
     ambientDroneGainNode.gain.setValueAtTime(ambientDroneGainNode.gain.value, now)
-    ambientDroneGainNode.gain.linearRampToValueAtTime(volume, now + 0.5)
+    ambientDroneGainNode.gain.linearRampToValueAtTime(volume, now + 0.3)
+    useAudioStore.getState().setAmbientVolume(volume)
   } catch (_) {}
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GLASS & CRYSTAL FEEDBACK (Pristine Spatial Chimes)
+// Physical modeling of crystalline glass / singing crystal bowl
+// Dynamic stereo panning across headphones based on interaction location
+// ─────────────────────────────────────────────────────────────────────────────
+
+const CRYSTAL_NOTES = [
+  1396.91, // F6
+  1567.98, // G6
+  1760.00, // A6
+  2093.00, // C7
+  2349.32, // D7
+  2793.83, // F7
+  3135.96  // G7
+]
+
+let crystalNoteIndex = 0
+
+export interface GlassChimeOptions {
+  freqIndex?: number
+  pan?: number
+  event?: React.MouseEvent | MouseEvent
+  targetX?: number
+}
+
+export function playGlassChime(options: GlassChimeOptions = {}) {
+  const audioState = useAudioStore.getState()
+  if (audioState.isMuted || !audioState.crystalChimesEnabled) return
+  const ctx = getAudioContext()
+  if (!ctx) return
+
+  try {
+    const now = ctx.currentTime
+
+    // Calculate stereo panning (-1.0 left to +1.0 right)
+    let pan = currentPan
+    if (typeof options.pan === 'number') {
+      pan = Math.max(-0.95, Math.min(0.95, options.pan))
+    } else if (options.event && typeof window !== 'undefined') {
+      const clientX = options.event.clientX
+      pan = Math.max(-0.95, Math.min(0.95, (clientX / window.innerWidth) * 2 - 1))
+    } else if (typeof options.targetX === 'number' && typeof window !== 'undefined') {
+      pan = Math.max(-0.95, Math.min(0.95, (options.targetX / window.innerWidth) * 2 - 1))
+    }
+
+    // Select harmonic frequency from crystal scale
+    let fundamental = CRYSTAL_NOTES[crystalNoteIndex % CRYSTAL_NOTES.length]
+    if (typeof options.freqIndex === 'number') {
+      fundamental = CRYSTAL_NOTES[Math.abs(options.freqIndex) % CRYSTAL_NOTES.length]
+    }
+    crystalNoteIndex = (crystalNoteIndex + 1) % CRYSTAL_NOTES.length
+
+    // Stereo Panner Node
+    const panner = ctx.createStereoPanner ? ctx.createStereoPanner() : null
+    if (panner) {
+      panner.pan.setValueAtTime(pan, now)
+      panner.connect(ctx.destination)
+    }
+
+    // Master Chime Gain
+    const masterGain = ctx.createGain()
+    masterGain.gain.setValueAtTime(0.14, now)
+
+    if (panner) {
+      masterGain.connect(panner)
+    } else {
+      masterGain.connect(ctx.destination)
+    }
+
+    // Highpass filter to eliminate mud and isolate crystalline brilliance
+    const highpass = ctx.createBiquadFilter()
+    highpass.type = 'highpass'
+    highpass.frequency.setValueAtTime(900, now)
+    highpass.connect(masterGain)
+
+    // Inharmonic modal partials of struck glass:
+    // Mode 1: 1.000 * f0 (fundamental crystal ring)
+    // Mode 2: 2.756 * f0 (metallic glass strike)
+    // Mode 3: 5.404 * f0 (high sparkle chime)
+    // Mode 4: 0.500 * f0 (warm glass body resonance)
+    const modes = [
+      { ratio: 1.000, decay: 1.8, gain: 0.16 },
+      { ratio: 2.756, decay: 0.9, gain: 0.08 },
+      { ratio: 5.404, decay: 0.5, gain: 0.04 },
+      { ratio: 0.500, decay: 1.2, gain: 0.05 }
+    ]
+
+    modes.forEach((mode) => {
+      const osc = ctx.createOscillator()
+      const gainNode = ctx.createGain()
+
+      osc.type = 'sine'
+      const freq = fundamental * mode.ratio
+      osc.frequency.setValueAtTime(freq, now)
+
+      // Slight frequency decay mimicking glass tension release
+      osc.frequency.exponentialRampToValueAtTime(freq * 0.998, now + mode.decay)
+
+      gainNode.gain.setValueAtTime(mode.gain, now)
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, now + mode.decay)
+
+      osc.connect(gainNode)
+      gainNode.connect(highpass)
+
+      osc.start(now)
+      osc.stop(now + mode.decay + 0.05)
+    })
+  } catch (error) {
+    console.warn('Glass chime playback failed', error)
+  }
 }
 
 export function playCryptoTick() {

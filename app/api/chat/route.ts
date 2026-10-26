@@ -4,15 +4,6 @@ import { PORTFOLIO_DATA } from "@/lib/portfolioData";
 
 export const dynamic = "force-dynamic";
 
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
-  httpOptions: {
-    headers: {
-      'User-Agent': 'aistudio-build',
-    },
-  },
-});
-
 const SYSTEM_INSTRUCTION = `
 You are the personal AI Assistant, Chief of Staff, and technical agent of Dhruv Dinesh Patil.
 Your job is to introduce Dhruv to potential employers, recruiters, and visitors, and answer questions about his skills, education, projects, experience, and contact info in a conversational, positive, and technically sophisticated manner.
@@ -46,11 +37,42 @@ Behaviors & Guidelines:
 
 export async function POST(req: NextRequest) {
   try {
+    const apiKey = process.env.GEMINI_API_KEY;
+
     const { messages } = await req.json();
     
     if (!messages || !Array.isArray(messages)) {
       return NextResponse.json({ error: "Invalid messages array provided" }, { status: 400 });
     }
+
+    // Graceful response when GEMINI_API_KEY is not configured in Vercel environment variables
+    if (!apiKey || apiKey === "MY_GEMINI_API_KEY" || apiKey.trim() === "") {
+      const lastMessage = messages[messages.length - 1];
+      const userPrompt = (lastMessage?.text || "").toLowerCase();
+      
+      let contextualNote = "";
+      if (userPrompt.includes("resume") || userPrompt.includes("cv")) {
+        contextualNote = `\n\n📄 **Resume**: You can download Dhruv's resume directly via the [Download Resume PDF](/dhruv-patil-resume.pdf) link!`;
+      } else if (userPrompt.includes("project") || userPrompt.includes("ai")) {
+        contextualNote = `\n\n🚀 **Featured Projects**:\n• **Raincrew.AI** (Gemini Live API)\n• **AutoForge.AI** (Autonomous Agent)\n• **Software Evolution Predictor** (AST & Neo4j)\n• **Dockmind** (Enterprise RAG engine)`;
+      } else if (userPrompt.includes("contact") || userPrompt.includes("email")) {
+        contextualNote = `\n\n📬 **Contact Dhruv**:\n• Email: ${PORTFOLIO_DATA.email}\n• Phone: ${PORTFOLIO_DATA.phone}`;
+      }
+
+      return NextResponse.json({
+        text: `Hello! I'm Dhruv's AI Assistant. 🌟\n\n*(Note: To enable live Gemini responses on your Vercel deployment, configure \`GEMINI_API_KEY\` in your Vercel Project Settings → Environment Variables.)*${contextualNote}\n\nDhruv is a B.Tech AI engineer (CGPA ${PORTFOLIO_DATA.cgpa}) with 10+ AI projects, ${PORTFOLIO_DATA.leetcodeSolved}+ LeetCode solutions, and 15+ certifications. Feel free to explore his portfolio!`,
+        fallback: true
+      });
+    }
+
+    const ai = new GoogleGenAI({
+      apiKey: apiKey,
+      httpOptions: {
+        headers: {
+          'User-Agent': 'aistudio-build',
+        },
+      },
+    });
 
     // Map history to Google GenAI format: { role: 'user' | 'model', parts: [{ text: string }] }
     // Note that the last message is the user prompt.

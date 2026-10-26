@@ -26,10 +26,13 @@ import {
   Copy,
   Sparkles
 } from 'lucide-react'
-import { playTick, playPopover, playAmbientPad, playNotification, playCryptoTick, playParchmentOpen, playQuillClick } from '@/lib/sounds'
+import { playTick, playPopover, playAmbientPad, playNotification, playCryptoTick, playParchmentOpen, playQuillClick, playGlassChime } from '@/lib/sounds'
 import ProjectArchitectureDiagram from '@/components/ProjectArchitectureDiagram'
 import { useProjectStore } from '@/store/useProjectStore'
 import TiltCard from '@/components/TiltCard'
+import BaffleText from '@/components/BaffleText'
+import EditorialBadge from '@/components/typography/EditorialBadge'
+import FluidText from '@/components/typography/FluidText'
 
 
 interface ProjectMetric {
@@ -792,7 +795,7 @@ function MiniCardSandbox({ project }: { project: Project }) {
   return null
 }
 
-function ProjectCard({ project, idx, onOpen }: { project: Project; idx: number; onOpen: (p: Project) => void }) {
+function ProjectCard({ project, idx, onOpen }: { project: Project; idx: number; onOpen: (p: Project, event?: React.MouseEvent) => void }) {
   const cardRef = useRef<HTMLDivElement>(null)
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -817,9 +820,10 @@ function ProjectCard({ project, idx, onOpen }: { project: Project; idx: number; 
 
   return (
     <TiltCard
-      onClick={() => {
+      onClick={(e) => {
+        playGlassChime({ event: e, freqIndex: idx })
         playTick()
-        onOpen(project)
+        onOpen(project, e)
       }}
       ariaLabel={`Inspect project: ${project.title}`}
       className="h-full"
@@ -878,7 +882,7 @@ function ProjectCard({ project, idx, onOpen }: { project: Project; idx: number; 
 
         {/* Title */}
         <h3 className="text-2xl md:text-3xl font-display font-medium text-white tracking-tight leading-tight group-hover:text-cyan-300 transition-colors duration-300">
-          {project.title}
+          <BaffleText text={project.title} />
         </h3>
 
         {/* Description */}
@@ -894,7 +898,7 @@ function ProjectCard({ project, idx, onOpen }: { project: Project; idx: number; 
                 {metric.label}
               </span>
               <span className="text-xs sm:text-sm font-mono font-bold text-cyan-300 tracking-tight leading-none truncate tabular-nums" title={metric.value}>
-                {metric.value}
+                <BaffleText text={metric.value} revealSpeed={25} />
               </span>
             </div>
           ))}
@@ -2303,9 +2307,15 @@ export default function Projects() {
     <section id="work" className="relative w-full min-h-screen flex flex-col items-center justify-center py-28 md:py-36 lg:py-48 px-4 sm:px-6">
       <div className="max-w-6xl w-full text-center mb-16 sm:mb-20 space-y-6">
         {/* Section Indicator */}
-        <span className="font-mono text-xs uppercase tracking-[0.2em] text-zinc-400 font-semibold">
-          [ 03 // SELECTED WORKS ]
-        </span>
+        <div className="flex justify-center">
+          <EditorialBadge
+            index="03"
+            label="PRODUCTION_SYSTEMS"
+            coordinates="10+ FLAGSHIPS"
+            frequency="SUB-40MS"
+            variant="amethyst"
+          />
+        </div>
 
         <motion.h2
           initial={{ opacity: 0, y: 15 }}
@@ -2317,9 +2327,9 @@ export default function Projects() {
           <span className="text-zinc-400 italic font-serif">
             Engineering
           </span>{" "}
-          <span className="font-semibold text-white">
+          <FluidText variant="amethyst" className="font-semibold text-white">
             Portfolio
-          </span>
+          </FluidText>
         </motion.h2>
 
         <motion.p
@@ -2368,7 +2378,8 @@ export default function Projects() {
             return (
               <button
                 key={filter}
-                onClick={() => {
+                onClick={(e) => {
+                  playGlassChime({ event: e, freqIndex: TAG_FILTERS.indexOf(filter) })
                   playTick()
                   setActiveFilter(filter)
                 }}

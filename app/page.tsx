@@ -8,6 +8,7 @@ import Hero from '@/components/sections/Hero'
 import About from '@/components/sections/About'
 import Skills from '@/components/sections/Skills'
 import Projects from '@/components/sections/Projects'
+import GenerativeArtLab from '@/components/sections/GenerativeArtLab'
 import Credentials from '@/components/sections/Credentials'
 import ResearchAndBlogs from '@/components/sections/ResearchAndBlogs'
 import GithubActivity from '@/components/sections/GithubActivity'
@@ -18,15 +19,20 @@ import Contact from '@/components/sections/Contact'
 import SectionSeparator from '@/components/SectionSeparator'
 import Chatbot from '@/components/Chatbot'
 import LenisProvider from '@/components/LenisProvider'
+import KineticMarquee, { DEFAULT_ITEMS_ROW1, DEFAULT_ITEMS_ROW2 } from '@/components/typography/KineticMarquee'
 import { useScrollStore } from '@/store/useScrollStore'
 import { useChatStore } from '@/store/useChatStore'
 import { useThemeStore } from '@/store/useThemeStore'
 
 // Interactive overlays and utility modals
 import CursorGlow from '@/components/CursorGlow'
-import DarkGridAndParticles from '@/components/DarkGridAndParticles'
+import MorphingSculptureCanvas from '@/components/sculpture/MorphingSculptureCanvas'
+import ArtStyleDock from '@/components/sculpture/ArtStyleDock'
+import GlobalMatrixOverlay from '@/components/sculpture/GlobalMatrixOverlay'
 import CommandPalette from '@/components/CommandPalette'
 import RecruiterViewModal from '@/components/RecruiterViewModal'
+import AmbientSoundscapeDock from '@/components/sculpture/AmbientSoundscapeDock'
+import { updateAmbientDroneScroll } from '@/lib/sounds'
 
 
 export default function Home() {
@@ -50,6 +56,7 @@ export default function Home() {
       const scrollHeight = document.documentElement.scrollHeight - window.innerHeight
       const progress = Math.max(0, Math.min(1, scrollTop / scrollHeight))
       setScrollProgress(progress)
+      updateAmbientDroneScroll(progress)
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true })
@@ -57,7 +64,7 @@ export default function Home() {
   }, [setScrollProgress])
 
   useEffect(() => {
-    const sectionIds = ['hero', 'about', 'skills', 'work', 'github', 'credentials', 'achievements', 'experience', 'testimonials', 'contact']
+    const sectionIds = ['hero', 'about', 'skills', 'work', 'art-lab', 'github', 'credentials', 'achievements', 'experience', 'testimonials', 'contact']
 
     const handleScroll = () => {
       const vh = window.innerHeight
@@ -106,26 +113,33 @@ export default function Home() {
         {/* Ambient Cursor Glow */}
         <CursorGlow />
 
+        {/* Global Live CRT Matrix / ASCII Scanline Overlay */}
+        <GlobalMatrixOverlay />
+
         {/* Dynamic Interactive Command Console (Cmd+K) */}
         <CommandPalette />
 
         {/* 30-Second Recruiter Fast View Overlay */}
         <RecruiterViewModal />
 
-        {/* Persistent Navigation & Backgrounds */}
-        <DarkGridAndParticles />
+        {/* Persistent 3D Generative Centerpiece & Ambient Canvas */}
+        <MorphingSculptureCanvas />
         <BackgroundParallax />
         <Overlay />
 
         {/* Content Layers */}
         <div className="relative z-10 w-full flex flex-col">
           <Hero />
+          <KineticMarquee items={DEFAULT_ITEMS_ROW1} variant="outline" className="my-2" />
           <SectionSeparator label="ORIGIN & INTENT" />
           <About />
           <SectionSeparator label="TECHNICAL MATRIX" />
           <Skills />
           <SectionSeparator label="ENGINEERING PORTFOLIO" />
           <Projects />
+          <KineticMarquee items={DEFAULT_ITEMS_ROW2} reverse variant="accent" className="my-2" />
+          <SectionSeparator label="CREATIVE AI & GENERATIVE ART LAB" />
+          <GenerativeArtLab />
           <SectionSeparator label="LIVE OPEN SOURCE ENGINE" />
           <GithubActivity />
           <SectionSeparator label="ACADEMIC CREDENTIALS" />
@@ -142,6 +156,12 @@ export default function Home() {
           <Contact />
           <Footer />
         </div>
+
+        {/* Interactive Generative Ambient Soundscape Controller (Sonic Art) */}
+        <AmbientSoundscapeDock />
+
+        {/* Interactive Floating 3D Art Preset Switcher Dock */}
+        <ArtStyleDock />
 
         {/* Chatbot Assistant */}
         <Chatbot isOpen={isChatOpen} onClose={closeChat} />

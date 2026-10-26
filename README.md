@@ -98,6 +98,56 @@ Ensure you have [Node.js](https://nodejs.org/) (v18+ recommended) and `npm` inst
 
 ---
 
+## ⚡ Deploying to Vercel
+
+This portfolio is configured for **zero-config, high-performance deployment on Vercel**.
+
+### Option A: 1-Click Git Import (Recommended)
+
+1. Push your repository to your GitHub account:
+   ```bash
+   git push origin main
+   ```
+2. Navigate to [vercel.com/new](https://vercel.com/new).
+3. Import your `rebuilt-3d-site` (or portfolio) repository.
+4. Vercel automatically detects **Next.js**:
+   - **Framework Preset**: `Next.js`
+   - **Build Command**: `next build` (or leave default)
+   - **Output Directory**: `.next` (or leave default)
+   - **Install Command**: `npm install` (or leave default)
+5. Under **Environment Variables**, optionally add:
+   - `GEMINI_API_KEY`: Your Google Gemini API key (for live AI assistant generation).
+   - `RESEND_API_KEY`: *(Optional)* For forwarding contact messages to your inbox.
+   - `RESEND_FROM_EMAIL`: *(Optional)* Verified Resend sender email.
+   - `CONTACT_TO_EMAIL`: *(Optional)* Target email address for contact submissions.
+6. Click **Deploy**. Your site will be live on a `*.vercel.app` domain with automatic SSL and edge caching!
+
+### Option B: Deploying with Vercel CLI
+
+```bash
+# 1. Install the Vercel CLI globally
+npm install -g vercel
+
+# 2. Login to your Vercel account
+vercel login
+
+# 3. Deploy (run at the repository root)
+vercel
+
+# 4. For production release:
+vercel --prod
+```
+
+### Vercel Deployment Checklist
+
+- [x] **Framework auto-detection**: Configured in `vercel.json` with `framework: "nextjs"`.
+- [x] **Standalone override**: Dynamically set so Vercel uses its native serverless runtime.
+- [x] **Image domains**: `avatars.githubusercontent.com` and `assets.leetcode.com` allowed in `next.config.js`.
+- [x] **Graceful Fallbacks**: If `GEMINI_API_KEY` is not added yet, the chatbot uses pre-computed responses without crashing.
+- [x] **Zero Build Errors**: Clean compilation verified with `next build`.
+
+---
+
 ## 📁 Directory Structure
 
 ```text

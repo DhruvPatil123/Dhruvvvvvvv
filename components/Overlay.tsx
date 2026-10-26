@@ -4,15 +4,18 @@ import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useChatStore } from '@/store/useChatStore'
 import { useRecruiterStore } from '@/store/useRecruiterStore'
-import { Menu, X, Zap, FileText } from 'lucide-react'
+import { Menu, X, Zap, FileText, Volume2, VolumeX } from 'lucide-react'
 import { useScrollStore } from '@/store/useScrollStore'
+import { useAudioStore } from '@/store/useAudioStore'
 import { downloadResume } from '@/lib/downloadResume'
+import { startAmbientDrone, stopAmbientDrone, playTick } from '@/lib/sounds'
 
 export default function Overlay() {
   const openChat = useChatStore((state) => state.openChat)
   const openRecruiterView = useRecruiterStore((state) => state.openRecruiterView)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const activeSection = useScrollStore((state) => state.activeSection)
+  const isPlayingAmbient = useAudioStore((state) => state.isPlayingAmbient)
   const [isScrolled, setIsScrolled] = useState(false)
 
   useEffect(() => {
@@ -76,6 +79,26 @@ export default function Overlay() {
 
         {/* Action Buttons */}
         <div className="flex items-center gap-2 sm:gap-3">
+          {/* Ambient Soundscape Quick Toggle */}
+          <button
+            onClick={() => {
+              playTick()
+              if (isPlayingAmbient) {
+                stopAmbientDrone()
+              } else {
+                startAmbientDrone()
+              }
+            }}
+            title={isPlayingAmbient ? "Pause Generative Ambient Drone" : "Start Generative Ambient Drone (F Major 9)"}
+            className={`p-2 rounded-full border transition-all active:scale-95 duration-200 flex items-center justify-center cursor-pointer ${
+              isPlayingAmbient
+                ? "bg-cyan-500/20 text-cyan-400 border-cyan-400/40 shadow-[0_0_12px_rgba(0,240,255,0.3)]"
+                : "bg-white/5 text-zinc-400 hover:text-white border-white/10"
+            }`}
+          >
+            {isPlayingAmbient ? <Volume2 className="w-3.5 h-3.5 animate-pulse" /> : <VolumeX className="w-3.5 h-3.5" />}
+          </button>
+
           {/* Resume Button */}
           <button
             onClick={() => downloadResume('charcoal', 'ai')}

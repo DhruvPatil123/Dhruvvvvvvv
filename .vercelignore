@@ -1,0 +1,6 @@
+.git
+.github
+.aistudio
+*.tsbuildinfo
+.vscode
+.idea
